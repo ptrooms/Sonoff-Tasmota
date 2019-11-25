@@ -25,6 +25,22 @@
     - Select IDE Tools - Flash Size: "1M (no SPIFFS)"
   ====================================================*/
 
+/*
+ * TUT PtrO@Tweakers flash notities PIR/LSC sensor:
+ * 0) Haal Tasmota source op, ik zet mijn Wifi&Device/Instellingen in "my_usercnfig.h"  zodat ik stap 7(+8) niet hoef te doen.
+ * 1) soldeer "Tywe3S" draden 3.3v-EN, GND-IO0, RX, TX en losse contactdraad-RST, verbindt  die 3.3v/GNS/TX/RX @RS232/USB.
+ * 2) Start Arduino, koppel USB/rs232, activeer serial monitor 
+ * 3) Controleer werking: kijk (SerialMonitor) of er iets gebeurd wanneer je even (2sec) ReSeT-draad met GND verbindt. 
+ * 4) Compileeer Tasmota 6.7.0 met esp82xx hardware 2.6.0 (esp8285/DOUT/1MB/LWiPV2-lower/
+ * 5) Upload en indien daarna de Upload staat te "wachten" (op Connecting ..._...) maakt even weer een 2sec-ReSeT contact met GND
+ * 5) Upload start vanzelf, in stukjes van 4% en duurt ca 1 minuut
+ * 6) Onkoppel USB, haal de "EN-pin en io0-pindraad los, en verbindt met USB om te kijken of het gelukt is.
+ * 7) NB: om op/in Tasmota-level te resetten verbindt je de io0 pindraad met GND
+ * 8) Zoek in je Wifi/AP/Router/Dhcp op welk IP de PIR heeft waarna je de rest kunt instellen Tuyadevice, Mqtt etc.etc.
+ * 9) Wanneer klaar, haal de draden los en de PIR is klaar voor gebruik
+ 
+ */
+
 // Location specific includes
 #include <core_version.h>                   // Arduino_Esp8266 version information (ARDUINO_ESP8266_RELEASE and ARDUINO_ESP8266_RELEASE_2_3_0)
 #include "sonoff_version.h"                 // Sonoff-Tasmota version information

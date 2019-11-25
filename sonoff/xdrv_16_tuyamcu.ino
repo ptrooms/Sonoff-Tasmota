@@ -27,15 +27,26 @@
 #define TUYA_DIMMER_ID         0
 #endif
 
+
+/* ----------------------------------------------------------------------------
+  Note: below changed after debug/analysis [/media/Rdisk/Info/noteit/tasmota_sw011_DEBUG_lsc_pir_sensor_session_23nov19_22u55.txt]
+	setAP  : 55 AA 00 02 00 01 00 02 Ledfast 250ms
+	setSta : 55 AA 00 02 00 01 01 02 Ledslow 1500ms
+	WifiCon: 55 AA 00 02 00 01 02 04 Ledoff, indicate Wifi connected 
+	DhcpRec: 55 AA 00 02 00 01 03 05 Ledoff, indicate connected to router
+	MqttSnd: 55 AA 00 02 00 01 04 06 Powerff, connect to cloud, report and poweroff
+ ----------------------------------------------------------------------------*/
 #define TUYA_CMD_HEARTBEAT     0x00
 #define TUYA_CMD_QUERY_PRODUCT 0x01
-#define TUYA_CMD_MCU_CONF      0x02
+#define TUYA_CMD_MCU_CONF      0x02	// 55AA00020000/1/2/3 01 after setap/setSta/wifi/dhcp
+#define TUYA_CMD_MCU_CONF2     0xFF // disable this function
 #define TUYA_CMD_WIFI_STATE    0x03
 #define TUYA_CMD_WIFI_RESET    0x04
-#define TUYA_CMD_WIFI_SELECT   0x05
-#define TUYA_CMD_SET_DP        0x06
+// #define TUYA_CMD_WIFI_SELECT   0x04	// original value was 05
+#define TUYA_CMD_SET_DP        0x05	// value was 06  dpid returned 55AA0005000501040001000F
+#define TUYA_CMD_QUERY_DP      0x06	// new name
 #define TUYA_CMD_STATE         0x07
-#define TUYA_CMD_QUERY_STATE   0x08
+#define TUYA_CMD_QUERY_STATE   0x08	// 55aa0008000007 ack after commands 55aa00 02
 
 #define TUYA_TYPE_BOOL         0x01
 #define TUYA_TYPE_VALUE        0x02
@@ -412,7 +423,7 @@ void TuyaPacketProcess(void)
       break;
 
     case TUYA_CMD_WIFI_RESET:
-    case TUYA_CMD_WIFI_SELECT:
+    // case TUYA_CMD_WIFI_SELECT: // PIR sensor operates differently
       AddLog_P(LOG_LEVEL_DEBUG, PSTR("TYA: RX WiFi Reset"));
       TuyaResetWifi();
       break;
@@ -422,7 +433,11 @@ void TuyaPacketProcess(void)
       Tuya.wifi_state = WifiState();
       break;
 
-    case TUYA_CMD_MCU_CONF:
+   case TUYA_CMD_MCU_CONF:    // pocs/ptr replaces orignal as PIR uses things differently
+      AddLog_P(LOG_LEVEL_DEBUG, PSTR("TYA: RX WiFi ACKnowledge"));
+      break;
+
+    case TUYA_CMD_MCU_CONF2:
       AddLog_P2(LOG_LEVEL_DEBUG, PSTR("TYA: RX MCU configuration Mode=%d"), Tuya.buffer[5]);
 
       if (Tuya.buffer[5] == 2) { // Processing by ESP module mode
