@@ -10,6 +10,7 @@
 .gcc-flags.json
 .cache
 tasmota/user_config_override.h
+sonoff/user_config_override.h
 build
 firmware.map
 firmware.asm
