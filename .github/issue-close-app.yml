@@ -16,18 +16,16 @@ comment: >-
   Please, could you be so kind on completing the [issue template](https://github.com/arendst/Tasmota/issues/new/choose) in order to have more information so as to properly help you?
 
   Thank you for taking the time to report, hopefully it can be resolved soon.
-
-  [Support Information](https://github.com/arendst/Sonoff-Tasmota/blob/development/SUPPORT.md)
   
-  [Wiki](https://tasmota.github.io/docs/#/) for more information.
+  [Wiki](https://tasmota.github.io/docs/) for more information.
   
   [Chat](https://discord.gg/Ks2Kzd4) for more user experience.
   
   [Community](https://groups.google.com/d/forum/sonoffusers) for forum.
   
-  [Code of Conduct](https://github.com/arendst/Sonoff-Tasmota/blob/development/CODE_OF_CONDUCT.md)
+  [Code of Conduct](https://github.com/arendst/Tasmota/blob/development/CODE_OF_CONDUCT.md)
   
-  [Contributing Guideline and Policy](https://github.com/arendst/Sonoff-Tasmota/blob/development/CONTRIBUTING.md)
+  [Contributing Guideline and Policy](https://github.com/arendst/Tasmota/blob/development/CONTRIBUTING.md)
 
 issueConfigs:
 # There can be several configs for different kind of issues.
@@ -39,7 +37,7 @@ issueConfigs:
   - "EXPECTED BEHAVIOUR" 
 - content:
 # template 2: feature request
-  - "Have you looked for this feature in other issues and in the wiki"
+  - "Have you looked for this feature in other issues and in the docs"
   - "Describe the solution you'd like"
   
 # Optional configuration:

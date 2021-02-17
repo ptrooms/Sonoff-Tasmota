@@ -1,7 +1,7 @@
 /*
   xdrv_15_pca9685.ino - Support for I2C PCA9685 12bit 16 pin hardware PWM driver on Tasmota
 
-  Copyright (C) 2019  Andre Thomas and Theo Arends
+  Copyright (C) 2020  Andre Thomas and Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -196,7 +196,7 @@ bool Xdrv15(uint8_t function)
   else if (pca9685_detected) {
     switch (function) {
       case FUNC_EVERY_SECOND:
-        if (tele_period == 0) {
+        if (TasmotaGlobal.tele_period == 0) {
           PCA9685_OutputTelemetry(true);
         }
         break;

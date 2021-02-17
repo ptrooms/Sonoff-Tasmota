@@ -1,7 +1,7 @@
 /*
   xdrv_14_mp3.ino - MP3 support for Tasmota
 
-  Copyright (C) 2019  gemu2015, mike2nl and Theo Arends
+  Copyright (C) 2020  gemu2015, mike2nl and Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -136,7 +136,7 @@ uint16_t MP3_Checksum(uint8_t *array)
 \*********************************************************************************************/
 
 void MP3PlayerInit(void) {
-  MP3Player = new TasmotaSerial(-1, pin[GPIO_MP3_DFR562]);
+  MP3Player = new TasmotaSerial(-1, Pin(GPIO_MP3_DFR562));
   // start serial communication fixed to 9600 baud
   if (MP3Player->begin(9600)) {
     MP3Player->flush();
@@ -232,7 +232,7 @@ bool Xdrv14(uint8_t function)
 {
   bool result = false;
 
-  if (pin[GPIO_MP3_DFR562] < 99) {
+  if (PinUsed(GPIO_MP3_DFR562)) {
     switch (function) {
       case FUNC_PRE_INIT:
         MP3PlayerInit();                              // init and start communication

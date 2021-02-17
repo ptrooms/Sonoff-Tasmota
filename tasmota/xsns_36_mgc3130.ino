@@ -1,7 +1,7 @@
 /*
   xsns_36_MGC3130.ino - Support for I2C MGC3130 Electric Field Sensor for Tasmota
 
-  Copyright (C) 2019  Christian Baars & Theo Arends
+  Copyright (C) 2020  Christian Baars & Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,13 +39,10 @@
 
 #define MGC3130_I2C_ADDR        0x42
 
-#define MGC3130_xfer            pin[GPIO_MGC3130_XFER]
-#define MGC3130_reset           pin[GPIO_MGC3130_RESET]
-
-
+uint8_t MGC3130_xfer = 0;
+uint8_t MGC3130_reset = 0;
 bool MGC3130_type = false;
 char MGC3130stype[] = "MGC3130";
-
 
 #define MGC3130_SYSTEM_STATUS 0x15
 #define MGC3130_REQUEST_MSG   0x06
@@ -72,7 +69,8 @@ const char HTTP_MGC_3130_SNS[] PROGMEM =
   "{s}" "%s" "{m}%s{e}"
   "{s}" "HwRev" "{m}%u.%u{e}"
   "{s}" "loaderVer" "{m}%u.%u{e}"
-  "{s}" "platVer" "{m}%u{e}";      // {s} = <tr><th>, {m} = </th><td>, {e} = </td></tr>
+  "{s}" "platVer" "{m}%u{e}"
+  "{s}" "NoisePower" "{m}%s{e}";      // {s} = <tr><th>, {m} = </th><td>, {e} = </td></tr>
 #endif  // USE_WEBSERVER
 
 
@@ -155,17 +153,18 @@ union MGC3130_Union{
     float SDData[4]; // signal deviation
   } out;
   struct {
-    uint8_t header[3];
+    uint8_t header[4];
     // payload
-    uint8_t valid;
+    uint8_t valid; // 0xAA is valid
     uint8_t hwRev[2];
     uint8_t parameterStartAddr;
     uint8_t loaderVersion[2];
     uint8_t loaderPlatform;
-    uint8_t fwStartAddr;
+    uint8_t fwStartAddr; // should be 0x20
     char fwVersion[120];
   } fw;
   struct{
+    uint8_t header[4];
     uint8_t id;
     uint8_t size;
     uint16_t error;
@@ -183,7 +182,7 @@ int16_t MGC3130_rotValue, MGC3130_lastSentRotValue = 0;
 uint16_t MGC3130_lastSentX, MGC3130_lastSentY, MGC3130_lastSentZ = 0;
 
 uint8_t hwRev[2], loaderVersion[2], loaderPlatform = 0;
-char MGC3130_firmwareInfo[20];
+float MGC3130_noisePower = -1;
 
 uint8_t MGC3130_touchTimeout = 0;
 uint16_t MGC3130_touchCounter = 1; // measure how long you touch the surface in loop cycles
@@ -197,6 +196,7 @@ uint8_t MGC3130_mode = 1; // 1-gesture; 2-airwheel; 3-position
 uint8_t MGC3130autoCal[] = {0x10, 0x00, 0x00, 0xA2, 0x80, 0x00 , 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
 uint8_t MGC3130disableAirwheel[] = {0x10, 0x00, 0x00, 0xA2, 0x90, 0x00 , 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00};
 uint8_t MGC3130enableAirwheel[] = {0x10, 0x00, 0x00, 0xA2, 0x90, 0x00 , 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00};
+uint8_t MGC3130enableAll[] = {0x10, 0x00, 0x00, 0xA2, 0xA0, 0x00 , 0x00, 0x00, 0x3f, 0x18, 0x00, 0x00, 0x3f, 0x18, 0x00, 0x00};
 
 void MGC3130_handleSensorData(){
       if ( MGC_data.out.outputConfigMask.touchInfo && MGC3130_touchTimeout == 0){
@@ -222,6 +222,9 @@ void MGC3130_handleSensorData(){
         if(MGC_data.out.systemInfo.positionValid && (MGC_data.out.z > MGC3130_MIN_ZVALUE)){
           MqttPublishSensor();
         }
+      }
+      if(MGC_data.out.systemInfo.noisePowerValid){
+        MGC3130_noisePower = MGC_data.out.noisePower;
       }
 }
 
@@ -397,7 +400,7 @@ void MGC3130_handleAirWheel(){
 }
 
 void MGC3130_handleSystemStatus(){
-  //Serial.println("Got System status");
+    AddLog_P(LOG_LEVEL_DEBUG,PSTR("MGC3130: system_status: response to ID:%02x, error code: %04x"),MGC_data.status.id, MGC_data.status.error);
 }
 
 bool MGC3130_receiveMessage(){
@@ -410,16 +413,15 @@ bool MGC3130_receiveMessage(){
           MGC3130_handleSystemStatus();
           break;
         case MGC3130_FW_VERSION:
-          hwRev[0] = MGC_data.fw.hwRev[1];
-          hwRev[1] = MGC_data.fw.hwRev[0];
-          loaderVersion[0] = MGC_data.fw.loaderVersion[0];
-          loaderVersion[1] = MGC_data.fw.loaderVersion[1];
+          hwRev[1] = MGC_data.fw.hwRev[1];
+          hwRev[0] = MGC_data.fw.hwRev[0];
+          loaderVersion[1] = MGC_data.fw.loaderVersion[0];
+          loaderVersion[0] = MGC_data.fw.loaderVersion[1];
           loaderPlatform = MGC_data.fw.loaderPlatform;
-          snprintf_P(MGC3130_firmwareInfo, sizeof(MGC3130_firmwareInfo), PSTR("FW: %s"), MGC_data.fw.fwVersion);
-          MGC3130_firmwareInfo[20] = '\0';
-          // Serial.print(MGC3130_firmwareInfo);
+          AddLog_P(LOG_LEVEL_INFO,PSTR("MGC3130: GestIC:%s"),MGC_data.fw.fwVersion);
           break;
       }
+    MGC_data.out.id  = 0;
     return true;
   }
   return false;
@@ -427,11 +429,12 @@ bool MGC3130_receiveMessage(){
 
 bool MGC3130_readData()
 {
+  static uint8_t _lastCounter = 0;
   bool success = false;
   if (!digitalRead(MGC3130_xfer)){
     pinMode(MGC3130_xfer, OUTPUT);
     digitalWrite(MGC3130_xfer, LOW);
-    Wire.requestFrom(MGC3130_I2C_ADDR, (uint16_t)32); // request usual data output
+    Wire.requestFrom(MGC3130_I2C_ADDR, (uint16_t)132); // request maximal data output
 
     MGC_data.buffer[0] = 4; // read at least header, but update after first read anyway
     unsigned char i = 0;
@@ -441,6 +444,14 @@ bool MGC3130_readData()
       }
     digitalWrite(MGC3130_xfer, HIGH);
     pinMode(MGC3130_xfer, INPUT);
+    uint8_t _mismatch = MGC_data.out.counter - _lastCounter;
+    if(_mismatch != 1){
+      if(i>4 && MGC_data.out.id != MGC3130_FW_VERSION){
+        AddLog_P(LOG_LEVEL_DEBUG,PSTR("MGC3130: missed a packet, mismatch: %u"), _mismatch - 1);
+        AddLogBuffer(LOG_LEVEL_DEBUG,MGC_data.buffer,i);
+      } 
+    }
+    _lastCounter = MGC_data.out.counter;
     success = true;
   }
   return success;
@@ -477,6 +488,9 @@ void MGC3130_loop()
 void MGC3130_detect(void)
 {
   if (MGC3130_type || I2cActive(MGC3130_I2C_ADDR)) { return; }
+
+  MGC3130_xfer = Pin(GPIO_MGC3130_XFER);
+  MGC3130_reset = Pin(GPIO_MGC3130_RESET);
 
   pinMode(MGC3130_xfer, INPUT_PULLUP);
   pinMode(MGC3130_reset,  OUTPUT);
@@ -537,7 +551,9 @@ void MGC3130_show(bool json)
     }
 #ifdef USE_WEBSERVER
   } else {
-    WSContentSend_PD(HTTP_MGC_3130_SNS, MGC3130stype, status_chr, hwRev[0], hwRev[1], loaderVersion[0], loaderVersion[1], loaderPlatform );
+    char _noise[FLOATSZ];
+    dtostrfd(MGC3130_noisePower, 2, _noise);
+    WSContentSend_PD(HTTP_MGC_3130_SNS, MGC3130stype, status_chr, hwRev[0], hwRev[1], loaderVersion[0], loaderVersion[1], loaderPlatform, _noise);
 #endif  // USE_WEBSERVER
   }
 }
@@ -552,6 +568,7 @@ void MGC3130_show(bool json)
  * Sensor36 | 1       | Gesture Mode
  * Sensor36 | 2       | Airwheel Mode
  * Sensor36 | 3       | Position Mode with x,y,z - z must be higher than half of the max. sensing height
+ * Sensor36 | 4       | Enable all data for debugging (noise level in web GUI)
 \*********************************************************************************************/
 
 bool MGC3130CommandSensor()
@@ -573,8 +590,12 @@ bool MGC3130CommandSensor()
     case 3: // position & touch
       MGC3130_mode = 3;
       MGC3130_sendMessage(MGC3130disableAirwheel,16);
-    break;
+      break;
+    case 4: // enable all readings for noise level for web GUI
+      MGC3130_sendMessage(MGC3130enableAll,16);
+      break;
   }
+  Response_P(PSTR("{\"MGC3130\":{\"mode\":%d}}"), MGC3130_mode);
   return serviced;
 }
 
@@ -588,7 +609,7 @@ bool Xsns36(uint8_t function)
 
   bool result = false;
 
-  if ((FUNC_INIT == function) && (pin[GPIO_MGC3130_XFER] < 99) && (pin[GPIO_MGC3130_RESET] < 99)) {
+  if ((FUNC_INIT == function) && PinUsed(GPIO_MGC3130_XFER) && PinUsed(GPIO_MGC3130_RESET)) {
     MGC3130_detect();
   }
   else if (MGC3130_type) {

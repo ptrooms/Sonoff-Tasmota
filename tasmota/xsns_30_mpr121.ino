@@ -1,3 +1,22 @@
+/*
+  xsns_30_mpr121.ino - MPR121 support for Tasmota
+
+  Copyright (C) 2020  Rene 'Renne' Bartsch and Theo Arends
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 /**
  *
  *  @file        xsns_30_mpr121.ino
@@ -23,22 +42,6 @@
  *
  *  @license     GNU GPL v.3
  */
-
- /*
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 
 #ifdef USE_I2C
 #ifdef USE_MPR121
@@ -290,7 +293,7 @@ void Mpr121Init(struct mpr121 *pS, bool initial)
 			// Check if sensor is running
 			pS->running[i] = (0x00 != I2cRead8(pS->i2c_addr[i], MPR121_ECR_REG));
 
-			AddLog_P2(LOG_LEVEL_INFO, PSTR(D_LOG_I2C "MPR121%c: %sRunning"), pS->id[i], (pS->running[i]) ? "" : "NOT");
+			AddLog_P(LOG_LEVEL_INFO, PSTR(D_LOG_I2C "MPR121%c: %sRunning"), pS->id[i], (pS->running[i]) ? "" : "NOT");
 
 		} else {
 
@@ -331,7 +334,7 @@ void Mpr121Show(struct mpr121 *pS, uint8_t function)
 
 			// Read data
 			if (!I2cValidRead16LE(&pS->current[i], pS->i2c_addr[i], MPR121_ELEX_REG)) {
-				AddLog_P2(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Cannot read data!"), pS->id[i]);
+				AddLog_P(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Cannot read data!"), pS->id[i]);
 				Mpr121Init(pS, false);
 				return;
 			}
@@ -340,7 +343,7 @@ void Mpr121Show(struct mpr121 *pS, uint8_t function)
 
 				// Clear OVCF bit
 				I2cWrite8(pS->i2c_addr[i], MPR121_ELEX_REG, 0x00);
-				AddLog_P2(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Excess current detected! Fix circuits if it happens repeatedly! Soft-resetting MPR121 ..."), pS->id[i]);
+				AddLog_P(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Excess current detected! Fix circuits if it happens repeatedly! Soft-resetting MPR121 ..."), pS->id[i]);
 				Mpr121Init(pS, false);
 				return;
 			}
@@ -359,7 +362,7 @@ void Mpr121Show(struct mpr121 *pS, uint8_t function)
 				if ((FUNC_EVERY_50_MSECOND == function)
 				    && (BITC(i, j) != BITP(i, j))) {
 					Response_P(PSTR("{\"MPR121%c\":{\"Button%i\":%i}}"), pS->id[i], j, BITC(i, j));
-					MqttPublishPrefixTopic_P(RESULT_OR_STAT, mqtt_data);
+					MqttPublishPrefixTopic_P(RESULT_OR_STAT, TasmotaGlobal.mqtt_data);
 				}
 				// Add buttons to web string
 #ifdef USE_WEBSERVER

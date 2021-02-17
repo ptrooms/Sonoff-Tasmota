@@ -1,7 +1,7 @@
 /*
   xsns_05_ds18x20.ino - DS18x20 temperature sensor support for Tasmota
 
-  Copyright (C) 2019  Theo Arends
+  Copyright (C) 2020  Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef ESP8266
 #ifdef USE_DS18x20
 /*********************************************************************************************\
  * DS18B20 - Temperature - Multiple sensors
@@ -50,7 +51,9 @@ struct DS18X20STRUCT {
   float   temperature;
 } ds18x20_sensor[DS18X20_MAX_SENSORS];
 uint8_t ds18x20_sensors = 0;
-uint8_t ds18x20_pin = 0;
+uint8_t ds18x20_pin = 0;           // Shelly GPIO3 input only
+uint8_t ds18x20_pin_out = 0;       // Shelly GPIO00 output only
+bool ds18x20_dual_mode = false;    // Single pin mode
 char ds18x20_types[12];
 #ifdef W1_PARASITE_POWER
 uint8_t ds18x20_sensor_curr = 0;
@@ -69,27 +72,44 @@ uint8_t onewire_last_family_discrepancy = 0;
 bool onewire_last_device_flag = false;
 unsigned char onewire_rom_id[8] = { 0 };
 
+/*------------------------------------------------------------------------------------------*/
+
 uint8_t OneWireReset(void)
 {
   uint8_t retries = 125;
 
-  //noInterrupts();
-  pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
-  do {
-    if (--retries == 0) {
-      return 0;
-    }
-    delayMicroseconds(2);
-  } while (!digitalRead(ds18x20_pin));
-  pinMode(ds18x20_pin, OUTPUT);
-  digitalWrite(ds18x20_pin, LOW);
-  delayMicroseconds(480);
-  pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
-  delayMicroseconds(70);
-  uint8_t r = !digitalRead(ds18x20_pin);
-  //interrupts();
-  delayMicroseconds(410);
-  return r;
+  if (!ds18x20_dual_mode) {
+    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+    do {
+      if (--retries == 0) {
+        return 0;
+      }
+      delayMicroseconds(2);
+    } while (!digitalRead(ds18x20_pin));
+    pinMode(ds18x20_pin, OUTPUT);
+    digitalWrite(ds18x20_pin, LOW);
+    delayMicroseconds(480);
+    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+    delayMicroseconds(70);
+    uint8_t r = !digitalRead(ds18x20_pin);
+    delayMicroseconds(410);
+    return r;
+  } else {
+    digitalWrite(ds18x20_pin_out, HIGH);
+    do {
+      if (--retries == 0) {
+        return 0;
+      }
+      delayMicroseconds(2);
+    } while (!digitalRead(ds18x20_pin));
+    digitalWrite(ds18x20_pin_out, LOW);
+    delayMicroseconds(480);
+    digitalWrite(ds18x20_pin_out, HIGH);
+    delayMicroseconds(70);
+    uint8_t r = !digitalRead(ds18x20_pin);
+    delayMicroseconds(410);
+    return r;
+  }
 }
 
 void OneWireWriteBit(uint8_t v)
@@ -98,28 +118,43 @@ void OneWireWriteBit(uint8_t v)
   static const uint8_t delay_high[2] = { 5, 55 };
 
   v &= 1;
-  //noInterrupts();
-  digitalWrite(ds18x20_pin, LOW);
-  pinMode(ds18x20_pin, OUTPUT);
-  delayMicroseconds(delay_low[v]);
-  digitalWrite(ds18x20_pin, HIGH);
-  //interrupts();
+  if (!ds18x20_dual_mode) {
+    digitalWrite(ds18x20_pin, LOW);
+    pinMode(ds18x20_pin, OUTPUT);
+    delayMicroseconds(delay_low[v]);
+    digitalWrite(ds18x20_pin, HIGH);
+  } else {
+    digitalWrite(ds18x20_pin_out, LOW);
+    delayMicroseconds(delay_low[v]);
+    digitalWrite(ds18x20_pin_out, HIGH);
+  }
   delayMicroseconds(delay_high[v]);
 }
 
-uint8_t OneWireReadBit(void)
+uint8_t OneWire1ReadBit(void)
 {
-  //noInterrupts();
   pinMode(ds18x20_pin, OUTPUT);
   digitalWrite(ds18x20_pin, LOW);
   delayMicroseconds(3);
   pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
   delayMicroseconds(10);
   uint8_t r = digitalRead(ds18x20_pin);
-  //interrupts();
   delayMicroseconds(53);
   return r;
 }
+
+uint8_t OneWire2ReadBit(void)
+{
+  digitalWrite(ds18x20_pin_out, LOW);
+  delayMicroseconds(3);
+  digitalWrite(ds18x20_pin_out, HIGH);
+  delayMicroseconds(10);
+  uint8_t r = digitalRead(ds18x20_pin);
+  delayMicroseconds(53);
+  return r;
+}
+
+/*------------------------------------------------------------------------------------------*/
 
 void OneWireWrite(uint8_t v)
 {
@@ -132,9 +167,17 @@ uint8_t OneWireRead(void)
 {
   uint8_t r = 0;
 
-  for (uint8_t bit_mask = 0x01; bit_mask; bit_mask <<= 1) {
-    if (OneWireReadBit()) {
-      r |= bit_mask;
+  if (!ds18x20_dual_mode) {
+    for (uint8_t bit_mask = 0x01; bit_mask; bit_mask <<= 1) {
+      if (OneWire1ReadBit()) {
+        r |= bit_mask;
+      }
+    }
+  } else {
+    for (uint8_t bit_mask = 0x01; bit_mask; bit_mask <<= 1) {
+      if (OneWire2ReadBit()) {
+        r |= bit_mask;
+      }
     }
   }
   return r;
@@ -178,9 +221,13 @@ uint8_t OneWireSearch(uint8_t *newAddr)
     }
     OneWireWrite(W1_SEARCH_ROM);
     do {
-      id_bit     = OneWireReadBit();
-      cmp_id_bit = OneWireReadBit();
-
+      if (!ds18x20_dual_mode) {
+        id_bit     = OneWire1ReadBit();
+        cmp_id_bit = OneWire1ReadBit();
+      } else {
+        id_bit     = OneWire2ReadBit();
+        cmp_id_bit = OneWire2ReadBit();
+      }
       if ((id_bit == 1) && (cmp_id_bit == 1)) {
         break;
       } else {
@@ -258,7 +305,14 @@ void Ds18x20Init(void)
 {
   uint64_t ids[DS18X20_MAX_SENSORS];
 
-  ds18x20_pin = pin[GPIO_DSB];
+  ds18x20_pin = Pin(GPIO_DSB);
+
+  if (PinUsed(GPIO_DSB_OUT)) {
+    ds18x20_pin_out = Pin(GPIO_DSB_OUT);
+    ds18x20_dual_mode = true;    // Dual pins mode as used by Shelly
+    pinMode(ds18x20_pin_out, OUTPUT);
+    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+  }
 
   OneWireResetSearch();
 
@@ -287,7 +341,7 @@ void Ds18x20Init(void)
       }
     }
   }
-  AddLog_P2(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
+  AddLog_P(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
 }
 
 void Ds18x20Convert(void)
@@ -322,12 +376,19 @@ bool Ds18x20Read(uint8_t sensor)
     if (OneWireCrc8(data)) {
       switch(ds18x20_sensor[index].address[0]) {
         case DS18S20_CHIPID: {
+/*
           if (data[1] > 0x80) {
             data[0] = (~data[0]) +1;
             sign = -1;                     // App-Note fix possible sign error
           }
           float temp9 = (float)(data[0] >> 1) * sign;
           ds18x20_sensor[index].temperature = ConvertTemp((temp9 - 0.25) + ((16.0 - data[6]) / 16.0));
+
+          Replaced by below based on issue #8777
+*/
+          int16_t tempS = (((data[1] << 8) | (data[0] & 0xFE)) << 3) | ((0x10 - data[6]) & 0x0F);
+          ds18x20_sensor[index].temperature = ConvertTemp(tempS * 0.0625 - 0.250);
+
           ds18x20_sensor[index].valid = SENSOR_MAX_MISS;
           return true;
         }
@@ -388,13 +449,15 @@ void Ds18x20Name(uint8_t sensor)
 
 void Ds18x20EverySecond(void)
 {
+  if (!ds18x20_sensors) { return; }
+
 #ifdef W1_PARASITE_POWER
   // skip access if there is still an eeprom write ongoing
   unsigned long now = millis();
   if (now < w1_power_until)
     return;
 #endif
-  if (uptime & 1
+  if (TasmotaGlobal.uptime & 1
 #ifdef W1_PARASITE_POWER
       // if more than 1 sensor and only parasite power: convert every cycle
       || ds18x20_sensors >= 2
@@ -437,12 +500,12 @@ void Ds18x20Show(bool json)
         }
         ResponseAppend_P(PSTR(",\"%s\":{\"" D_JSON_ID "\":\"%s\",\"" D_JSON_TEMPERATURE "\":%s}"), ds18x20_types, address, temperature);
 #ifdef USE_DOMOTICZ
-        if ((0 == tele_period) && (0 == i)) {
+        if ((0 == TasmotaGlobal.tele_period) && (0 == i)) {
           DomoticzSensor(DZ_TEMP, temperature);
         }
 #endif  // USE_DOMOTICZ
 #ifdef USE_KNX
-        if ((0 == tele_period) && (0 == i)) {
+        if ((0 == TasmotaGlobal.tele_period) && (0 == i)) {
           KnxSensor(KNX_TEMPERATURE, ds18x20_sensor[index].temperature);
         }
 #endif  // USE_KNX
@@ -463,7 +526,7 @@ bool Xsns05(uint8_t function)
 {
   bool result = false;
 
-  if (pin[GPIO_DSB] < 99) {
+  if (PinUsed(GPIO_DSB)) {
     switch (function) {
       case FUNC_INIT:
         Ds18x20Init();
@@ -485,3 +548,4 @@ bool Xsns05(uint8_t function)
 }
 
 #endif  // USE_DS18x20
+#endif  // ESP8266

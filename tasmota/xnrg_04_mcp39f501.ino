@@ -1,7 +1,7 @@
 /*
   xnrg_04_mcp39f501.ino - MCP39F501 energy sensor support for Tasmota
 
-  Copyright (C) 2019  Theo Arends
+  Copyright (C) 2020  Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -562,33 +562,31 @@ void McpEverySecond(void)
 void McpSnsInit(void)
 {
   // Software serial init needs to be done here as earlier (serial) interrupts may lead to Exceptions
-  McpSerial = new TasmotaSerial(pin[GPIO_MCP39F5_RX], pin[GPIO_MCP39F5_TX], 1);
+  McpSerial = new TasmotaSerial(Pin(GPIO_MCP39F5_RX), Pin(GPIO_MCP39F5_TX), 1);
   if (McpSerial->begin(MCP_BAUDRATE)) {
     if (McpSerial->hardwareSerial()) {
       ClaimSerial();
-      mcp_buffer = serial_in_buffer;  // Use idle serial buffer to save RAM
+      mcp_buffer = TasmotaGlobal.serial_in_buffer;  // Use idle serial buffer to save RAM
     } else {
       mcp_buffer = (char*)(malloc(MCP_BUFFER_SIZE));
     }
-    if (pin[GPIO_MCP39F5_RST] < 99) {
-      digitalWrite(pin[GPIO_MCP39F5_RST], 1);  // MCP enable
-    }
+    DigitalWrite(GPIO_MCP39F5_RST, 0, 1);  // MCP enable
   } else {
-    energy_flg = ENERGY_NONE;
+    TasmotaGlobal.energy_driver = ENERGY_NONE;
   }
 }
 
 void McpDrvInit(void)
 {
-  if ((pin[GPIO_MCP39F5_RX] < 99) && (pin[GPIO_MCP39F5_TX] < 99)) {
-    if (pin[GPIO_MCP39F5_RST] < 99) {
-      pinMode(pin[GPIO_MCP39F5_RST], OUTPUT);
-      digitalWrite(pin[GPIO_MCP39F5_RST], 0);  // MCP disable - Reset Delta Sigma ADC's
+  if (PinUsed(GPIO_MCP39F5_RX) && PinUsed(GPIO_MCP39F5_TX)) {
+    if (PinUsed(GPIO_MCP39F5_RST)) {
+      pinMode(Pin(GPIO_MCP39F5_RST), OUTPUT);
+      digitalWrite(Pin(GPIO_MCP39F5_RST), 0);  // MCP disable - Reset Delta Sigma ADC's
     }
     mcp_calibrate = 0;
     mcp_timeout = 2;               // Initial wait
     mcp_init = 2;                  // Initial setup steps
-    energy_flg = XNRG_04;
+    TasmotaGlobal.energy_driver = XNRG_04;
   }
 }
 

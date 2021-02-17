@@ -1,7 +1,7 @@
 /*
   xsns_26_lm75ad.ino - Support for I2C LM75AD Temperature Sensor
 
-  Copyright (C) 2019  Andre Thomas and Theo Arends
+  Copyright (C) 2020  Andre Thomas and Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ void LM75ADDetect(void)
 {
   for (uint32_t i = 0; i < sizeof(lm75ad_addresses); i++) {
     lm75ad_address = lm75ad_addresses[i];
-    if (I2cActive(lm75ad_address)) { 
+    if (I2cActive(lm75ad_address)) {
       continue; }
     if (!I2cSetDevice(lm75ad_address)) {
       break; // do not make the next step without a confirmed device on the bus
@@ -89,9 +89,9 @@ void LM75ADShow(bool json)
   dtostrfd(t, Settings.flag2.temperature_resolution, temperature);
 
   if (json) {
-    ResponseAppend_P(PSTR(",\"LM75AD\":{\"" D_JSON_TEMPERATURE "\":%s}"), temperature);
+    ResponseAppend_P(JSON_SNS_TEMP, "LM75AD", temperature);
 #ifdef USE_DOMOTICZ
-    if (0 == tele_period) DomoticzSensor(DZ_TEMP, temperature);
+    if (0 == TasmotaGlobal.tele_period) DomoticzSensor(DZ_TEMP, temperature);
 #endif  // USE_DOMOTICZ
 #ifdef USE_WEBSERVER
   } else {

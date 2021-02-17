@@ -1,7 +1,7 @@
 /*
   xdsp_05_epaper.ino - Display e-paper support for Tasmota
 
-  Copyright (C) 2019  Theo Arends, Gerhard Mutz and Waveshare
+  Copyright (C) 2020  Theo Arends, Gerhard Mutz and Waveshare
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -67,13 +67,13 @@ void EpdInitDriver29()
     epd  = new Epd(EPD_WIDTH,EPD_HEIGHT);
 
     // whiten display with full update, takes 3 seconds
-    if ((pin[GPIO_SPI_CS] < 99) && (pin[GPIO_SPI_CLK] < 99) && (pin[GPIO_SPI_MOSI] < 99)) {
-      epd->Begin(pin[GPIO_SPI_CS],pin[GPIO_SPI_MOSI],pin[GPIO_SPI_CLK]);
-      AddLog_P2(LOG_LEVEL_DEBUG, PSTR("EPD: HardSPI CS %d, CLK %d, MOSI %d"),pin[GPIO_SPI_CS], pin[GPIO_SPI_CLK], pin[GPIO_SPI_MOSI]);
+    if (PinUsed(GPIO_SPI_CS) && PinUsed(GPIO_SPI_CLK) && PinUsed(GPIO_SPI_MOSI)) {
+      epd->Begin(Pin(GPIO_SPI_CS),Pin(GPIO_SPI_MOSI),Pin(GPIO_SPI_CLK));
+      AddLog_P(LOG_LEVEL_DEBUG, PSTR("EPD: HardSPI CS %d, CLK %d, MOSI %d"),Pin(GPIO_SPI_CS), Pin(GPIO_SPI_CLK), Pin(GPIO_SPI_MOSI));
     }
-    else if ((pin[GPIO_SSPI_CS] < 99) && (pin[GPIO_SSPI_SCLK] < 99) && (pin[GPIO_SSPI_MOSI] < 99)) {
-      epd->Begin(pin[GPIO_SSPI_CS],pin[GPIO_SSPI_MOSI],pin[GPIO_SSPI_SCLK]);
-      AddLog_P2(LOG_LEVEL_DEBUG, PSTR("EPD: SoftSPI CS %d, CLK %d, MOSI %d"),pin[GPIO_SSPI_CS], pin[GPIO_SSPI_SCLK], pin[GPIO_SSPI_MOSI]);
+    else if (PinUsed(GPIO_SSPI_CS) && PinUsed(GPIO_SSPI_SCLK) && PinUsed(GPIO_SSPI_MOSI)) {
+      epd->Begin(Pin(GPIO_SSPI_CS),Pin(GPIO_SSPI_MOSI),Pin(GPIO_SSPI_SCLK));
+      AddLog_P(LOG_LEVEL_DEBUG, PSTR("EPD: SoftSPI CS %d, CLK %d, MOSI %d"),Pin(GPIO_SSPI_CS), Pin(GPIO_SSPI_SCLK), Pin(GPIO_SSPI_MOSI));
     } else {
       free(buffer);
       return;
@@ -136,7 +136,7 @@ void EpdPrintLog29(void)
       renderer->DrawStringAt(0, epd_scroll, disp_screen_buffer[last_row], COLORED, 0);
 //      EpdDisplayFrame();
 
-      AddLog_P2(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), txt);
+      AddLog_P(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), txt);
     }
   }
 }

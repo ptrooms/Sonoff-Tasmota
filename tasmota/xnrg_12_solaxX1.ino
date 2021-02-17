@@ -1,7 +1,7 @@
 /*
   xnrg_12_solaxX1.ino - Solax X1 inverter RS485 support for Tasmota
 
-  Copyright (C) 2019  Pablo Zerón
+  Copyright (C) 2020  Pablo Zerón
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -236,6 +236,7 @@ uint8_t solaxX1_ParseErrorCode(uint32_t code){
   if (ErrCode.TemperatureOverFault) return 6;
   if (ErrCode.FanFault) return 7;
   if (ErrCode.OtherDeviceFault) return 8;
+  return 0;
 }
 
 /*********************************************************************************************/
@@ -406,21 +407,21 @@ void solaxX1250MSecond(void) // Every Second
 void solaxX1SnsInit(void)
 {
   AddLog_P(LOG_LEVEL_DEBUG, PSTR("SX1: Solax X1 Inverter Init"));
-  DEBUG_SENSOR_LOG(PSTR("SX1: RX pin: %d, TX pin: %d"), pin[GPIO_SOLAXX1_RX], pin[GPIO_SOLAXX1_TX]);
+  DEBUG_SENSOR_LOG(PSTR("SX1: RX pin: %d, TX pin: %d"), Pin(GPIO_SOLAXX1_RX), Pin(GPIO_SOLAXX1_TX));
   protocolStatus.status = 0b00100000; // hasAddress
 
-  solaxX1Serial = new TasmotaSerial(pin[GPIO_SOLAXX1_RX], pin[GPIO_SOLAXX1_TX], 1);
+  solaxX1Serial = new TasmotaSerial(Pin(GPIO_SOLAXX1_RX), Pin(GPIO_SOLAXX1_TX), 1);
   if (solaxX1Serial->begin(SOLAXX1_SPEED)) {
     if (solaxX1Serial->hardwareSerial()) { ClaimSerial(); }
   } else {
-    energy_flg = ENERGY_NONE;
+    TasmotaGlobal.energy_driver = ENERGY_NONE;
   }
 }
 
 void solaxX1DrvInit(void)
 {
-  if ((pin[GPIO_SOLAXX1_RX] < 99) && (pin[GPIO_SOLAXX1_TX] < 99)) {
-    energy_flg = XNRG_12;
+  if (PinUsed(GPIO_SOLAXX1_RX) && PinUsed(GPIO_SOLAXX1_TX)) {
+    TasmotaGlobal.energy_driver = XNRG_12;
   }
 }
 
@@ -504,7 +505,7 @@ bool Xnrg12(uint8_t function)
 
   switch (function) {
     case FUNC_EVERY_250_MSECOND:
-      if (uptime > 4) { solaxX1250MSecond(); }
+      solaxX1250MSecond();
       break;
     case FUNC_JSON_APPEND:
       solaxX1Show(1);

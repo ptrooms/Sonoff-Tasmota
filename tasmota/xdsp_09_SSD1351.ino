@@ -1,7 +1,7 @@
 /*
   xdsp_09_SSD1351.ino - Display SSD1351 support for Tasmota
 
-  Copyright (C) 2019  Gerhard Mutz and Theo Arends
+  Copyright (C) 2020  Gerhard Mutz and Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -60,18 +60,17 @@ void SSD1351_InitDriver() {
     bg_color = SSD1351_BLACK;
 
     // init renderer
-    if  ((pin[GPIO_SSPI_CS]<99) && (pin[GPIO_SSPI_MOSI]<99) && (pin[GPIO_SSPI_SCLK]<99)){
-      ssd1351  = new SSD1351(pin[GPIO_SSPI_CS],pin[GPIO_SSPI_MOSI],pin[GPIO_SSPI_SCLK]);
+    if  (PinUsed(GPIO_SSPI_CS) && PinUsed(GPIO_SSPI_MOSI) && PinUsed(GPIO_SSPI_SCLK)){
+      ssd1351  = new SSD1351(Pin(GPIO_SSPI_CS),Pin(GPIO_SSPI_MOSI),Pin(GPIO_SSPI_SCLK));
     } else {
-      if  ((pin[GPIO_SPI_CS]<99) && (pin[GPIO_SPI_MOSI]<99) && (pin[GPIO_SPI_CLK]<99)){
-        ssd1351  = new SSD1351(pin[GPIO_SPI_CS],pin[GPIO_SPI_MOSI],pin[GPIO_SPI_CLK]);
+      if (PinUsed(GPIO_SPI_CS) && PinUsed(GPIO_SPI_MOSI) && PinUsed(GPIO_SPI_CLK)) {
+        ssd1351  = new SSD1351(Pin(GPIO_SPI_CS),Pin(GPIO_SPI_MOSI),Pin(GPIO_SPI_CLK));
       } else {
         return;
       }
     }
 
     delay(100);
-    SPI.begin();
     ssd1351->begin();
     renderer = ssd1351;
     renderer->DisplayInit(DISPLAY_INIT_MODE,Settings.display_size,Settings.display_rotate,Settings.display_font);
@@ -112,8 +111,7 @@ void SSD1351PrintLog(void)
       strlcpy(disp_screen_buffer[last_row], txt, disp_screen_buffer_cols);
       DisplayFillScreen(last_row);
 
-      snprintf_P(log_data, sizeof(log_data), PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
-      AddLog(LOG_LEVEL_DEBUG);
+      AddLog_P(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
 
       renderer->println(disp_screen_buffer[last_row]);
       renderer->Updateframe();

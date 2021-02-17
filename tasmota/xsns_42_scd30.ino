@@ -1,7 +1,7 @@
 /*
   xsns_42_scd30.ino - SC30 CO2 sensor support for Tasmota
 
-  Copyright (C) 2019 Frogmore42
+  Copyright (C) 2020 Frogmore42
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 
 #define XSNS_42        42
 #define XI2C_29        29  // See I2CDEVICES.md
+
+//#define SCD30_DEBUG
 
 #define SCD30_ADDRESS  0x61
 
@@ -91,7 +93,7 @@ void Scd30Detect(void)
   I2cSetActiveFound(SCD30_ADDRESS, "SCD30");
   scd30Found = true;
 
-  AddLog_P2(LOG_LEVEL_DEBUG, PSTR("SCD: FW v%d.%d"), major, minor);
+  AddLog_P(LOG_LEVEL_DEBUG, PSTR("SCD: FW v%d.%d"), major, minor);
 }
 
 // gets data from the sensor every 3 seconds or so to give the sensor time to gather new data
@@ -99,7 +101,7 @@ void Scd30Update(void)
 {
   scd30Loop_count++;
   if (scd30Loop_count > (scd30Interval_sec - 1)) {
-    int error = 0;
+    uint32_t error = 0;
     switch (scd30ErrorState) {
       case SCD30_STATE_NO_ERROR: {
         error = scd30.readMeasurement(&scd30_CO2, &scd30_CO2EAvg, &scd30_Temp, &scd30_Humid);
@@ -118,24 +120,23 @@ void Scd30Update(void)
             scd30ErrorState = SCD30_STATE_ERROR_DATA_CRC;
             scd30CrcError_count++;
 #ifdef SCD30_DEBUG
-            snprintf_P(log_data, sizeof(log_data), "SCD30: CRC error, CRC error: %ld, CO2 zero: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld", scd30CrcError_count, scd30Co2Zero_count, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
-            AddLog(LOG_LEVEL_ERROR);
+            AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: CRC error, CRC error: %ld, CO2 zero: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld"),
+              scd30CrcError_count, scd30Co2Zero_count, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
 #endif
             break;
 
           case ERROR_SCD30_CO2_ZERO:
             scd30Co2Zero_count++;
 #ifdef SCD30_DEBUG
-            snprintf_P(log_data, sizeof(log_data), "SCD30: CO2 zero, CRC error: %ld, CO2 zero: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld", scd30CrcError_count, scd30Co2Zero_count, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
-            AddLog(LOG_LEVEL_ERROR);
+            AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: CO2 zero, CRC error: %ld, CO2 zero: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld"),
+              scd30CrcError_count, scd30Co2Zero_count, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
 #endif
             break;
 
           default: {
             scd30ErrorState = SCD30_STATE_ERROR_READ_MEAS;
 #ifdef SCD30_DEBUG
-            snprintf_P(log_data, sizeof(log_data), "SCD30: Update: ReadMeasurement error: 0x%lX, counter: %ld", error, scd30Loop_count);
-            AddLog(LOG_LEVEL_ERROR);
+            AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: Update: ReadMeasurement error: 0x%lX, counter: %ld"), error, scd30Loop_count);
 #endif
              return;
           }
@@ -147,10 +148,9 @@ void Scd30Update(void)
       case SCD30_STATE_ERROR_DATA_CRC: {
         //scd30IsDataValid = false;
 #ifdef SCD30_DEBUG
-        snprintf_P(log_data, sizeof(log_data), "SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld", scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
-        AddLog(LOG_LEVEL_ERROR);
-        snprintf_P(log_data, sizeof(log_data), "SCD30: got CRC error, try again, counter: %ld", scd30Loop_count);
-        AddLog(LOG_LEVEL_ERROR);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
+          scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: got CRC error, try again, counter: %ld"), scd30Loop_count);
 #endif
         scd30ErrorState = ERROR_SCD30_NO_ERROR;
       }
@@ -159,17 +159,15 @@ void Scd30Update(void)
       case SCD30_STATE_ERROR_READ_MEAS: {
         //scd30IsDataValid = false;
 #ifdef SCD30_DEBUG
-        snprintf_P(log_data, sizeof(log_data), "SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld", scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
-        AddLog(LOG_LEVEL_ERROR);
-        snprintf_P(log_data, sizeof(log_data), "SCD30: not answering, sending soft reset, counter: %ld", scd30Loop_count);
-        AddLog(LOG_LEVEL_ERROR);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
+          scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: not answering, sending soft reset, counter: %ld"), scd30Loop_count);
 #endif
         scd30Reset_count++;
         error = scd30.softReset();
         if (error) {
 #ifdef SCD30_DEBUG
-          snprintf_P(log_data, sizeof(log_data), "SCD30: resetting got error: 0x%lX", error);
-          AddLog(LOG_LEVEL_ERROR);
+          AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: resetting got error: 0x%lX"), error);
 #endif
           error >>= 8;
           if (error == 4) {
@@ -186,18 +184,16 @@ void Scd30Update(void)
       case SCD30_STATE_ERROR_SOFT_RESET: {
         //scd30IsDataValid = false;
 #ifdef SCD30_DEBUG
-        snprintf_P(log_data, sizeof(log_data), "SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld", scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
-        AddLog(LOG_LEVEL_ERROR);
-        snprintf_P(log_data, sizeof(log_data), "SCD30: clearing i2c bus");
-        AddLog(LOG_LEVEL_ERROR);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
+          scd30ErrorState, scd30GoodMeas_count, scd30DataNotAvailable_count, scd30Reset_count, i2cReset_count);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: clearing i2c bus"));
 #endif
         i2cReset_count++;
         error = scd30.clearI2CBus();
         if (error) {
           scd30ErrorState = SCD30_STATE_ERROR_I2C_RESET;
 #ifdef SCD30_DEBUG
-          snprintf_P(log_data, sizeof(log_data), "SCD30: error clearing i2c bus: 0x%lX", error);
-          AddLog(LOG_LEVEL_ERROR);
+          AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: error clearing i2c bus: 0x%lX"), error);
 #endif
         } else {
           scd30ErrorState = ERROR_SCD30_NO_ERROR;
@@ -208,7 +204,7 @@ void Scd30Update(void)
       default: {
         //scd30IsDataValid = false;
 #ifdef SCD30_DEBUG
-        AddLog_P2(LOG_LEVEL_ERROR, PSTR("SCD30: unknown error state: 0x%lX"), scd30ErrorState);
+        AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: unknown error state: 0x%lX"), scd30ErrorState);
 #endif
         scd30ErrorState = SCD30_STATE_ERROR_SOFT_RESET; // try again
       }
@@ -253,6 +249,7 @@ int Scd30GetCommand(int command_code, uint16_t *pvalue)
         // else for Unknown command
       break;
   }
+  return 0;  // Fix GCC 10.1 warning
 }
 
 int Scd30SetCommand(int command_code, uint16_t value)
@@ -295,6 +292,7 @@ int Scd30SetCommand(int command_code, uint16_t value)
         // else for Unknown command
       break;
   }
+  return 0;  // Fix GCC 10.1 warning
 }
 
 /*********************************************************************************************\
@@ -342,8 +340,7 @@ bool Scd30CommandSensor()
         if (error)
         {
 #ifdef SCD30_DEBUG
-          snprintf_P(log_data, sizeof(log_data), "SCD30: error getting FW version: 0x%lX", error);
-          AddLog(LOG_LEVEL_ERROR);
+          AddLog_P(LOG_LEVEL_ERROR, PSTR("SCD30: error getting FW version: 0x%lX"), error);
 #endif
           serviced = false;
         }
@@ -367,28 +364,24 @@ void Scd30Show(bool json)
 {
   if (scd30IsDataValid)
   {
-    char humidity[10];
-    dtostrfd(ConvertHumidity(scd30_Humid), Settings.flag2.humidity_resolution, humidity);
-    char temperature[10];
-    dtostrfd(ConvertTemp(scd30_Temp), Settings.flag2.temperature_resolution, temperature);
+    float t = ConvertTemp(scd30_Temp);
+    float h = ConvertHumidity(scd30_Humid);
 
     if (json) {
-      //ResponseAppend_P(PSTR(",\"SCD30\":{\"" D_JSON_CO2 "\":%d,\"" D_JSON_TEMPERATURE "\":%s,\"" D_JSON_HUMIDITY "\":%s}"), scd30_CO2, temperature, humidity);
-      ResponseAppend_P(PSTR(",\"SCD30\":{\"" D_JSON_CO2 "\":%d,\"" D_JSON_ECO2 "\":%d,\"" D_JSON_TEMPERATURE "\":%s,\"" D_JSON_HUMIDITY "\":%s}"),
-        scd30_CO2, scd30_CO2EAvg, temperature, humidity);
+      ResponseAppend_P(PSTR(",\"SCD30\":{\"" D_JSON_CO2 "\":%d,\"" D_JSON_ECO2 "\":%d,"), scd30_CO2, scd30_CO2EAvg);
+      ResponseAppendTHD(t, h);
+      ResponseJsonEnd();
 #ifdef USE_DOMOTICZ
-      if (0 == tele_period)
-      {
+      if (0 == TasmotaGlobal.tele_period) {
         DomoticzSensor(DZ_AIRQUALITY, scd30_CO2);
-        DomoticzTempHumSensor(temperature, humidity);
+        DomoticzTempHumPressureSensor(t, h);
       }
 #endif  // USE_DOMOTICZ
 #ifdef USE_WEBSERVER
     } else {
       WSContentSend_PD(HTTP_SNS_CO2EAVG, "SCD30", scd30_CO2EAvg);
       WSContentSend_PD(HTTP_SNS_CO2, "SCD30", scd30_CO2);
-      WSContentSend_PD(HTTP_SNS_TEMP, "SCD30", temperature, TempUnit());
-      WSContentSend_PD(HTTP_SNS_HUM, "SCD30", humidity);
+      WSContentSend_THD("SCD30", t, h);
 #endif  // USE_WEBSERVER
     }
   }

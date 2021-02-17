@@ -1,7 +1,7 @@
 /*
   support_esptool.ino - esptool support for Tasmota
 
-  Copyright (C) 2019  Theo Arends
+  Copyright (C) 2020  Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef ESP8266
 #define USE_ESPTOOL
+#endif  // ESP8266
+
 #ifdef USE_ESPTOOL
 /*********************************************************************************************\
  * EspTool Erase function based on Version 2.8
