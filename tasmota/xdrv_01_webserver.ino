@@ -991,7 +991,9 @@ void WebSliderColdWarm(void)
     "#fff", "#ff0",  // White to Yellow
     1,               // sl1
     153, 500,        // Range color temperature
+#ifndef FIRMWARE_MINIMAL
     LightGetColorTemp(),
+#endif  // FIRMWARE_MINIMAL
     't', 0);         // t0 - Value id releated to lc("t0", value) and WebGetArg("t0", tmp, sizeof(tmp));
 }
 
