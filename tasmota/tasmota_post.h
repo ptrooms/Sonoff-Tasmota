@@ -33,10 +33,10 @@ extern "C" {
 }
 #endif
 
-//#ifdef USE_KNX  // Enabling this will fail compilation. It has no impact if not used. (20180417)
+#ifdef USE_KNX  // Enabling this will fail compilation. It has no impact if not used. (20180417)
 #include <esp-knx-ip.h>
 void KNX_CB_Action(message_t const &msg, void *arg);
-//#endif  // USE_KNX
+#endif  // USE_KNX
 
 char* ToHex_P(const unsigned char * in, size_t insz, char * out, size_t outsz, char inbetween = '\0');
 extern "C" void custom_crash_callback(struct rst_info * rst_info, uint32_t stack, uint32_t stack_end);
