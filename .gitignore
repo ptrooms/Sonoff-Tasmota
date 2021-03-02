@@ -28,3 +28,5 @@ platformio_tasmota_cenv.ini
 .vscode/launch.json
 *.bak
 *.code-workspace
+test1.txt
+test1a.txt
