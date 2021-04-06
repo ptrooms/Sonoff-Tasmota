@@ -31,3 +31,6 @@ platformio_tasmota_cenv.ini
 *.code-workspace
 test1.txt
 test1a.txt
+*.bin
+tasmota/*.txt
+
