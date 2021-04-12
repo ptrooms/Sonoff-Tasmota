@@ -16,6 +16,9 @@ firmware.map
 firmware.asm
 tasmota*.bin
 tasmota*.map
+*.txt
+*.bin
+build_output/
 
 ## Visual Studio Code specific ######
 .vscode
