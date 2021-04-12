@@ -1,7 +1,7 @@
 /*
   xsns_05_ds18x20.ino - DS18x20 temperature sensor support for Tasmota
 
-  Copyright (C) 2020  Theo Arends
+  Copyright (C) 2021  Theo Arends
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #define XSNS_05              5
 
 //#define USE_DS18x20_RECONFIGURE    // When sensor is lost keep retrying or re-configure
+//#define DS18x20_USE_ID_AS_NAME      // Use last 3 bytes for naming of sensors
 
 #define DS18S20_CHIPID       0x10  // +/-0.5C 9-bit
 #define DS1822_CHIPID        0x22  // +/-2C 12-bit
@@ -38,7 +39,9 @@
 #define W1_WRITE_SCRATCHPAD  0x4E
 #define W1_READ_SCRATCHPAD   0xBE
 
+#ifndef DS18X20_MAX_SENSORS // DS18X20_MAX_SENSORS fallback to 8 if not defined in user_config_override.h
 #define DS18X20_MAX_SENSORS  8
+#endif
 
 const char kDs18x20Types[] PROGMEM = "DS18x20|DS18S20|DS1822|DS18B20|MAX31850";
 
@@ -51,10 +54,11 @@ struct DS18X20STRUCT {
   float   temperature;
 } ds18x20_sensor[DS18X20_MAX_SENSORS];
 uint8_t ds18x20_sensors = 0;
-uint8_t ds18x20_pin = 0;           // Shelly GPIO3 input only
-uint8_t ds18x20_pin_out = 0;       // Shelly GPIO00 output only
+int8_t ds18x20_pin = 0;            // Shelly GPIO3 input only
+int8_t ds18x20_pin_out = 0;        // Shelly GPIO00 output only
+uint8_t ds18x20_pin_mode = 0;      // INPUT or INPUT_PULLUP (=2)
 bool ds18x20_dual_mode = false;    // Single pin mode
-char ds18x20_types[12];
+char ds18x20_types[17];
 #ifdef W1_PARASITE_POWER
 uint8_t ds18x20_sensor_curr = 0;
 unsigned long w1_power_until = 0;
@@ -79,7 +83,7 @@ uint8_t OneWireReset(void)
   uint8_t retries = 125;
 
   if (!ds18x20_dual_mode) {
-    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+    pinMode(ds18x20_pin, ds18x20_pin_mode);
     do {
       if (--retries == 0) {
         return 0;
@@ -89,7 +93,7 @@ uint8_t OneWireReset(void)
     pinMode(ds18x20_pin, OUTPUT);
     digitalWrite(ds18x20_pin, LOW);
     delayMicroseconds(480);
-    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+    pinMode(ds18x20_pin, ds18x20_pin_mode);
     delayMicroseconds(70);
     uint8_t r = !digitalRead(ds18x20_pin);
     delayMicroseconds(410);
@@ -136,7 +140,7 @@ uint8_t OneWire1ReadBit(void)
   pinMode(ds18x20_pin, OUTPUT);
   digitalWrite(ds18x20_pin, LOW);
   delayMicroseconds(3);
-  pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+  pinMode(ds18x20_pin, ds18x20_pin_mode);
   delayMicroseconds(10);
   uint8_t r = digitalRead(ds18x20_pin);
   delayMicroseconds(53);
@@ -306,12 +310,13 @@ void Ds18x20Init(void)
   uint64_t ids[DS18X20_MAX_SENSORS];
 
   ds18x20_pin = Pin(GPIO_DSB);
+  ds18x20_pin_mode = Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT;  // SetOption74 - Enable internal pullup for single DS18x20 sensor
 
   if (PinUsed(GPIO_DSB_OUT)) {
     ds18x20_pin_out = Pin(GPIO_DSB_OUT);
     ds18x20_dual_mode = true;    // Dual pins mode as used by Shelly
     pinMode(ds18x20_pin_out, OUTPUT);
-    pinMode(ds18x20_pin, Settings.flag3.ds18x20_internal_pullup ? INPUT_PULLUP : INPUT);  // SetOption74 - Enable internal pullup for single DS18x20 sensor
+    pinMode(ds18x20_pin, ds18x20_pin_mode);
   }
 
   OneWireResetSearch();
@@ -341,7 +346,7 @@ void Ds18x20Init(void)
       }
     }
   }
-  AddLog_P(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
 }
 
 void Ds18x20Convert(void)
@@ -426,7 +431,7 @@ bool Ds18x20Read(uint8_t sensor)
       }
     }
   }
-  AddLog_P(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSOR_CRC_ERROR));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSOR_CRC_ERROR));
   return false;
 }
 
@@ -441,7 +446,15 @@ void Ds18x20Name(uint8_t sensor)
   }
   GetTextIndexed(ds18x20_types, sizeof(ds18x20_types), index, kDs18x20Types);
   if (ds18x20_sensors > 1) {
+#ifdef DS18x20_USE_ID_AS_NAME
+    char address[17];
+    for (uint32_t j = 0; j < 3; j++) {
+      sprintf(address+2*j, "%02X", ds18x20_sensor[ds18x20_sensor[sensor].index].address[3-j]);  // Only last 3 bytes
+    }
+    snprintf_P(ds18x20_types, sizeof(ds18x20_types), PSTR("%s%c%s"), ds18x20_types, IndexSeparator(), address);
+#else
     snprintf_P(ds18x20_types, sizeof(ds18x20_types), PSTR("%s%c%d"), ds18x20_types, IndexSeparator(), sensor +1);
+#endif
   }
 }
 
@@ -488,9 +501,6 @@ void Ds18x20Show(bool json)
     uint8_t index = ds18x20_sensor[i].index;
 
     if (ds18x20_sensor[index].valid) {   // Check for valid temperature
-      char temperature[33];
-      dtostrfd(ds18x20_sensor[index].temperature, Settings.flag2.temperature_resolution, temperature);
-
       Ds18x20Name(i);
 
       if (json) {
@@ -498,10 +508,11 @@ void Ds18x20Show(bool json)
         for (uint32_t j = 0; j < 6; j++) {
           sprintf(address+2*j, "%02X", ds18x20_sensor[index].address[6-j]);  // Skip sensor type and crc
         }
-        ResponseAppend_P(PSTR(",\"%s\":{\"" D_JSON_ID "\":\"%s\",\"" D_JSON_TEMPERATURE "\":%s}"), ds18x20_types, address, temperature);
+        ResponseAppend_P(PSTR(",\"%s\":{\"" D_JSON_ID "\":\"%s\",\"" D_JSON_TEMPERATURE "\":%*_f}"),
+          ds18x20_types, address, Settings.flag2.temperature_resolution, &ds18x20_sensor[index].temperature);
 #ifdef USE_DOMOTICZ
         if ((0 == TasmotaGlobal.tele_period) && (0 == i)) {
-          DomoticzSensor(DZ_TEMP, temperature);
+          DomoticzFloatSensor(DZ_TEMP, ds18x20_sensor[index].temperature);
         }
 #endif  // USE_DOMOTICZ
 #ifdef USE_KNX
@@ -511,7 +522,7 @@ void Ds18x20Show(bool json)
 #endif  // USE_KNX
 #ifdef USE_WEBSERVER
       } else {
-        WSContentSend_PD(HTTP_SNS_TEMP, ds18x20_types, temperature, TempUnit());
+        WSContentSend_Temp(ds18x20_types, ds18x20_sensor[index].temperature);
 #endif  // USE_WEBSERVER
       }
     }
