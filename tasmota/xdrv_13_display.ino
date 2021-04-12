@@ -17,7 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if defined(USE_I2C) || defined(USE_SPI)
 #ifdef USE_DISPLAY
 
 #define XDRV_13       13
@@ -43,7 +42,7 @@ uint16_t bg_color = 0;
 uint8_t color_type = COLOR_BW;
 uint8_t auto_draw = 1;
 
-const uint8_t DISPLAY_MAX_DRIVERS = 16;        // Max number of display drivers/models supported by xdsp_interface.ino
+const uint8_t DISPLAY_MAX_DRIVERS = 32;        // Max number of display drivers/models supported by xdsp_interface.ino
 const uint8_t DISPLAY_MAX_COLS = 64;           // Max number of columns allowed with command DisplayCols
 const uint8_t DISPLAY_MAX_ROWS = 64;           // Max number of lines allowed with command DisplayRows
 
@@ -55,22 +54,24 @@ const uint8_t DISPLAY_LOG_ROWS = 32;           // Number of lines in display log
 #define D_CMND_DISP_DIMMER "Dimmer"
 #define D_CMND_DISP_MODE "Mode"
 #define D_CMND_DISP_MODEL "Model"
+#define D_CMND_DISP_TYPE "Type"
 #define D_CMND_DISP_REFRESH "Refresh"
 #define D_CMND_DISP_ROWS "Rows"
 #define D_CMND_DISP_SIZE "Size"
 #define D_CMND_DISP_FONT "Font"
 #define D_CMND_DISP_ROTATE "Rotate"
-#define D_CMND_DISP_TEXT "Text"
+#define D_CMND_DISP_INVERT "Invert"
 #define D_CMND_DISP_WIDTH "Width"
 #define D_CMND_DISP_HEIGHT "Height"
 #define D_CMND_DISP_BLINKRATE "Blinkrate"
 #define D_CMND_DISP_BATCH "Batch"
+#define D_CMND_DISP_TEXT "Text"
+
 #define D_CMND_DISP_CLEAR "Clear"
 #define D_CMND_DISP_NUMBER "Number"
 #define D_CMND_DISP_FLOAT "Float"
-#define D_CMND_DISP_NUMBERNC "NumberNC"              // NC - "No Clear"
-#define D_CMND_DISP_FLOATNC "FloatNC"                // NC - "No Clear"
-#define D_CMND_DISP_BRIGHTNESS "Brightness"
+#define D_CMND_DISP_NUMBERNC "NumberNC"               // NC - "No Clear"
+#define D_CMND_DISP_FLOATNC "FloatNC"                 // NC - "No Clear"
 #define D_CMND_DISP_RAW "Raw"
 #define D_CMND_DISP_LEVEL "Level"
 #define D_CMND_DISP_SEVENSEG_TEXT "SevensegText"
@@ -78,12 +79,8 @@ const uint8_t DISPLAY_LOG_ROWS = 32;           // Number of lines in display log
 #define D_CMND_DISP_SCROLLDELAY "ScrollDelay"
 #define D_CMND_DISP_CLOCK "Clock"
 #define D_CMND_DISP_TEXTNC "TextNC"                   // NC - "No Clear"
-#define D_CMND_DISP_SETLEDS "SetLEDs"
-#define D_CMND_DISP_SETLED "SetLED"
-#define D_CMND_DISP_BUTTONS "Buttons"
 #define D_CMND_DISP_SCROLLTEXT "ScrollText"
-
-
+#define D_CMND_DISP_REINIT "reinit"
 
 enum XdspFunctions { FUNC_DISPLAY_INIT_DRIVER, FUNC_DISPLAY_INIT, FUNC_DISPLAY_EVERY_50_MSECOND, FUNC_DISPLAY_EVERY_SECOND,
                      FUNC_DISPLAY_MODEL, FUNC_DISPLAY_MODE, FUNC_DISPLAY_POWER,
@@ -92,43 +89,82 @@ enum XdspFunctions { FUNC_DISPLAY_INIT_DRIVER, FUNC_DISPLAY_INIT, FUNC_DISPLAY_E
                      FUNC_DISPLAY_DRAW_CIRCLE, FUNC_DISPLAY_FILL_CIRCLE,
                      FUNC_DISPLAY_DRAW_RECTANGLE, FUNC_DISPLAY_FILL_RECTANGLE,
                      FUNC_DISPLAY_TEXT_SIZE, FUNC_DISPLAY_FONT_SIZE, FUNC_DISPLAY_ROTATION, FUNC_DISPLAY_DRAW_STRING,
-                     FUNC_DISPLAY_DIM, FUNC_DISPLAY_BLINKRATE
+                     FUNC_DISPLAY_DIM, FUNC_DISPLAY_BLINKRATE,
 #ifdef USE_UFILESYS
-                    ,FUNC_DISPLAY_BATCH
+                     FUNC_DISPLAY_BATCH,
 #endif
-                     , FUNC_DISPLAY_NUMBER, FUNC_DISPLAY_FLOAT, FUNC_DISPLAY_NUMBERNC, FUNC_DISPLAY_FLOATNC, 
-                     FUNC_DISPLAY_BRIGHTNESS, FUNC_DISPLAY_RAW, FUNC_DISPLAY_LEVEL, FUNC_DISPLAY_SEVENSEG_TEXT, FUNC_DISPLAY_SEVENSEG_TEXTNC,
-                     FUNC_DISPLAY_SCROLLDELAY, FUNC_DISPLAY_CLOCK, FUNC_DISPLAY_SETLEDS, FUNC_DISPLAY_SETLED,
-                     FUNC_DISPLAY_BUTTONS, FUNC_DISPLAY_SCROLLTEXT
+                     FUNC_DISPLAY_NUMBER, FUNC_DISPLAY_FLOAT, FUNC_DISPLAY_NUMBERNC, FUNC_DISPLAY_FLOATNC,
+                     FUNC_DISPLAY_RAW, FUNC_DISPLAY_LEVEL, FUNC_DISPLAY_SEVENSEG_TEXT, FUNC_DISPLAY_SEVENSEG_TEXTNC,
+                     FUNC_DISPLAY_SCROLLDELAY, FUNC_DISPLAY_CLOCK, FUNC_DISPLAY_SCROLLTEXT
                    };
 
 enum DisplayInitModes { DISPLAY_INIT_MODE, DISPLAY_INIT_PARTIAL, DISPLAY_INIT_FULL };
 
 const char kDisplayCommands[] PROGMEM = D_PRFX_DISPLAY "|"  // Prefix
-  "|" D_CMND_DISP_MODEL "|" D_CMND_DISP_WIDTH "|" D_CMND_DISP_HEIGHT "|" D_CMND_DISP_MODE "|" D_CMND_DISP_REFRESH "|"
-  D_CMND_DISP_DIMMER "|" D_CMND_DISP_COLS "|" D_CMND_DISP_ROWS "|" D_CMND_DISP_SIZE "|" D_CMND_DISP_FONT "|"
-  D_CMND_DISP_ROTATE "|" D_CMND_DISP_TEXT "|" D_CMND_DISP_ADDRESS "|" D_CMND_DISP_BLINKRATE
+  "|" D_CMND_DISP_MODEL "|" D_CMND_DISP_TYPE "|" D_CMND_DISP_WIDTH "|" D_CMND_DISP_HEIGHT "|" D_CMND_DISP_MODE "|"
+  D_CMND_DISP_INVERT "|" D_CMND_DISP_REFRESH "|" D_CMND_DISP_DIMMER "|" D_CMND_DISP_COLS "|" D_CMND_DISP_ROWS "|"
+  D_CMND_DISP_SIZE "|" D_CMND_DISP_FONT "|" D_CMND_DISP_ROTATE "|" D_CMND_DISP_TEXT "|" D_CMND_DISP_ADDRESS "|" D_CMND_DISP_BLINKRATE "|"
 #ifdef USE_UFILESYS
-  "|" D_CMND_DISP_BATCH
+  D_CMND_DISP_BATCH "|"
 #endif
-   "|" D_CMND_DISP_CLEAR "|" D_CMND_DISP_NUMBER "|" D_CMND_DISP_FLOAT "|" D_CMND_DISP_NUMBERNC "|" D_CMND_DISP_FLOATNC "|" 
-  D_CMND_DISP_BRIGHTNESS "|" D_CMND_DISP_RAW "|" D_CMND_DISP_LEVEL "|" D_CMND_DISP_SEVENSEG_TEXT "|" D_CMND_DISP_SEVENSEG_TEXTNC "|"
-  D_CMND_DISP_SCROLLDELAY "|" D_CMND_DISP_CLOCK "|" D_CMND_DISP_TEXTNC "|" D_CMND_DISP_SETLEDS "|" D_CMND_DISP_SETLED "|"
-  D_CMND_DISP_BUTTONS "|" D_CMND_DISP_SCROLLTEXT
+  D_CMND_DISP_CLEAR "|" D_CMND_DISP_NUMBER "|" D_CMND_DISP_FLOAT "|" D_CMND_DISP_NUMBERNC "|" D_CMND_DISP_FLOATNC "|"
+  D_CMND_DISP_RAW "|" D_CMND_DISP_LEVEL "|" D_CMND_DISP_SEVENSEG_TEXT "|" D_CMND_DISP_SEVENSEG_TEXTNC "|"
+  D_CMND_DISP_SCROLLDELAY "|" D_CMND_DISP_CLOCK "|" D_CMND_DISP_TEXTNC "|" D_CMND_DISP_SCROLLTEXT "|" D_CMND_DISP_REINIT
   ;
 
 void (* const DisplayCommand[])(void) PROGMEM = {
-  &CmndDisplay, &CmndDisplayModel, &CmndDisplayWidth, &CmndDisplayHeight, &CmndDisplayMode, &CmndDisplayRefresh,
-  &CmndDisplayDimmer, &CmndDisplayColumns, &CmndDisplayRows, &CmndDisplaySize, &CmndDisplayFont,
-  &CmndDisplayRotate, &CmndDisplayText, &CmndDisplayAddress, &CmndDisplayBlinkrate
+  &CmndDisplay, &CmndDisplayModel, &CmndDisplayType, &CmndDisplayWidth, &CmndDisplayHeight, &CmndDisplayMode,
+  &CmndDisplayInvert, &CmndDisplayRefresh, &CmndDisplayDimmer, &CmndDisplayColumns, &CmndDisplayRows,
+  &CmndDisplaySize, &CmndDisplayFont, &CmndDisplayRotate, &CmndDisplayText, &CmndDisplayAddress, &CmndDisplayBlinkrate,
 #ifdef USE_UFILESYS
-  ,&CmndDisplayBatch
+  &CmndDisplayBatch,
 #endif
-  , &CmndDisplayClear, &CmndDisplayNumber, &CmndDisplayFloat, &CmndDisplayNumberNC, &CmndDisplayFloatNC, 
-  &CmndDisplayBrightness, &CmndDisplayRaw, &CmndDisplayLevel, &CmndDisplaySevensegText, &CmndDisplaySevensegTextNC, 
-  &CmndDisplayScrollDelay, &CmndDisplayClock, &CmndDisplayTextNC, &CmndDisplaySetLEDs, &CmndDisplaySetLED,
-  &CmndDisplayButtons, &CmndDisplayScrollText
+  &CmndDisplayClear, &CmndDisplayNumber, &CmndDisplayFloat, &CmndDisplayNumberNC, &CmndDisplayFloatNC,
+  &CmndDisplayRaw, &CmndDisplayLevel, &CmndDisplaySevensegText, &CmndDisplaySevensegTextNC,
+  &CmndDisplayScrollDelay, &CmndDisplayClock, &CmndDisplayTextNC, &CmndDisplayScrollText,&DisplayReInitDriver
 };
+
+#ifdef USE_GRAPH
+
+typedef union {
+  uint8_t data;
+  struct {
+      uint8_t overlay : 1;
+      uint8_t draw : 1;
+      uint8_t nu3 : 1;
+      uint8_t nu4 : 1;
+      uint8_t nu5 : 1;
+      uint8_t nu6 : 1;
+      uint8_t nu7 : 1;
+      uint8_t nu8 : 1;
+  };
+} GFLAGS;
+
+struct GRAPH {
+  uint16_t xp;
+  uint16_t yp;
+  uint16_t xs;
+  uint16_t ys;
+  float ymin;
+  float ymax;
+  float range;
+  uint32_t x_time;       // time per x slice in milliseconds
+  uint32_t last_ms;
+  uint32_t last_ms_redrawn;
+  int16_t decimation; // decimation or graph duration in minutes
+  uint16_t dcnt;
+  uint32_t summ;
+  uint16_t xcnt;
+  uint8_t *values;
+  uint8_t xticks;
+  uint8_t yticks;
+  uint8_t last_val;
+  uint8_t color_index;
+  GFLAGS flags;
+};
+
+struct GRAPH *graph[NUM_GRAPHS];
+#endif // USE_GRAPH
 
 char *dsp_str;
 
@@ -151,7 +187,8 @@ uint8_t dsp_font;
 uint8_t dsp_flag;
 uint8_t dsp_on;
 
-uint16_t index_colors[MAX_INDEXCOLORS];
+#define PREDEF_INDEXCOLORS 19
+uint16_t index_colors[MAX_INDEXCOLORS - PREDEF_INDEXCOLORS];
 
 #ifdef USE_DISPLAY_MODES1TO5
 
@@ -322,7 +359,12 @@ uint32_t decode_te(char *line) {
 
 uint16_t GetColorFromIndex(uint32_t index) {
   if (index >= MAX_INDEXCOLORS) index = 0;
-  return index_colors[index];
+
+  if (index < PREDEF_INDEXCOLORS) {
+    return renderer->GetColorFromIndex(index);
+  } else {
+    return index_colors[index - PREDEF_INDEXCOLORS];
+  }
 }
 
 void DisplayText(void)
@@ -610,49 +652,53 @@ void DisplayText(void)
               cp++;
               var = fatoiv(cp, &ftemp);
               cp += var;
-              if (temp >= MAX_INDEXCOLORS) temp = 0;
-              index_colors[temp] = ftemp;
+              if (temp >= MAX_INDEXCOLORS) temp = PREDEF_INDEXCOLORS;
+              if (temp < PREDEF_INDEXCOLORS) temp = PREDEF_INDEXCOLORS;
+              index_colors[temp - PREDEF_INDEXCOLORS] = ftemp;
               break;
             }
 #ifdef USE_DT_VARS
-            if (*cp == 'v') {
+          if (*cp == 'v') {
+            cp++;
+            { int16_t num, gxp, gyp, textbcol, textfcol, font, textsize, txlen, dp, time;
+              var=atoiv(cp,&num);
+              cp+=var;
               cp++;
-              { int16_t num, gxp, gyp, textbcol, textfcol, font, textsize, txlen, dp;
-                var=atoiv(cp,&num);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&gxp);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&gyp);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&textbcol);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&textfcol);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&font);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&textsize);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&txlen);
-                cp+=var;
-                cp++;
-                var=atoiv(cp,&dp);
-                cp+=var;
-                cp++;
-                // text itself
-                char bbuff[32];
-                cp = get_string(bbuff, sizeof(bbuff), cp);
-                char unit[4];
-                cp = get_string(unit, sizeof(unit), cp);
-                define_dt_var(num, gxp, gyp, textbcol, textfcol, font, textsize, txlen, dp, bbuff, unit);
-              }
+              var=atoiv(cp,&gxp);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&gyp);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&textbcol);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&textfcol);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&font);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&textsize);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&txlen);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&dp);
+              cp+=var;
+              cp++;
+              var=atoiv(cp,&time);
+              cp+=var;
+              cp++;
+              // text itself
+              char bbuff[32];
+              cp = get_string(bbuff, sizeof(bbuff), cp);
+              char unit[4];
+              cp = get_string(unit, sizeof(unit), cp);
+              define_dt_var(num, gxp, gyp, textbcol, textfcol, font, textsize, txlen, time, dp, bbuff, unit);
             }
+          }
 #endif // USE_DT_VARS
             // force draw grafics buffer
             if (renderer) renderer->Updateframe();
@@ -942,8 +988,9 @@ void DisplayText(void)
 extern FS *ufsp;
 void Display_Text_From_File(const char *file) {
   File fp;
+  if (!ufsp) return;
   fp = ufsp->open(file, FS_FILE_READ);
-  if (fp >= 0) {
+  if (fp > 0) {
     char *savptr = XdrvMailbox.data;
     char linebuff[128];
     while (fp.available()) {
@@ -975,7 +1022,7 @@ void Display_Text_From_File(const char *file) {
     fp.close();
   }
 }
-#endif
+#endif // USE_UFILESYS
 
 
 #ifdef USE_DT_VARS
@@ -995,6 +1042,8 @@ typedef struct {
   int8_t txtlen;
   int8_t dp;
   int8_t font;
+  int8_t time;
+  int8_t timer;
   char unit[6];
   char *jstrbuf;
   char rstr[32];
@@ -1002,7 +1051,7 @@ typedef struct {
 
 DT_VARS *dt_vars[MAX_DT_VARS];
 
-void define_dt_var(uint32_t num, uint32_t xp, uint32_t yp,  uint32_t txtbcol,  uint32_t txtfcol, int32_t font, int32_t txtsiz, int32_t txtlen, int32_t dp, char *jstr, char *unit) {
+void define_dt_var(uint32_t num, uint32_t xp, uint32_t yp,  uint32_t txtbcol,  uint32_t txtfcol, int32_t font, int32_t txtsiz, int32_t txtlen, int32_t time, int32_t dp, char *jstr, char *unit) {
   if (num >= MAX_DT_VARS) return;
 
   if (dt_vars[num]) {
@@ -1022,56 +1071,86 @@ void define_dt_var(uint32_t num, uint32_t xp, uint32_t yp,  uint32_t txtbcol,  u
   dtp->txtfcol = txtfcol;
   dtp->font = font;
   dtp->txtsiz = txtsiz;
+  dtp->time = time;
   if (txtlen > MAX_DVTSIZE) {txtlen = MAX_DVTSIZE;}
   dtp->txtlen = txtlen;
   dtp->dp = dp;
-  dtp->jstrbuf = (char*)malloc(strlen(jstr + 1));
+  uint8_t jlen = strlen(jstr);
+  dtp->jstrbuf = (char*)calloc(jlen + 2,1);
   if (!dtp->jstrbuf) {
     free (dtp);
     return;
   }
+  dtp->rstr[0] = 0;
+  strcpy(dtp->unit, unit);
   strcpy(dtp->jstrbuf, jstr);
-  strcpy(dtp->unit,unit);
+  if (!time) time = 1;
+  dtp->timer = time;
 }
 
 void draw_dt_vars(void) {
   if (!renderer) return;
 
   for (uint32_t cnt = 0; cnt < MAX_DT_VARS; cnt++) {
-    if (dt_vars[cnt]) {
-      if (dt_vars[cnt]->jstrbuf) {
+    DT_VARS *dtp = dt_vars[cnt];
+    if (dtp) {
+      if (dtp->jstrbuf) {
         // draw
-        char vstr[MAX_DVTSIZE + 7];
-        memset(vstr, ' ', sizeof(vstr));
-        strcpy(vstr, dt_vars[cnt]->rstr);
-        strcat(vstr, " ");
-        strcat(vstr, dt_vars[cnt]->unit);
-        uint16_t slen = strlen(vstr);
-        vstr[slen] = ' ';
+        dtp->timer--;
+        if (!dtp->timer) {
+          dtp->timer = dtp->time;
+          char vstr[MAX_DVTSIZE + 7];
+          memset(vstr, ' ', sizeof(vstr));
+          strcpy(vstr, dtp->rstr);
+          strcat(vstr, " ");
+          strcat(vstr, dtp->unit);
+          uint16_t slen = strlen(vstr);
+          vstr[slen] = ' ';
 
-        if (!dt_vars[cnt]->txtlen) {
+          if (!dtp->txtlen) {
             vstr[slen] = 0;
-        } else {
-            vstr[abs(int(dt_vars[cnt]->txtlen))] = 0;
-        }
-        if (dt_vars[cnt]->txtlen < 0) {
-          // right align
-          alignright(vstr);
-        }
+          } else {
+            vstr[abs(int(dtp->txtlen))] = 0;
+          }
+          if (dtp->txtlen < 0) {
+            // right align
+            alignright(vstr);
+          }
 
-        if (dt_vars[cnt]->txtsiz > 0) {
-          renderer->setDrawMode(0);
-        } else {
-          renderer->setDrawMode(2);
-        }
-        renderer->setTextColor(GetColorFromIndex(dt_vars[cnt]->txtfcol),GetColorFromIndex(dt_vars[cnt]->txtbcol));
-        renderer->setTextFont(dt_vars[cnt]->font);
-        renderer->setTextSize(abs(dt_vars[cnt]->txtsiz));
-        renderer->DrawStringAt(dt_vars[cnt]->xp, dt_vars[cnt]->yp, vstr, GetColorFromIndex(dt_vars[cnt]->txtfcol), 0);
+          if (dtp->txtsiz > 0) {
+            renderer->setDrawMode(0);
+          } else {
+            renderer->setDrawMode(2);
+          }
+          renderer->setTextColor(GetColorFromIndex(dtp->txtfcol),GetColorFromIndex(dtp->txtbcol));
+          renderer->setTextFont(dtp->font);
+          renderer->setTextSize(abs(dtp->txtsiz));
 
-        // reset display vars
-        renderer->setTextColor(fg_color, bg_color);
-        renderer->setDrawMode(auto_draw);
+          if (dtp->jstrbuf[0]=='[') {
+            uint16_t s_disp_xpos = disp_xpos;
+            uint16_t s_disp_ypos = disp_ypos;
+            uint16_t s_bg_color = bg_color;
+            uint16_t s_fg_color = fg_color;
+            disp_xpos = dtp->xp;
+            disp_ypos = dtp->yp;
+            bg_color = GetColorFromIndex(dtp->txtbcol);
+            fg_color = GetColorFromIndex(dtp->txtfcol);
+            char *savmbd = XdrvMailbox.data;
+            XdrvMailbox.data = dtp->jstrbuf;
+            DisplayText();
+            XdrvMailbox.data = savmbd;
+            disp_xpos = s_disp_xpos;
+            disp_ypos = s_disp_ypos;
+            bg_color = s_bg_color;
+            fg_color = s_fg_color;
+          } else {
+            renderer->DrawStringAt(dtp->xp, dtp->yp, vstr, GetColorFromIndex(dtp->txtfcol), 0);
+          }
+
+          // restore display vars
+          renderer->setTextColor(fg_color, bg_color);
+          renderer->setDrawMode(auto_draw);
+        }
       }
     }
   }
@@ -1079,20 +1158,28 @@ void draw_dt_vars(void) {
 
 #define DTV_JSON_SIZE 1024
 
-void DTVarsTeleperiod(void) {
-  char *json = (char*)malloc(DTV_JSON_SIZE);
-  if (json) {
-    strlcpy(json, TasmotaGlobal.mqtt_data, DTV_JSON_SIZE);
-    get_dt_vars(json);
-    free(json);
+void DisplayDTVarsTeleperiod(void) {
+  ResponseClear();
+  MqttShowState();
+  uint32_t jlen = strlen(TasmotaGlobal.mqtt_data);
+
+  if (jlen < DTV_JSON_SIZE) {
+    char *json = (char*)malloc(jlen + 2);
+    if (json) {
+      strlcpy(json, TasmotaGlobal.mqtt_data, jlen + 1);
+      get_dt_vars(json);
+      free(json);
+    }
   }
 }
 
 void get_dt_mqtt(void) {
+  static uint8_t xsns_index = 0;
+
   ResponseClear();
   uint16_t script_tele_period_save = TasmotaGlobal.tele_period;
   TasmotaGlobal.tele_period = 2;
-  XsnsNextCall(FUNC_JSON_APPEND, script_xsns_index);
+  XsnsNextCall(FUNC_JSON_APPEND, xsns_index);
   TasmotaGlobal.tele_period = script_tele_period_save;
   if (strlen(TasmotaGlobal.mqtt_data)) {
     TasmotaGlobal.mqtt_data[0] = '{';
@@ -1108,7 +1195,7 @@ void get_dt_vars(char *json) {
 
     for (uint32_t cnt = 0; cnt < MAX_DT_VARS; cnt++) {
       if (dt_vars[cnt]) {
-        if (dt_vars[cnt]->jstrbuf) {
+        if (dt_vars[cnt]->jstrbuf && dt_vars[cnt]->jstrbuf[0]!='[') {
           char sbuf[32];
           uint32_t res = JsonParsePath(&obj, dt_vars[cnt]->jstrbuf, '#', NULL, sbuf, sizeof(sbuf));
           if (res) {
@@ -1536,14 +1623,22 @@ void DisplayInitDriver(void)
     renderer->setTextSize(Settings.display_size);
     // force opaque mode
     renderer->setDrawMode(0);
+
+    for (uint32_t cnt = 0; cnt < (MAX_INDEXCOLORS - PREDEF_INDEXCOLORS); cnt++) {
+      index_colors[cnt] = 0;
+    }
   }
+
+#ifdef USE_DT_VARS
+  free_dt_vars();
+#endif
 
 #ifdef USE_UFILESYS
   Display_Text_From_File("/display.ini");
 #endif
 
-#ifdef USE_DT_VARS
-  free_dt_vars();
+#ifdef USE_GRAPH
+  for (uint8_t count = 0; count < NUM_GRAPHS; count++) { graph[count] = 0; }
 #endif
 
 //  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Display model %d"), Settings.display_model);
@@ -1584,18 +1679,16 @@ void DisplaySetPower(void)
  * Commands
 \*********************************************************************************************/
 
-void CmndDisplay(void)
-{
-  Response_P(PSTR("{\"" D_PRFX_DISPLAY "\":{\"" D_CMND_DISP_MODEL "\":%d,\"" D_CMND_DISP_WIDTH "\":%d,\"" D_CMND_DISP_HEIGHT "\":%d,\""
+void CmndDisplay(void) {
+  Response_P(PSTR("{\"" D_PRFX_DISPLAY "\":{\"" D_CMND_DISP_MODEL "\":%d,\"" D_CMND_DISP_TYPE "\":%d,\"" D_CMND_DISP_WIDTH "\":%d,\"" D_CMND_DISP_HEIGHT "\":%d,\""
     D_CMND_DISP_MODE "\":%d,\"" D_CMND_DISP_DIMMER "\":%d,\"" D_CMND_DISP_SIZE "\":%d,\"" D_CMND_DISP_FONT "\":%d,\""
-    D_CMND_DISP_ROTATE "\":%d,\"" D_CMND_DISP_REFRESH "\":%d,\"" D_CMND_DISP_COLS "\":[%d,%d],\"" D_CMND_DISP_ROWS "\":%d}}"),
-    Settings.display_model, Settings.display_width, Settings.display_height,
-    Settings.display_mode, Settings.display_dimmer, Settings.display_size, Settings.display_font,
-    Settings.display_rotate, Settings.display_refresh, Settings.display_cols[0], Settings.display_cols[1], Settings.display_rows);
+    D_CMND_DISP_ROTATE "\":%d,\"" D_CMND_DISP_INVERT "\":%d,\"" D_CMND_DISP_REFRESH "\":%d,\"" D_CMND_DISP_COLS "\":[%d,%d],\"" D_CMND_DISP_ROWS "\":%d}}"),
+    Settings.display_model, Settings.display_options.type, Settings.display_width, Settings.display_height,
+    Settings.display_mode, changeUIntScale(Settings.display_dimmer, 0, 15, 0, 100), Settings.display_size, Settings.display_font,
+    Settings.display_rotate, Settings.display_options.invert, Settings.display_refresh, Settings.display_cols[0], Settings.display_cols[1], Settings.display_rows);
 }
 
-void CmndDisplayModel(void)
-{
+void CmndDisplayModel(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload < DISPLAY_MAX_DRIVERS)) {
     uint32_t last_display_model = Settings.display_model;
     Settings.display_model = XdrvMailbox.payload;
@@ -1608,8 +1701,15 @@ void CmndDisplayModel(void)
   ResponseCmndNumber(Settings.display_model);
 }
 
-void CmndDisplayWidth(void)
-{
+void CmndDisplayType(void) {
+  if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 7)) {
+    Settings.display_options.type = XdrvMailbox.payload;
+    TasmotaGlobal.restart_flag = 2;
+  }
+  ResponseCmndNumber(Settings.display_options.type);
+}
+
+void CmndDisplayWidth(void) {
   if (XdrvMailbox.payload > 0) {
     if (XdrvMailbox.payload != Settings.display_width) {
       Settings.display_width = XdrvMailbox.payload;
@@ -1619,8 +1719,7 @@ void CmndDisplayWidth(void)
   ResponseCmndNumber(Settings.display_width);
 }
 
-void CmndDisplayHeight(void)
-{
+void CmndDisplayHeight(void) {
   if (XdrvMailbox.payload > 0) {
     if (XdrvMailbox.payload != Settings.display_height) {
       Settings.display_height = XdrvMailbox.payload;
@@ -1630,10 +1729,9 @@ void CmndDisplayHeight(void)
   ResponseCmndNumber(Settings.display_height);
 }
 
-void CmndDisplayMode(void)
-{
+void CmndDisplayMode(void) {
 #ifdef USE_DISPLAY_MODES1TO5
-/*     Matrix               LCD / Oled                           TFT
+/*     Matrix / 7-segment   LCD / Oled                           TFT
  * 1 = Text up and time     Time
  * 2 = Date                 Local sensors                        Local sensors
  * 3 = Day                  Local sensors and time               Local sensors and time
@@ -1661,200 +1759,26 @@ void CmndDisplayMode(void)
   ResponseCmndNumber(Settings.display_mode);
 }
 
-void CmndDisplayDimmer(void)
-{
+void CmndDisplayDimmer(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 100)) {
-    Settings.display_dimmer = ((XdrvMailbox.payload +1) * 100) / 666;  // Correction for Domoticz (0 - 15)
+    Settings.display_dimmer = changeUIntScale(XdrvMailbox.payload, 0, 100, 0, 15);  // Correction for Domoticz (0 - 15)
     if (Settings.display_dimmer && !(disp_power)) {
       ExecuteCommandPower(disp_device, POWER_ON, SRC_DISPLAY);
     }
     else if (!Settings.display_dimmer && disp_power) {
       ExecuteCommandPower(disp_device, POWER_OFF, SRC_DISPLAY);
     }
-    if (renderer)
+    if (renderer) {
       renderer->dim(Settings.display_dimmer);
-    else
+    } else {
       XdspCall(FUNC_DISPLAY_DIM);
-  }
-  ResponseCmndNumber(Settings.display_dimmer);
-}
-
-void CmndDisplayBlinkrate(void)
-{
-  if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 3)) {
-
-    if (!renderer)
-      XdspCall(FUNC_DISPLAY_BLINKRATE);
-  }
-  ResponseCmndNumber(XdrvMailbox.payload);
-}
-
-
-#ifdef USE_UFILESYS
-void CmndDisplayBatch(void) {
-  if (XdrvMailbox.data_len > 0) {
-    if (!Settings.display_mode) {
-      Display_Text_From_File(XdrvMailbox.data);
     }
-    ResponseCmndChar(XdrvMailbox.data);
   }
-}
-#endif
-
-
-void CmndDisplayClear(void)
-{
-  if (!renderer)
-    XdspCall(FUNC_DISPLAY_CLEAR);
-  ResponseCmndChar(XdrvMailbox.data);
+  ResponseCmndNumber(changeUIntScale(Settings.display_dimmer, 0, 15, 0, 100));
 }
 
-void CmndDisplayNumber(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_NUMBER);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayFloat(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_FLOAT);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayNumberNC(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_NUMBERNC);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayFloatNC(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_FLOATNC);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayBrightness(void)
-{
-  bool result = false;
-  if (!renderer) {
-    result = XdspCall(FUNC_DISPLAY_BRIGHTNESS);
-  }
-  if(result) ResponseCmndNumber(XdrvMailbox.payload);
-  else ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayRaw(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_RAW);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayLevel(void)
-{
-  bool result = false;
-  if (!renderer) {
-    result = XdspCall(FUNC_DISPLAY_LEVEL);
-  }
-  if(result) ResponseCmndNumber(XdrvMailbox.payload);
-  else ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplaySevensegText(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXT);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayTextNC(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXTNC);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplaySevensegTextNC(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXTNC);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayScrollDelay(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_SCROLLDELAY);
-  }
-  ResponseCmndNumber(XdrvMailbox.payload);
-}
-
-void CmndDisplayClock(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_CLOCK);
-  }
-  ResponseCmndNumber(XdrvMailbox.payload);
-}
-
-void CmndDisplaySetLEDs(void)
-{
-  bool result = false;
-  if (!renderer) {
-    result = XdspCall(FUNC_DISPLAY_SETLEDS);
-  }
-  if(result) ResponseCmndNumber(XdrvMailbox.payload);
-  else ResponseCmndChar(XdrvMailbox.data);
-}
-
-
-void CmndDisplaySetLED(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_SETLED);
-  }
-  ResponseCmndChar(XdrvMailbox.data);
-}
-
-void CmndDisplayButtons(void)
-{
-  if (!renderer) {
-    XdspCall(FUNC_DISPLAY_BUTTONS);
-  }
-  ResponseCmndNumber(XdrvMailbox.payload);
-}
-
-
-void CmndDisplayScrollText(void)
-{
-  bool result = false;
-  if (!renderer) {
-    result = XdspCall(FUNC_DISPLAY_SCROLLTEXT);
-  }
-  if(result) ResponseCmndNumber(XdrvMailbox.payload);
-  else ResponseCmndChar(XdrvMailbox.data);
-}
-
-
-void CmndDisplaySize(void)
-{
-#ifdef USE_DISPLAY_TM1637
-  if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= 6)) {
-#else
+void CmndDisplaySize(void) {
   if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= 4)) {
-#endif    
     Settings.display_size = XdrvMailbox.payload;
     if (renderer) renderer->setTextSize(Settings.display_size);
     //else DisplaySetSize(Settings.display_size);
@@ -1862,8 +1786,7 @@ void CmndDisplaySize(void)
   ResponseCmndNumber(Settings.display_size);
 }
 
-void CmndDisplayFont(void)
-{
+void CmndDisplayFont(void) {
   if ((XdrvMailbox.payload >=0) && (XdrvMailbox.payload <= 4)) {
     Settings.display_font = XdrvMailbox.payload;
     if (renderer) renderer->setTextFont(Settings.display_font);
@@ -1872,10 +1795,9 @@ void CmndDisplayFont(void)
   ResponseCmndNumber(Settings.display_font);
 }
 
-void CmndDisplayRotate(void)
-{
+void CmndDisplayRotate(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload < 4)) {
-    if (Settings.display_rotate != XdrvMailbox.payload) {
+    if ((Settings.display_rotate) != XdrvMailbox.payload) {
 /*
       // Needs font info regarding height and width
       if ((Settings.display_rotate &1) != (XdrvMailbox.payload &1)) {
@@ -1897,8 +1819,77 @@ void CmndDisplayRotate(void)
   ResponseCmndNumber(Settings.display_rotate);
 }
 
-void CmndDisplayText(void)
-{
+void CmndDisplayInvert(void) {
+  if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
+    Settings.display_options.invert = XdrvMailbox.payload;
+    if (renderer) renderer->invertDisplay(Settings.display_options.invert);
+  }
+  ResponseCmndNumber(Settings.display_options.invert);
+}
+
+void CmndDisplayRefresh(void) {
+  if ((XdrvMailbox.payload >= 1) && (XdrvMailbox.payload <= 7)) {
+    Settings.display_refresh = XdrvMailbox.payload;
+  }
+  ResponseCmndNumber(Settings.display_refresh);
+}
+
+void CmndDisplayColumns(void) {
+  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= 2)) {
+    if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= DISPLAY_MAX_COLS)) {
+      Settings.display_cols[XdrvMailbox.index -1] = XdrvMailbox.payload;
+#ifdef USE_DISPLAY_MODES1TO5
+      if (1 == XdrvMailbox.index) {
+        DisplayLogBufferInit();
+        DisplayReAllocScreenBuffer();
+      }
+#endif  // USE_DISPLAY_MODES1TO5
+    }
+    ResponseCmndIdxNumber(Settings.display_cols[XdrvMailbox.index -1]);
+  }
+}
+
+void CmndDisplayRows(void) {
+  if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= DISPLAY_MAX_ROWS)) {
+    Settings.display_rows = XdrvMailbox.payload;
+#ifdef USE_DISPLAY_MODES1TO5
+    DisplayLogBufferInit();
+    DisplayReAllocScreenBuffer();
+#endif  // USE_DISPLAY_MODES1TO5
+  }
+  ResponseCmndNumber(Settings.display_rows);
+}
+
+void CmndDisplayAddress(void) {
+  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= 8)) {
+    if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 255)) {
+      Settings.display_address[XdrvMailbox.index -1] = XdrvMailbox.payload;
+    }
+    ResponseCmndIdxNumber(Settings.display_address[XdrvMailbox.index -1]);
+  }
+}
+
+void CmndDisplayBlinkrate(void) {
+  if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 3)) {
+    if (!renderer) {
+      XdspCall(FUNC_DISPLAY_BLINKRATE);
+    }
+  }
+  ResponseCmndNumber(XdrvMailbox.payload);
+}
+
+#ifdef USE_UFILESYS
+void CmndDisplayBatch(void) {
+  if (XdrvMailbox.data_len > 0) {
+    if (!Settings.display_mode) {
+      Display_Text_From_File(XdrvMailbox.data);
+    }
+    ResponseCmndChar(XdrvMailbox.data);
+  }
+}
+#endif
+
+void CmndDisplayText(void) {
   if (disp_device && XdrvMailbox.data_len > 0) {
 #ifndef USE_DISPLAY_MODES1TO5
     DisplayText();
@@ -1915,54 +1906,109 @@ void CmndDisplayText(void)
   }
 }
 
-void CmndDisplayAddress(void)
-{
-  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= 8)) {
-    if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 255)) {
-      Settings.display_address[XdrvMailbox.index -1] = XdrvMailbox.payload;
-    }
-    ResponseCmndIdxNumber(Settings.display_address[XdrvMailbox.index -1]);
-  }
+/*********************************************************************************************\
+ * Currently 7-segement specific - should have been handled by (extended) DisplayText command
+\*********************************************************************************************/
+
+void CmndDisplayClear(void) {
+  if (!renderer)
+    XdspCall(FUNC_DISPLAY_CLEAR);
+  ResponseCmndChar(XdrvMailbox.data);
 }
 
-void CmndDisplayRefresh(void)
-{
-  if ((XdrvMailbox.payload >= 1) && (XdrvMailbox.payload <= 7)) {
-    Settings.display_refresh = XdrvMailbox.payload;
+void CmndDisplayNumber(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_NUMBER);
   }
-  ResponseCmndNumber(Settings.display_refresh);
+  ResponseCmndChar(XdrvMailbox.data);
 }
 
-void CmndDisplayColumns(void)
-{
-  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= 2)) {
-    if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= DISPLAY_MAX_COLS)) {
-      Settings.display_cols[XdrvMailbox.index -1] = XdrvMailbox.payload;
-#ifdef USE_DISPLAY_MODES1TO5
-      if (1 == XdrvMailbox.index) {
-        DisplayLogBufferInit();
-        DisplayReAllocScreenBuffer();
-      }
-#endif  // USE_DISPLAY_MODES1TO5
-    }
-    ResponseCmndIdxNumber(Settings.display_cols[XdrvMailbox.index -1]);
+void CmndDisplayFloat(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_FLOAT);
   }
+  ResponseCmndChar(XdrvMailbox.data);
 }
 
-void CmndDisplayRows(void)
-{
-  if ((XdrvMailbox.payload > 0) && (XdrvMailbox.payload <= DISPLAY_MAX_ROWS)) {
-    Settings.display_rows = XdrvMailbox.payload;
-#ifdef USE_DISPLAY_MODES1TO5
-    DisplayLogBufferInit();
-    DisplayReAllocScreenBuffer();
-#endif  // USE_DISPLAY_MODES1TO5
+void CmndDisplayNumberNC(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_NUMBERNC);
   }
-  ResponseCmndNumber(Settings.display_rows);
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplayFloatNC(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_FLOATNC);
+  }
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplayRaw(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_RAW);
+  }
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplayLevel(void) {
+  bool result = false;
+  if (!renderer) {
+    result = XdspCall(FUNC_DISPLAY_LEVEL);
+  }
+  if(result) ResponseCmndNumber(XdrvMailbox.payload);
+}
+
+void CmndDisplaySevensegText(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXT);
+  }
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplayTextNC(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXTNC);
+  }
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplaySevensegTextNC(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_SEVENSEG_TEXTNC);
+  }
+  ResponseCmndChar(XdrvMailbox.data);
+}
+
+void CmndDisplayScrollDelay(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_SCROLLDELAY);
+  }
+  ResponseCmndNumber(XdrvMailbox.payload);
+}
+
+void CmndDisplayClock(void) {
+  if (!renderer) {
+    XdspCall(FUNC_DISPLAY_CLOCK);
+  }
+  ResponseCmndNumber(XdrvMailbox.payload);
+}
+
+void CmndDisplayScrollText(void) {
+  bool result = false;
+  if (!renderer) {
+    result = XdspCall(FUNC_DISPLAY_SCROLLTEXT);
+  }
+  if(result) ResponseCmndChar(XdrvMailbox.data);
+}
+
+void DisplayReInitDriver(void) {
+  XdspCall(FUNC_DISPLAY_INIT_DRIVER);
+  ResponseCmndDone();
 }
 
 /*********************************************************************************************\
- * optional drivers
+ * Optional drivers
 \*********************************************************************************************/
 
 #ifdef USE_TOUCH_BUTTONS
@@ -1985,7 +2031,7 @@ char ppath[16];
   }
   Draw_RGB_Bitmap(ppath, xp, yp, inverted);
 }
-#endif
+#endif  // USE_TOUCH_BUTTONS
 
 
 #ifdef ESP32
@@ -2099,6 +2145,10 @@ void Draw_RGB_Bitmap(char *file,uint16_t xp, uint16_t yp, bool inverted ) {
 }
 #endif // USE_UFILESYS
 
+/*********************************************************************************************\
+ * AWatch
+\*********************************************************************************************/
+
 #ifdef USE_AWATCH
 #define MINUTE_REDUCT 4
 
@@ -2136,48 +2186,13 @@ void DrawAClock(uint16_t rad) {
 }
 #endif // USE_AWATCH
 
+/*********************************************************************************************\
+ * Graphics
+\*********************************************************************************************/
+
 
 #ifdef USE_GRAPH
 
-typedef union {
-  uint8_t data;
-  struct {
-      uint8_t overlay : 1;
-      uint8_t draw : 1;
-      uint8_t nu3 : 1;
-      uint8_t nu4 : 1;
-      uint8_t nu5 : 1;
-      uint8_t nu6 : 1;
-      uint8_t nu7 : 1;
-      uint8_t nu8 : 1;
-  };
-} GFLAGS;
-
-struct GRAPH {
-  uint16_t xp;
-  uint16_t yp;
-  uint16_t xs;
-  uint16_t ys;
-  float ymin;
-  float ymax;
-  float range;
-  uint32_t x_time;       // time per x slice in milliseconds
-  uint32_t last_ms;
-  uint32_t last_ms_redrawn;
-  int16_t decimation; // decimation or graph duration in minutes
-  uint16_t dcnt;
-  uint32_t summ;
-  uint16_t xcnt;
-  uint8_t *values;
-  uint8_t xticks;
-  uint8_t yticks;
-  uint8_t last_val;
-  uint8_t color_index;
-  GFLAGS flags;
-};
-
-
-struct GRAPH *graph[NUM_GRAPHS];
 
 #define TICKLEN 4
 void ClrGraph(uint16_t num) {
@@ -2373,6 +2388,7 @@ void Save_graph(uint8_t num, char *path) {
   fp.print("\n");
   fp.close();
 }
+
 void Restore_graph(uint8_t num, char *path) {
   if (!renderer) return;
   uint16_t index=num%NUM_GRAPHS;
@@ -2484,7 +2500,6 @@ void AddGraph(uint8_t num,uint8_t val) {
   }
 }
 
-
 // add next value
 void AddValue(uint8_t num,float fval) {
   // not yet defined ???
@@ -2518,6 +2533,12 @@ void AddValue(uint8_t num,float fval) {
   }
 }
 #endif // USE_GRAPH
+
+/*********************************************************************************************\
+ * Touch panel control
+\*********************************************************************************************/
+
+#if defined(USE_FT5206) || defined(USE_XPT2046)
 
 #ifdef USE_FT5206
 
@@ -2555,11 +2576,49 @@ uint32_t Touch_Status(uint32_t sel) {
     return 0;
   }
 }
+#endif  // USE_FT5206
 
+#if defined(USE_XPT2046) && defined(USE_DISPLAY_ILI9341)
+#include <XPT2046_Touchscreen.h>
+
+XPT2046_Touchscreen *touchp;
+TS_Point pLoc;
+bool XPT2046_found;
+
+bool Touch_Init(uint16_t CS) {
+  touchp = new XPT2046_Touchscreen(CS);
+  XPT2046_found = touchp->begin();
+  if (XPT2046_found) {
+	AddLog(LOG_LEVEL_INFO, PSTR("TS: XPT2046"));
+  }
+  return XPT2046_found;
+}
+
+uint32_t Touch_Status(uint32_t sel) {
+  if (XPT2046_found) {
+    switch (sel) {
+      case 0:
+        return  touchp->touched();
+      case 1:
+        return pLoc.x;
+      case 2:
+        return pLoc.y;
+    }
+    return 0;
+  } else {
+    return 0;
+  }
+}
+
+#endif  // USE_XPT2046 && USE_DISPLAY_ILI9341
 
 #ifdef USE_TOUCH_BUTTONS
 void Touch_MQTT(uint8_t index, const char *cp, uint32_t val) {
+#if defined(USE_FT5206)
   ResponseTime_P(PSTR(",\"FT5206\":{\"%s%d\":\"%d\"}}"), cp, index+1, val);
+#elif defined(USE_XPT2046)
+  ResponseTime_P(PSTR(",\"XPT2046\":{\"%s%d\":\"%d\"}}"), cp, index+1, val);
+#endif  // USE_XPT2046
   MqttPublishTeleSensor();
 }
 
@@ -2575,15 +2634,17 @@ uint8_t tbstate[3];
 
 // check digitizer hit
 void Touch_Check(void(*rotconvert)(int16_t *x, int16_t *y)) {
-uint16_t temp;
-uint8_t rbutt=0;
-uint8_t vbutt=0;
-
+  uint16_t temp;
+  uint8_t rbutt=0;
+  uint8_t vbutt=0;
 
   if (touchp->touched()) {
     // did find a hit
+#if defined(USE_FT5206)
     pLoc = touchp->getPoint(0);
-
+#elif defined(USE_XPT2046)
+    pLoc = touchp->getPoint();
+#endif  // USE_XPT2046
     if (renderer) {
 
 #ifdef USE_M5STACK_CORE2
@@ -2604,11 +2665,11 @@ uint8_t vbutt=0;
         }
         xcenter += 100;
       }
-#endif
+#endif  // USE_M5STACK_CORE2
 
       rotconvert(&pLoc.x, &pLoc.y);
 
-      //AddLog(LOG_LEVEL_INFO, PSTR("touch %d - %d"), pLoc.x, pLoc.y);
+      // AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("touch after convert %d - %d"), pLoc.x, pLoc.y);
       // now must compare with defined buttons
       for (uint8_t count = 0; count < MAX_TOUCH_BUTTONS; count++) {
         if (buttons[count]) {
@@ -2668,7 +2729,7 @@ uint8_t vbutt=0;
         //AddLog(LOG_LEVEL_INFO, PSTR("tbut: %d released"), tbut);
       }
     }
-#endif
+#endif  // USE_M5STACK_CORE2
     for (uint8_t count = 0; count < MAX_TOUCH_BUTTONS; count++) {
       if (buttons[count]) {
         if (!buttons[count]->vpower.slider) {
@@ -2701,7 +2762,7 @@ uint8_t vbutt=0;
 }
 
 #endif // USE_TOUCH_BUTTONS
-#endif // USE_FT5206
+#endif // USE_FT5206 || USE_XPT2046
 
 /*********************************************************************************************\
  * Interface
@@ -2711,13 +2772,10 @@ bool Xdrv13(uint8_t function)
 {
   bool result = false;
 
-  if ((TasmotaGlobal.i2c_enabled || TasmotaGlobal.spi_enabled || TasmotaGlobal.soft_spi_enabled) && XdspPresent()) {
+  if (XdspPresent()) {
     switch (function) {
       case FUNC_PRE_INIT:
         DisplayInitDriver();
-#ifdef USE_GRAPH
-        for (uint8_t count = 0; count < NUM_GRAPHS; count++) { graph[count] = 0; }
-#endif
         break;
       case FUNC_EVERY_50_MSECOND:
         if (Settings.display_model) { XdspCall(FUNC_DISPLAY_EVERY_50_MSECOND); }
@@ -2738,7 +2796,11 @@ bool Xdrv13(uint8_t function)
         if (Settings.display_model && Settings.display_mode) { XdspCall(FUNC_DISPLAY_EVERY_SECOND); }
 #endif
         break;
-
+      case FUNC_AFTER_TELEPERIOD:
+#ifdef USE_DT_VARS
+        DisplayDTVarsTeleperiod();
+#endif // USE_DT_VARS
+        break;
 #ifdef USE_DISPLAY_MODES1TO5
       case FUNC_MQTT_SUBSCRIBE:
         DisplayMqttSubscribe();
@@ -2759,4 +2821,3 @@ bool Xdrv13(uint8_t function)
 }
 
 #endif  // USE_DISPLAY
-#endif  // USE_I2C or USE_SPI
