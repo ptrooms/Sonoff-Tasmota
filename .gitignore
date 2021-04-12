@@ -16,6 +16,9 @@ tasmota*.bin
 tasmota*.bin.gz
 tasmota*.map
 platformio_override.ini
+*.txt
+*.bin
+build_output/
 
 ## Visual Studio Code specific ######
 .vscode
