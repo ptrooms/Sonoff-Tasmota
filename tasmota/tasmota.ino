@@ -17,6 +17,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*====================================================
+ * // require  core 2.6.1 , ESP8266 Lwip1.4 gheneric  TTYUSB0 , V2 lower memory
   Prerequisites:
     - Change libraries/PubSubClient/src/PubSubClient.h
         #define MQTT_MAX_PACKET_SIZE 1000
