@@ -1,0 +1,88 @@
+pafoxp@ubuntuO380:~/code-tasmota/tasmota$ esptool.py --port /dev/ttyUSB0 write_flash -fs 1MB -fm dout 0x0 firmware_7.1_basic.bin
+esptool.py v2.8
+Serial port /dev/ttyUSB0
+Connecting....
+Detecting chip type... ESP8266
+Chip is ESP8285
+Features: WiFi, Embedded Flash
+Crystal is 26MHz
+MAC: c4:4f:33:8c:47:ab
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+Compressed 469792 bytes to 326109...
+Wrote 469792 bytes (326109 compressed) at 0x00000000 in 28.8 seconds (effective 130.7 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+pafoxp@ubuntuO380:~/code-tasmota/tasmota$ minicom -D /dev/ttyUSB0
+$pd{$n
+00:00:00 CFG: Use defaults
+00:00:00 Project tasmota Tasmota Version 7.1.0(basic)-2_6_1
+00:00:00 WIF: WifiManager active for 3 minutes
+00:00:00 HTP: Web server active on tasmota-1963 with IP address 192.168.4.1
+00:01:34 WIF: Hostname %s-%04d, SSId1 Pafo SSID4, SSId2
+00:01:35 APP: Restarting
+
+ ets Jan  8 2013,rst cause:2, boot mode:(3,7)
+
+ load 0x4010f000, len 1384, room 16
+ tail 8
+ chksum 0x2d
+ csum 0x2d
+ v482516e3
+ ~ld
+
+ 00:00:00 CFG: Loaded from flash at F8, Count 4
+ 00:00:00 Project tasmota Tasmota Version 7.1.0(basic)-2_6_1
+ 00:00:00 WIF: Connecting to AP1 Pafo SSID4 in mode 11N as tasmota-1963...
+ 00:00:06 WIF: Connected
+ 00:00:06 HTP: Web server active on tasmota-1963 with IP address 192.168.1.133
+ 23:14:10 RSL: tele/tasmota/INFO1 = {"Module":"Sonoff Basic","Version":"7.1.0(basic)","FallbackTopic":"cmnd/DVES_8C47AB_fb/","GroupTopic":"cmnd/tasmotas/"}
+ 23:14:10 RSL: tele/tasmota/INFO2 = {"WebServerMode":"Admin","Hostname":"tasmota-1963","IPAddress":"192.168.1.133"}
+ 23:14:10 RSL: tele/tasmota/INFO3 = {"RestartReason":"Software/System restart"}
+ 23:14:10 RSL: stat/tasmota/RESULT = {"POWER":"OFF"}
+ 23:14:10 RSL: stat/tasmota/POWER = OFF
+ 23:14:14 RSL: tele/tasmota/STATE = {"Time":"2022-06-16T23:14:14","Uptime":"0T00:00:13","UptimeSec":13,"Vcc":3.255,"Heap":32,"SleepMode":"Dynamic","Sleep":50,"LoadAvg":19,"MqttCount":0,"POWE}
+ 23:17:15 UPL: File Config_sonoff_a001_7.1.0_living_09dec19_18u05.dmp ...
+ 23:17:16 UPL: Successful 4096 bytes. Restarting
+ 23:17:16 MQT: Attempting connection...
+ 23:17:16 MQT: Connected
+ 23:17:16 MQT: tele/tasmota/LWT = Online (retained)
+ 23:17:16 MQT: cmnd/tasmota/POWER =
+ 23:17:17 APP: Restarting
+
+  ets Jan  8 2013,rst cause:2, boot mode:(3,7)
+
+  load 0x4010f000, len 1384, room 16
+  tail 8
+  chksum 0x2d
+  csum 0x2d
+  v482516e3
+  ~ld
+
+  00:00:00 CFG: Loaded from flash at FB, Count 9
+  00:00:00 Project tasmota Sonoff-a001 Living Version 7.1.0(basic)-2_6_1
+  00:00:00 WIF: Connecting to AP2 Pafo SSID4 in mode 11N as sonoff-a001...
+  00:00:06 WIF: Connected
+  00:00:06 HTP: Web server active on sonoff-a001 with IP address 192.168.1.133
+  23:17:25 MQT: Attempting connection...
+  23:17:25 MQT: Connected
+  23:17:25 MQT: tele/sonoff-a001/LWT = Online (retained)
+  23:17:25 MQT: cmnd/sonoff-a001/POWER =
+  23:17:25 MQT: tele/sonoff-a001/INFO1 = {"Module":"LSC Ledi2 Plug","Version":"7.1.0(basic)","FallbackTopic":"cmnd/DVES_8C47AB_fb/","GroupTopic":"cmnd/sonoffs/"}
+  23:17:25 MQT: tele/sonoff-a001/INFO2 = {"WebServerMode":"Admin","Hostname":"sonoff-a001","IPAddress":"192.168.1.133"}
+  23:17:25 MQT: tele/sonoff-a001/INFO3 = {"RestartReason":"Software/System restart"}
+  23:17:25 MQT: stat/sonoff-a001/RESULT = {"POWER1":"OFF"}
+  23:17:25 MQT: stat/sonoff-a001/POWER1 = OFF
+  23:17:25 MQT: stat/sonoff-a001/RESULT = {"POWER2":"OFF"}
+  23:17:25 MQT: stat/sonoff-a001/POWER2 = OFF
+  23:17:25 MQT: stat/sonoff-a001/RESULT = {"POWER1":"OFF"}
+  23:17:25 MQT: stat/sonoff-a001/POWER1 = OFF
+  23:17:25 MQT: stat/sonoff-a001/RESULT = {"POWER2":"OFF"}
+  23:17:25 MQT: stat/sonoff-a001/POWER2 = OFF
+  23:17:29 MQT: tele/sonoff-a001/STATE = {"Time":"2022-06-16T23:17:29","Uptime":"0T00:00:13","UptimeSec":13,"Vcc":3.126,"Heap":32,"SleepMode":"Dynamic","Sleep":50,"LoadAvg":19,"MqttCount":1,"}
+
+  C
