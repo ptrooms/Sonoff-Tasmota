@@ -129,7 +129,7 @@ enum _State_e {
 #define TINFO_SGR '\n' // start of group
 #define TINFO_EGR '\r' // End of group
 
-typedef void (*_fn_ADPS) (uint8_t);
+typedef void (*_fn_ADPS) (uint8_t, char *);
 typedef void (*_fn_data) (ValueList *, uint8_t);
 typedef void (*_fn_new_frame) (ValueList *);
 typedef void (*_fn_updated_frame) (ValueList *);
@@ -140,7 +140,7 @@ class TInfo
     TInfo();
     void          init(_Mode_e mode); // mode MUST be specified
     _State_e      process (char c);
-    void          attachADPS(void (*_fn_ADPS)(uint8_t phase));
+    void          attachADPS(void (*_fn_ADPS)(uint8_t phase, char * label));
     void          attachData(void (*_fn_data)(ValueList * valueslist, uint8_t state));
     void          attachNewFrame(void (*_fn_new_frame)(ValueList * valueslist));
     void          attachUpdatedFrame(void (*_fn_updated_frame)(ValueList * valueslist));
@@ -149,6 +149,7 @@ class TInfo
     uint8_t       valuesDump(void);
     char *        valueGet(char * name, char * value);
     char *        valueGet_P(const char * name, char * value);
+    int           labelCount();
     boolean       listDelete();
     unsigned char calcChecksum(char *etiquette, char *valeur, char *horodate=NULL) ;
 
@@ -157,7 +158,6 @@ class TInfo
     ValueList *   valueAdd (char * name, char * value, uint8_t checksum, uint8_t * flags, char * horodate=NULL);
     boolean       valueRemove (char * name);
     boolean       valueRemoveFlagged(uint8_t flags);
-    int           labelCount();
     uint32_t      horodate2Timestamp( char * pdate) ;
     void          customLabel( char * plabel, char * pvalue, uint8_t * pflags) ;
     ValueList *   checkLine(char * pline) ;
@@ -169,7 +169,7 @@ class TInfo
     char      _separator;
     uint8_t   _recv_idx;  // index in receive buffer
     boolean   _frame_updated; // Data on the frame has been updated
-    void      (*_fn_ADPS)(uint8_t phase);
+    void      (*_fn_ADPS)(uint8_t phase, char * label);
     void      (*_fn_data)(ValueList * valueslist, uint8_t state);
     void      (*_fn_new_frame)(ValueList * valueslist);
     void      (*_fn_updated_frame)(ValueList * valueslist);

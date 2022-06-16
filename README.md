@@ -1,13 +1,23 @@
 ![Tasmota logo](/tools/logo/TASMOTA_FullLogo_Vector.svg)
 
-Alternative firmware for [ESP8266](https://en.wikipedia.org/wiki/ESP8266) based devices with **easy configuration using webUI, OTA updates, automation using timers or rules, expandability and entirely local control over MQTT, HTTP, Serial or KNX**.
-_Written for PlatformIO with limited support for Arduino IDE._
+Alternative firmware for [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and [ESP32](https://en.wikipedia.org/wiki/ESP32) based devices with **easy configuration using webUI, OTA updates, automation using timers or rules, expandability and entirely local control over MQTT, HTTP, Serial or KNX**.
+_Written for PlatformIO._
 
-[![GitHub version](https://img.shields.io/github/release/arendst/Tasmota.svg)](https://github.com/arendst/Tasmota/releases/latest)
+[![GitHub version](https://img.shields.io/github/release/arendst/Tasmota.svg)](http://ota.tasmota.com/tasmota/release)
 [![GitHub download](https://img.shields.io/github/downloads/arendst/Tasmota/total.svg)](https://github.com/arendst/Tasmota/releases/latest)
 [![License](https://img.shields.io/github/license/arendst/Tasmota.svg)](LICENSE.txt)
 [![Chat](https://img.shields.io/discord/479389167382691863.svg)](https://discord.gg/Ks2Kzd4)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/arendst/Tasmota)
+
+<hr></hr>
+
+**In light of current events we like to support the people behind _PlatformIO Project_, especially Ivan Kravets, and wish them the strength to help stop the war. See [platformio-is-ukrainian-project-please-help-us-stop-the-war](https://community.platformio.org/t/platformio-is-ukrainian-project-please-help-us-stop-the-war/26330) for what you can do.**
+
+<hr></hr>
+
+## Easy install
+
+Easy initial installation of Tasmota can be performed using the [Tasmota WebInstaller](https://tasmota.github.io/install/).
 
 If you like **Tasmota**, give it a star, or fork it and contribute!
 
@@ -17,27 +27,26 @@ If you like **Tasmota**, give it a star, or fork it and contribute!
 
 See [RELEASENOTES.md](https://github.com/arendst/Tasmota/blob/master/RELEASENOTES.md) for release information.
 
-In addition to the [release webpage](https://github.com/arendst/Tasmota/releases/latest) the binaries can also be downloaded from http://ota.tasmota.com/tasmota/release/
+Firmware binaries can be downloaded from http://ota.tasmota.com/tasmota/release/ or http://ota.tasmota.com/tasmota32/release/ for ESP32 binaries.
 
 ## Development
 
-[![Dev Version](https://img.shields.io/badge/development%20version-v9.3.x.x-blue.svg)](https://github.com/arendst/Tasmota)
+[![Dev Version](https://img.shields.io/badge/development%20version-v12.0.x.x-blue.svg)](https://github.com/arendst/Tasmota)
 [![Download Dev](https://img.shields.io/badge/download-development-yellow.svg)](http://ota.tasmota.com/tasmota/)
-[![Tasmota CI](https://github.com/arendst/Tasmota/workflows/Tasmota%20CI/badge.svg)](https://github.com/arendst/Tasmota/actions?query=workflow%3A%22Tasmota+CI%22)
-[![Tasmota ESP32 CI](https://github.com/arendst/Tasmota/workflows/Tasmota%20ESP32%20CI/badge.svg)](https://github.com/arendst/Tasmota/actions?query=workflow%3A%22Tasmota+ESP32+CI%22)
-[![Build_firmware](https://github.com/arendst/Tasmota/workflows/Build_firmware/badge.svg)](https://github.com/arendst/Tasmota/actions?query=workflow%3ABuild_firmware)
+[![Tasmota CI](https://github.com/arendst/Tasmota/actions/workflows/build_all_the_things.yml/badge.svg)](https://github.com/arendst/Tasmota/actions/workflows/build_all_the_things.yml)
+[![Build_development](https://github.com/arendst/Tasmota/actions/workflows/Tasmota_build_devel.yml/badge.svg)](https://github.com/arendst/Tasmota/actions/workflows/Tasmota_build_devel.yml)
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed change information.
 
 Unless your Tasmota powered device exhibits a problem or you need to make use of a feature that is not available in the Tasmota version currently installed on your device, leave your device alone - it works so don't make unnecessary changes! If the release version (i.e., the master branch) exhibits unexpected behaviour for your device and configuration, you should upgrade to the latest development version instead to see if your problem is resolved as some bugs in previous releases or development builds may already have been resolved.
 
-Every commit made to the development branch, which is compiling successfuly, will post new binary files at  http://ota.tasmota.com/tasmota/ (this web address can be used for OTA updates too). It is important to note that these binaries are based on the current development codebase. These commits are tested as much as is possible and are typically quite stable. However, it is infeasible to test on the hundreds of different types of devices with all the available configuration options permitted.
+Every commit made to the development branch, which is compiling successfuly, will post new binary files at http://ota.tasmota.com/tasmota/ (this web address can be used for OTA updates too). It is important to note that these binaries are based on the current development codebase. These commits are tested as much as is possible and are typically quite stable. However, it is infeasible to test on the hundreds of different types of devices with all the available configuration options permitted.
 
 Note that there is a chance, as with any upgrade, that the device may not function as expected. You must always account for the possibility that you may need to flash the device via the serial programming interface if the OTA upgrade fails. Even with the master release, you should always attempt to test the device or a similar prototype before upgrading a device which is in production or is hard to reach. And, as always, make a backup of the device configuration before beginning any firmware update.
 
 ## Disclaimer
 
-:warning: **DANGER OF ELECTROCUTION** :warning:
+st:warning: **DANGER OF ELECTROCUTION** :warning:
 
 If your device connects to mains electricity (AC power) there is danger of electrocution if not installed properly. If you don't know how to install it, please call an electrician (***Beware:*** certain countries prohibit installation without a licensed electrician present). Remember: _**SAFETY FIRST**_. It is not worth the risk to yourself, your family and your home if you don't know exactly what you are doing. Never tinker or try to flash a device using the serial programming interface while it is connected to MAINS ELECTRICITY (AC power).
 
@@ -45,16 +54,16 @@ We don't take any responsibility nor liability for using this software nor for t
 
 ## Note
 
-Please do not ask to add new devices unless it requires additional code for new features. If the device is not listed as a module, try using [Templates](https://tasmota.github.io/docs/Templates) first. If it is not listed in the [Tasmota Device Templates Repository](http://blakadder.github.io/templates) create your own [Template](https://tasmota.github.io/docs/Templates#creating-your-template).
+Please do not ask to add new devices unless it requires additional code for new features. If the device is not listed as a module, try using [Templates](https://tasmota.github.io/docs/Templates) first. If it is not listed in the [Tasmota Device Templates Repository](http://templates.blakadder.com) create your own [Template](https://tasmota.github.io/docs/Templates#creating-your-template).
 
 ## Quick Install
-Download one of the released binaries from https://github.com/arendst/Tasmota/releases and flash it to your hardware [using our installation guide](https://tasmota.github.io/docs/Getting-Started).
+Download one of the released binaries from http://ota.tasmota.com/tasmota/release/ or http://ota.tasmota.com/tasmota32/release/ and flash it to your hardware [using our installation guide](https://tasmota.github.io/docs/Getting-Started).
 
 ## Important User Compilation Information
 If you want to compile Tasmota yourself keep in mind the following:
 
-- Only Flash Mode **DOUT** is supported. Do not use Flash Mode DIO / QIO / QOUT as it might seem to brick your device.
-- Tasmota uses a 1M linker script WITHOUT spiffs **1M (no SPIFFS)** for optimal code space.
+- For ESP8285 based devices only Flash Mode **DOUT** is supported. Do not use Flash Mode DIO / QIO / QOUT as it might seem to brick your device.
+- For ESP8285 based devices Tasmota uses a 1M linker script WITHOUT spiffs **1M (no SPIFFS)** for optimal code space.
 - To make compile time changes to Tasmota use the `user_config_override.h` file. It assures keeping your custom settings when you download and compile a new version. You have to make a copy from the provided `user_config_override_sample.h` file and add your setting overrides.
 
 ## Configuration Information
@@ -63,23 +72,28 @@ Please refer to the installation and configuration articles in our [documentatio
 
 ## Migration Information
 
-See [wiki migration path](https://tasmota.github.io/docs/Upgrading#migration-path) for instructions how to migrate to a major version. Pay attention to the following version breaks due to dynamic settings updates:
+See [migration path](https://tasmota.github.io/docs/Upgrading#migration-path) for instructions how to migrate to a major version.
+
+**Do not upgrade from minimal to minimal version. It will most likely fail at some point and will require flashing via serial.** If you do have to use minimal versions, always OTA to a full version of the same release before applying next minimal version.
+
+Pay attention to the following version breaks due to dynamic settings updates:
 
 1. Migrate to **Sonoff-Tasmota 3.9.x**
 2. Migrate to **Sonoff-Tasmota 4.x**
 3. Migrate to **Sonoff-Tasmota 5.14**
-4. Migrate to **Sonoff-Tasmota 6.7.1** (http://ota.tasmota.com/tasmota/release-6.7.1/)
-5. Migrate to **Tasmota 7.2.0** (http://ota.tasmota.com/tasmota/release-7.2.0/)
+4. Migrate to **Sonoff-Tasmota 6.7.1** (http://ota.tasmota.com/tasmota/release_6.7.1/sonoff.bin) - NOTICE underscore as a dash is not supported in older versions
+5. Migrate to **Tasmota 7.2.0** (http://ota.tasmota.com/tasmota/release-7.2.0/tasmota.bin)
 
 --- Major change in parameter storage layout ---
 
-6. Migrate to **Tasmota 8.5.1** (http://ota.tasmota.com/tasmota/release-8.5.1/)
+6. Migrate to **Tasmota 8.5.1** (http://ota.tasmota.com/tasmota/release-8.5.1/tasmota.bin)
 
 --- Major change in internal GPIO function representation ---
 
-7. Migrate to **Tasmota 9.1** (http://ota.tasmota.com/tasmota/release-9.1.0/)
+7. Migrate to **Tasmota 9.1** (http://ota.tasmota.com/tasmota/release-9.1.0/tasmota.bin.gz)
+8. Upgrade to **latest release** (http://ota.tasmota.com/tasmota/release/tasmota.bin.gz)
 
-While fallback or downgrading is common practice it was never supported due to Settings additions or changes in newer releases. Starting with version **v9.0.0.1** the internal GPIO function representation has changed in such a way that fallback is only possible to the latest GPIO configuration before installing **v9.0.0.1**.
+While fallback or downgrading is common practice it was never supported due to Settings additions or changes in newer releases. Starting with release **v9.1.0 Imogen** the internal GPIO function representation has changed in such a way that fallback is only possible to the latest GPIO configuration before installing **v9.1.0**.
 
 ## Support Information
 
@@ -141,7 +155,7 @@ People helping to keep the show on the road:
 - Frogmore42 for providing many issue answers
 - Jason2866 for platformio support and providing many issue answers
 - Blakadder for managing the new document site and providing template management
-- Stephan Hadinger for refactoring light driver, enhancing HueEmulation and Zigbee support
+- Stephan Hadinger for refactoring light driver, enhancing HueEmulation, LVGL, Zigbee and Berry support
 - tmo for designing the official Tasmota logo
 - Stefan Bode for his Shutter and Deep sleep drivers
 - Jacek Ziółkowski for his [TDM](https://github.com/jziolkowski/tdm) management tool and [Tasmotizer](https://github.com/tasmota/tasmotizer) flashing tool
@@ -149,6 +163,7 @@ People helping to keep the show on the road:
 - Paul Diem for UDP Group communication support
 - Jörg Schüler-Maroldt for his initial ESP32 port
 - Javier Arigita for his thermostat driver
+- Simon Hailes for ESP32 Bluetooth extensions
 - Many more providing Tips, Wips, Pocs, PRs and Donations
 
 ## License
