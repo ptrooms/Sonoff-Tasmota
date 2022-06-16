@@ -6,21 +6,26 @@
 
 **This version removes support for direct migration from versions before v8.1.0 (Doris)**
 
-See [migration path](https://tasmota.github.io/docs/Upgrading#migration-path) for instructions how to migrate to a major version. Pay attention to the following version breaks due to dynamic settings updates:
+See [migration path](https://tasmota.github.io/docs/Upgrading#migration-path) for instructions how to migrate to a major version.
+
+**Do not upgrade from minimal to minimal version. It will most likely fail at some point and will require flashing via serial.** If you do have to use minimal versions, always OTA to a full version of the same release before applying next minimal version.
+
+Pay attention to the following version breaks due to dynamic settings updates:
 
 1. Migrate to **Sonoff-Tasmota 3.9.x**
 2. Migrate to **Sonoff-Tasmota 4.x**
 3. Migrate to **Sonoff-Tasmota 5.14**
-4. Migrate to **Sonoff-Tasmota 6.7.1** (http://ota.tasmota.com/tasmota/release-6.7.1/)
-5. Migrate to **Tasmota 7.2.0** (http://ota.tasmota.com/tasmota/release-7.2.0/)
+4. Migrate to **Sonoff-Tasmota 6.7.1** (http://ota.tasmota.com/tasmota/release_6.7.1/sonoff.bin) - NOTICE underscore as a dash is not supported in older versions
+5. Migrate to **Tasmota 7.2.0** (http://ota.tasmota.com/tasmota/release-7.2.0/tasmota.bin)
 
 --- Major change in parameter storage layout ---
 
-6. Migrate to **Tasmota 8.5.1** (http://ota.tasmota.com/tasmota/release-8.5.1/)
+6. Migrate to **Tasmota 8.5.1** (http://ota.tasmota.com/tasmota/release-8.5.1/tasmota.bin)
 
 --- Major change in internal GPIO function representation ---
 
-7. Migrate to **Tasmota 9.1** (http://ota.tasmota.com/tasmota/release-9.1.0/)
+7. Migrate to **Tasmota 9.1** (http://ota.tasmota.com/tasmota/release-9.1.0/tasmota.bin.gz)
+8. Upgrade to **latest release** (http://ota.tasmota.com/tasmota/release/tasmota.bin.gz)
 
 While fallback or downgrading is common practice it was never supported due to Settings additions or changes in newer releases. Starting with release **v9.1.0 Imogen** the internal GPIO function representation has changed in such a way that fallback is only possible to the latest GPIO configuration before installing **v9.1.0**.
 
@@ -28,135 +33,118 @@ While fallback or downgrading is common practice it was never supported due to S
 
 This release will be supported from ESP8266/Arduino library Core version **2.7.4.9** due to reported security and stability issues on previous Core version. This will also support gzipped binaries.
 
-Support of Core versions before 2.7.1 has been removed.
+This release will be supported from ESP32/Arduino library Core version **2.0.3**.
+
+Support of ESP8266 Core versions before 2.7.4.9 and ESP32 Core versions before 2.0.3 have been removed.
 
 ## Support of TLS
 
-In addition to TLS using fingerprints now also user supplied CA certs and AWS IoT is supported. Read [full documentation](https://tasmota.github.io/docs/AWS-IoT)
+In addition to TLS using fingerprints now also user supplied CA certs, AWS IoT and Azure IoT is supported. Read [full documentation](https://tasmota.github.io/docs/AWS-IoT)
 
 ## Initial configuration tools
 
-For initial configuration this release supports Webserver based **WifiManager** or **Serial** based command interface only. Support for **WPS** and **SmartConfig** has been removed.
+For initial configuration this release supports Webserver based **WifiManager** or **Serial** based command interface.
+
+## Initial installation
+
+Easy initial installation of Tasmota can be performed using the [Tasmota WebInstaller](https://tasmota.github.io/install/).
 
 ## Provided Binary Downloads
 
 ### ESP8266 or ESP8285 based
 The following binary downloads have been compiled with ESP8266/Arduino library core version **2.7.4.9**.
 
-- **tasmota.bin** = The Tasmota version with most drivers. **RECOMMENDED RELEASE BINARY**
-- **tasmota-BG.bin** to **tasmota-TW.bin** = The Tasmota version in different languages.
-- **tasmota-lite.bin** = The Lite version without most drivers and sensors.
-- **tasmota-knx.bin** = The Knx version without some features but adds KNX support.
-- **tasmota-sensors.bin** = The Sensors version adds more useful sensors.
-- **tasmota-ir.bin** = The InfraRed Receiver and transmitter version allowing all available protocols provided by library IRremoteESP8266 but without most other features.
-- **tasmota-display.bin** = The Display version without Energy Monitoring but adds display support.
-- **tasmota-zbbridge.bin** = The dedicated Sonoff Zigbee Bridge version.
-- **tasmota-minimal.bin** = The Minimal version allows intermediate OTA uploads to support larger versions and does NOT change any persistent parameter. This version **should NOT be used for initial installation**.
+- **tasmota.bin** = The Tasmota version with most drivers for 1M+ flash. **RECOMMENDED RELEASE BINARY**
+- **tasmota4M.bin** = The Tasmota version with most drivers and filesystem for 4M+ flash.
+- **tasmota-AF.bin** to **tasmota-VN.bin** = The Tasmota version in different languages for 1M+ flash.
+- **tasmota-lite.bin** = The Lite version without most drivers and sensors for 1M+ flash.
+- **tasmota-knx.bin** = The Knx version without some features but adds KNX support for 1M+ flash.
+- **tasmota-sensors.bin** = The Sensors version adds more useful sensors for 1M+ flash.
+- **tasmota-ir.bin** = The InfraRed Receiver and transmitter version allowing all available protocols provided by library IRremoteESP8266 but without most other features for 1M+ flash.
+- **tasmota-display.bin** = The Display version without Energy Monitoring but adds display support for 1M+ flash.
+- **tasmota-zbbridge.bin** = The dedicated Sonoff Zigbee Bridge version for 2M+ flash.
+- **tasmota-zigbee.bin** = The dedicated cc25xx Zigbee Bridge version for 4M+ flash.
 
 Above binaries are also available as gzipped version allowing faster uploads.
 
-The attached binaries can also be downloaded from http://ota.tasmota.com/tasmota/release. The links can be used for OTA upgrades too like ``OtaUrl http://ota.tasmota.com/tasmota/release/tasmota.bin.gz``
+Latest released binaries can be downloaded from
+- https://github.com/arendst/Tasmota-firmware/tree/main/release-firmware
+- http://ota.tasmota.com/tasmota/release
 
-### ESP32 based
-The following binary downloads have been compiled with ESP32/Arduino library core version **1.0.5-rc6**.
+Historical binaries can be downloaded from
+- http://ota.tasmota.com/tasmota/release-12.0.0
 
-- **tasmota32.bin** = The Tasmota version with most drivers. **RECOMMENDED RELEASE BINARY**
-- **tasmota32-BG.bin** to **tasmota32-TW.bin** = The Tasmota version in different languages.
-- **tasmota32-lite.bin** = The Lite version without most drivers and sensors.
-- **tasmota32-knx.bin** = The Knx version without some features but adds KNX support.
-- **tasmota32-sensors.bin** = The Sensors version adds more useful sensors.
-- **tasmota32-ir.bin** = The InfraRed Receiver and transmitter version allowing all available protocols provided by library IRremoteESP8266 but without most other features.
-- **tasmota32-display.bin** = The Display version without Energy Monitoring but adds display support.
-- **tasmota32-webcam.bin** = The Webcam version adds webcam support.
-- **tasmota32-bluetooth.bin** = The Bluetooth version adds BLE support.
-- **tasmota32-odroidgo.bin** = The Odroid-Go version is specifically tailored to Odroid_go hardware.
-- **tasmota32-core2.bin** = The Core2 version is specifically tailored to M5Stack Core2 hardware.
+The latter links can be used for OTA upgrades too like ``OtaUrl http://ota.tasmota.com/tasmota/release/tasmota.bin.gz``
 
-The attached binaries can also be downloaded from http://ota.tasmota.com/tasmota32/release. The links can be used for OTA upgrades too like ``OtaUrl http://ota.tasmota.com/tasmota32/release/tasmota32.bin``
+### ESP32, ESP32-C3, ESP32-S2 and ESP32-S3 based
+The following binary downloads have been compiled with ESP32/Arduino library core version **2.0.3**.
+
+- **tasmota32.bin** = The Tasmota version with most drivers including additional sensors and KNX for 4M+ flash.  **RECOMMENDED RELEASE BINARY**
+- **tasmota32xy.bin** = The Tasmota version with most drivers including additional sensors and KNX for ESP32-C3/S2/S3 and 4M+ flash.
+- **tasmota32xycdc.bin** = The Tasmota version with most drivers including additional sensors and KNX for ESP32-C3/S2/S3 with serial over embedded USB CDC only and 4M+ flash.
+- **tasmota32solo1.bin** = The Tasmota version with most drivers including additional sensors and KNX for single core ESP32 and 4M+ flash.
+- **tasmota32-AF.bin** to **tasmota32-VN.bin** = The Tasmota version in different languages for 4M+ flash.
+- **tasmota32-bluetooth.bin** = The Bluetooth version adds BLE support for 4M+ flash.
+- **tasmota32-display.bin** = The Display version without Energy Monitoring but adds display support for 4M+ flash.
+- **tasmota32-ir.bin** = The InfraRed Receiver and transmitter version allowing all available protocols provided by library IRremoteESP8266 but without most other features for 4M+ flash.
+- **tasmota32-lvgl.bin** = The LVGL version adds Light and Versatile Graphics Library (LVGL) display support for 4M+ flash.
+- **tasmota32-nspanel.bin** = The Sonoff NSPanel Smart Scene Wall Switch version with HASPmota display support.
+- **tasmota32-webcam.bin** = The Webcam version adds webcam support for 4M+ flash.
+- **tasmota32-zbbridgepro.bin** - The Sonoff Zigbee Bridge Pro version with CC2652P firmware load support.
+
+Latest released binaries can be downloaded from
+- https://github.com/arendst/Tasmota-firmware/tree/main/release-firmware
+- http://ota.tasmota.com/tasmota32/release
+
+Historical binaries can be downloaded from
+- http://ota.tasmota.com/tasmota32/release-12.0.0
+
+The latter links can be used for OTA upgrades too like ``OtaUrl http://ota.tasmota.com/tasmota32/release/tasmota32.bin``
+
+## Additional information
 
 [List](MODULES.md) of embedded modules.
 
 [Complete list](BUILDS.md) of available feature and sensors.
 
-## Changelog v9.3.1 Kenneth
+## Changelog v12.0.0 Paul
 ### Added
-- Animate PWM dimmer brightness LEDs during transitions and with variable brightness [#11076](https://github.com/arendst/Tasmota/issues/11076)
-- Commands ``StateRetain`` and ``InfoRetain`` [#11084](https://github.com/arendst/Tasmota/issues/11084)
-
-### Changed
-- Remove the need to start filenames with a slash (/) in Ufs commands
-- Removed command ``VirtualCT`` as synonym for ``SetOption106`` [#11049](https://github.com/arendst/Tasmota/issues/11049)
-
-### Fixed
-- Web request accepts wrong password [#11039](https://github.com/arendst/Tasmota/issues/11039)
-- Ili1942 driver [#11046](https://github.com/arendst/Tasmota/issues/11046)
-- ESP32 Mi32 driver [#11048](https://github.com/arendst/Tasmota/issues/11048)
-- Shutter driver [#11055](https://github.com/arendst/Tasmota/issues/11055)
-- TM1637 driver now needs ``TM1637 CLK`` and ``TM1637 DIO`` to enable [#11057](https://github.com/arendst/Tasmota/issues/11057)
-- Sml driver [#11082](https://github.com/arendst/Tasmota/issues/11082)
-- Ezo drivers [#11083](https://github.com/arendst/Tasmota/issues/11083)
-
-## Changelog v9.3.0 Kenneth
-### Added
-- Command ``CTRange`` to specify the visible CT range the bulb is capable of [#10311](https://github.com/arendst/Tasmota/issues/10311)
-- Command ``L1MusicSync <0|Off>|<1|On>|<2|Toggle>, 1..10, 1..100>`` to control Sonoff L1 Music Sync mode sensitivity and speed [#10722](https://github.com/arendst/Tasmota/issues/10722)
-- Command ``RuleTimer0`` to access all RuleTimers at once [#10352](https://github.com/arendst/Tasmota/issues/10352)
-- Command ``Speed2`` to control a once off fade [#10741](https://github.com/arendst/Tasmota/issues/10741)
-- Command ``VirtualCT`` to simulate or fine tune CT bulbs with 3,4,5 channels [#10311](https://github.com/arendst/Tasmota/issues/10311)
-- Command ``SetOption40 0..250`` to disable button functionality if activated for over 0.1 second re-introduced
-- Command ``SetOption43 1..255`` to control Rotary step [#10407](https://github.com/arendst/Tasmota/issues/10407)
-- Command ``SetOption118 1`` to move ZbReceived from JSON message and into the subtopic replacing "SENSOR" default [#10353](https://github.com/arendst/Tasmota/issues/10353)
-- Command ``SetOption119 1`` to remove the device addr from json payload, can be used with zb_topic_fname where the addr is already known from the topic [#10355](https://github.com/arendst/Tasmota/issues/10355)
-- Zigbee command ``SetOption120 1`` or ``ZbEndpointTopic 1`` to add the zigbee endpoint as suffix in topic when using ``SetOption89 1``
-- Zigbee command ``ZbScan`` to do an energy scan on each radio channel
-- Commands ``ChannelRemap``, ``MultiPWM``, ``AlexaCTRange``, ``PowerOnFade``, ``PWMCT``, ``WhiteBlend`` and ``VirtualCT`` as synonyms for ``SetOption37, 68, 82, 91, 92, 105`` and ``106``
-- Commands ``ZbNameKey``, ``ZbDeviceTopic``, ``ZbNoPrefix``, ``ZbEndpointSuffix``, ``ZbNoAutoBind`` and ``ZbNameTopic`` as synonyms for ``SetOption83, 89, 100, 101, 110`` and ``112``
-- Commands ``ZbNoAutoBind``, ``ZbReceivedTopic`` and ``ZbOmitDevice`` as synonyms for ``SetOption116, 118`` and ``119``
-- Commands ``BuzzerActive`` and ``BuzzerPwm`` as synonyms for ``SetOption67`` and ``111``
-- Filesystem commands ``Ufs``, ``UfsType``, ``UfsSize``, ``UfsFree``, ``UfsDelete``, ``UfsRename`` and ``UfsRun``
-- Support for filesystem ``autoexec.bat`` to execute sequential commands like backlog
-- Milliseconds to console output [#10152](https://github.com/arendst/Tasmota/issues/10152)
-- Gpio ``Option_a1`` enabling PWM2 high impedance if powered off as used by Wyze bulbs [#10196](https://github.com/arendst/Tasmota/issues/10196)
-- Rotary No Pullup GPIO selection ``Rotary A/B_n`` [#10407](https://github.com/arendst/Tasmota/issues/10407)
-- BSSID and Signal Strength Indicator to GUI wifi scan result [#10253](https://github.com/arendst/Tasmota/issues/10253)
-- Support for P9813 RGB Led MOSFET controller [#10104](https://github.com/arendst/Tasmota/issues/10104)
-- Support for GPIO option selection
-- Support for FTC532 8-button touch controller by Peter Franck [#10222](https://github.com/arendst/Tasmota/issues/10222)
-- Support for BS814A-2 8-button touch buttons by Peter Franck [#10447](https://github.com/arendst/Tasmota/issues/10447)
-- Support for up to 4 I2C SEESAW_SOIL Capacitance & Temperature sensors by Peter Franck [#10481](https://github.com/arendst/Tasmota/issues/10481)
-- Support for TOF10120 time of flight sensor by Cyril Pawelko [#10190](https://github.com/arendst/Tasmota/issues/10190)
-- Support for Afrikaans language translations by Christiaan Heerze
-- Support for Frysk language translations by Christiaan Heerze
-- Support for IR inverted leds using ``#define IR_SEND_INVERTED true`` [#10301](https://github.com/arendst/Tasmota/issues/10301)
-- Support for disabling 38kHz IR modulation using ``#define IR_SEND_USE_MODULATION false`` [#10301](https://github.com/arendst/Tasmota/issues/10301)
-- Support for SPI display driver for ST7789 TFT by Gerhard Mutz [#9037](https://github.com/arendst/Tasmota/issues/9037)
-- Support for TM1637 seven segment display by Ajith Vasudevan [#10889](https://github.com/arendst/Tasmota/issues/10889)
-- Support for time proportioned (``#define USE_TIMEPROP``) and optional PID (``#define USE_PID``) relay control [#10412](https://github.com/arendst/Tasmota/issues/10412)
-- Support for 24/26/32/34 bit RFID Wiegand interface (D0/D1) by Sigurd Leuther [#3647](https://github.com/arendst/Tasmota/issues/3647)
-- Support for SM2135 current selection using GPIO ``SM2135 DAT`` index [#10634](https://github.com/arendst/Tasmota/issues/10634)
-- Support for Sugar Valley NeoPool Controller by Norbert Richter [#10637](https://github.com/arendst/Tasmota/issues/10637)
-- Support for Device Groups Device Map [#10898](https://github.com/arendst/Tasmota/issues/10898)
-- Support for Eastron SDM72D-M three phase 100A Modbus energy meter [#10862](https://github.com/arendst/Tasmota/issues/10862)
-- Support for ESP32 ``Module 3`` Odroid Go 16MB binary tasmota32-odroidgo.bin [#8630](https://github.com/arendst/Tasmota/issues/8630)
-- Support for ESP32 ``Module 5`` Wireless Tag Eth01 [#9496](https://github.com/arendst/Tasmota/issues/9496)
-- Support for ESP32 ``Module 7`` M5stack core2 16MB binary tasmota32-core2.bin [#10635](https://github.com/arendst/Tasmota/issues/10635)
-- Support for Berry language on ESP32
-- Support rotary encoder on Shelly Dimmer [#10407](https://github.com/arendst/Tasmota/issues/10407#issuecomment-756240920)
-- Support character `#` to be replaced by `space`-character in command ``Publish`` topic [#10258](https://github.com/arendst/Tasmota/issues/10258)
-- Support trailing silence in buzzer tune [#10694](https://github.com/arendst/Tasmota/issues/10694)
-- Rule trigger string comparisons for EndsWith ``$>``, StartsWith ``$<`` and Contains ``$|`` [#10538](https://github.com/arendst/Tasmota/issues/10538)
-- SPI display driver SSD1331 Color oled by Jeroen Vermeulen [#10376](https://github.com/arendst/Tasmota/issues/10376)
-- Compile time option ``USE_MQTT_TLS_DROP_OLD_FINGERPRINT`` to drop old (less secure) TLS fingerprint
-- ESP8266 Fallback to ``*.bin.gz`` binary when OTA upload of ``*.bin`` binary fails
+- Command ``SetOption139 0/1`` to switch between pressure unit "mmHg" (0) or "inHg" (1) when ``SO24 1`` [#15350](https://github.com/arendst/Tasmota/issues/15350)
+- Command ``SetOption140 0/1`` to switch between MQTT Clean Session (0) or Persistent Session (1) [#15530](https://github.com/arendst/Tasmota/issues/15530)
+- Command ``SetOption141 1`` to disable display of module name in GUI header
+- Command ``SetOption142 1`` to wait 1 second for wifi connection solving some FRITZ!Box modem issues [#14985](https://github.com/arendst/Tasmota/issues/14985)
+- Command ``EnergyExportActive<phase>`` to (p)reset energy export active for supported devices. Currently ADE7880 only [#13515](https://github.com/arendst/Tasmota/issues/13515)
+- Command ``IfxRp ""|<policy>`` adds optional InfluxDb Retention Policy [#15513](https://github.com/arendst/Tasmota/issues/15513)
+- Command ``SspmDisplay 2`` to display Sonoff SPM energy data in GUI for user tab-selected relay modules [#13447](https://github.com/arendst/Tasmota/issues/13447)
+- Command ``SSerialSend9 0/1`` to enable Serial Bridge console Tee for debugging purposes
+- Support for Sonoff MS01 soil moisture sensor [#15335](https://github.com/arendst/Tasmota/issues/15335)
+- Support for daisy chaining MAX7219 displays [#15345](https://github.com/arendst/Tasmota/issues/15345)
+- Support for Sensirion SHT4X using define USE_SHT3X [#15349](https://github.com/arendst/Tasmota/issues/15349)
+- Support for Sonoff SPM v1.2.0
+- Support for Sonoff Zigbee Bridge Pro by Stephan Hadinger [#15701](https://github.com/arendst/Tasmota/issues/15701)
+- Support for Sonoff NSPanel Smart Scene Wall Switch
+- Support for flowrate meters like YF-DN50 and similary [#15474](https://github.com/arendst/Tasmota/issues/15474)
+- Support for 5-channel light dimmer driver BP5758D used in Tuya bulbs [#15713](https://github.com/arendst/Tasmota/issues/15713)
+- Support for HYTxxx temperature and humidity sensor [#15715](https://github.com/arendst/Tasmota/issues/15715)
+- Sonoff SPM delayed SetPowerOnState [#13447](https://github.com/arendst/Tasmota/issues/13447)
+- ESP32 Command ``Restart 3`` to switch between SafeBoot and Production
 
 ### Breaking Changed
-- ESP32 switch from default SPIFFS to default LittleFS file system loosing current (zigbee) files
-- Replaced MFRC522 13.56MHz rfid card reader GPIO selection from ``SPI CS`` by ``RC522 CS``
-- Replaced NRF24L01 GPIO selection from ``SPI CS`` by ``NRF24 CS`` and ``SPI DC`` by ``NRF24 DC``
-- Replaced ILI9341 GPIO selection from ``SPI CS`` by ``ILI9341 CS`` and ``SPI DC`` by ``ILI9341 DC``
-- Replaced ST7789 GPIO selection from ``SPI CS`` by ``ST7789 CS`` and ``SPI DC`` by ``ST7789 DC``
-- Replaced ILI9488 GPIO selection from ``SPI CS`` by ``ILI9488_CS``
-- Replaced EPaper29 GPIO selection from ``SPI CS`` by ``EPaper29 CS``
-- Replaced EPaper42 GPIO selection from ``SPI CS`` by ``EPaper42 CS``
-- Replaced SSD1351 GPIO selection from ``SPI CS`` by ``SSD1351 CS``
-- Replaced RA8876 GPIO selection from ``SPI CS`` by ``RA8876 CS``
+
+### Changed
+- Restructured tasmota source directories taking benefit from PlatformIO Core v6.0.2
+- Prepare to remove dedicated Home Assistant discovery in favour of Tasmota Discovery and hatasmota
+- ESP32 Tasmota SafeBoot with changed partition scheme allowing larger binaries
+- ESP32 increase Serial Bridge input buffer from 130 to 520 characters
+
+### Fixed
+- Improv initial or erase device installation failing to provide Configure WiFi option
+- SCD40 start low power command [#15361](https://github.com/arendst/Tasmota/issues/15361)
+- BL09xx negative power presentation [#15374](https://github.com/arendst/Tasmota/issues/15374)
+- Possible pin output toggle after power on [#15630](https://github.com/arendst/Tasmota/issues/15630)
+- Reduce blocking by adding WifiPollDns before resolving NTP and/or MQTT server names [#14394](https://github.com/arendst/Tasmota/issues/14394)
+- SHT1X driver hangs and wrong values on ESP32 [#15790](https://github.com/arendst/Tasmota/issues/15790)
+- ESP32 Arduino Core WiFi timeout is changed from msec to seconds
+
+### Removed
+- Arduino IDE support

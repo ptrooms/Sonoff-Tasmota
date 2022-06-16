@@ -53,6 +53,7 @@
 
 // ESP32 uses 2. SPI BUS, ESP8266 uses software spi
 #ifdef ESP32
+#include "esp8266toEsp32.h"
 #undef ILI9341_2_DIMMER
 #define ILI9341_2_DIMMER
 #undef ESP32_PWM_CHANNEL
@@ -193,6 +194,8 @@ void ILI9341_2::init(uint16_t width, uint16_t height) {
     if (_hwspi > 2) {
       spi2->begin(_sclk, _miso, _mosi, -1);
     }
+#else
+    SPI.begin();
 #endif // ESP32
   } else {
 #ifdef ESP32
@@ -246,9 +249,7 @@ void ILI9341_2::init(uint16_t width, uint16_t height) {
 
   if (_bp >= 0) {
 #ifdef ILI9341_2_DIMMER
-    ledcSetup(ESP32_PWM_CHANNEL, 4000, 8);
-    ledcAttachPin(_bp, ESP32_PWM_CHANNEL);
-    ledcWrite(ESP32_PWM_CHANNEL, 128);
+    analogWrite(_bp, 511);
 #else
     pinMode(_bp, OUTPUT);
 #endif
@@ -528,7 +529,10 @@ void ili9342_bpwr(uint8_t on);
 void ILI9341_2::DisplayOnff(int8_t on) {
 
   if ((_hwspi >= 2) && (_bp < 0)) {
-    ili9342_bpwr(on);
+    //ili9342_bpwr(on);
+    if (pwr_cbp) {
+      pwr_cbp(on);
+    }
   }
 
   if (on) {
@@ -539,7 +543,8 @@ void ILI9341_2::DisplayOnff(int8_t on) {
     SPI_END_TRANSACTION();
     if (_bp >= 0) {
 #ifdef ILI9341_2_DIMMER
-      ledcWrite(ESP32_PWM_CHANNEL, dimmer);
+      analogWrite(_bp, dimmer * 4);
+      // ledcWrite(ESP32_PWM_CHANNEL, dimmer);
 #else
       digitalWrite(_bp, HIGH);
 #endif
@@ -552,7 +557,8 @@ void ILI9341_2::DisplayOnff(int8_t on) {
     SPI_END_TRANSACTION();
     if (_bp >= 0) {
 #ifdef ILI9341_2_DIMMER
-      ledcWrite(ESP32_PWM_CHANNEL, 0);
+      analogWrite(_bp, 0);
+      // ledcWrite(ESP32_PWM_CHANNEL, 0);
 #else
       digitalWrite(_bp, LOW);
 #endif
@@ -568,6 +574,28 @@ void ILI9341_2::invertDisplay(boolean i) {
   SPI_END_TRANSACTION();
 }
 
+void ILI9341_2::reverseDisplay(boolean i) {
+  SPI_BEGIN_TRANSACTION();
+  ILI9341_2_CS_LOW
+  if (i) {
+    writecmd(ILI9341_2_FRMCTR1);
+    spiwrite(0x00);
+    spiwrite(0x13);
+    writecmd(ILI9341_2_MADCTL);
+    spiwrite(0x01);
+    spiwrite(0x08);
+  } else {
+    writecmd(ILI9341_2_FRMCTR1);
+    spiwrite(0x00);
+    spiwrite(0x18);
+    writecmd(ILI9341_2_MADCTL);
+    spiwrite(0x01);
+    spiwrite(0x48);
+  }
+  ILI9341_2_CS_HIGH
+  SPI_END_TRANSACTION();
+}
+
 void ili9342_dimm(uint8_t dim);
 
 // dimmer 0-100
@@ -577,10 +605,14 @@ void ILI9341_2::dim(uint8_t dim) {
   dimmer=((float)dimmer/15.0)*255.0;
 #ifdef ESP32
   if (_bp>=0) {
-    ledcWrite(ESP32_PWM_CHANNEL,dimmer);
+    analogWrite(_bp, dimmer * 4);
+    // ledcWrite(ESP32_PWM_CHANNEL,dimmer);
   } else {
     if (_hwspi>=2) {
-      ili9342_dimm(dim);
+      //ili9342_dimm(dim);
+      if (dim_cbp) {
+        dim_cbp(dim);
+      }
     }
   }
 #endif

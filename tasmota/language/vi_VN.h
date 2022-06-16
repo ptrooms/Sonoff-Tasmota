@@ -1,7 +1,7 @@
 /*
   vi-VN.h - localization for Vietnam for Tasmota
 
-  Copyright (C) 2021  translateb by Tâm.NT
+  Copyright (C) 2021  Tâm.NT
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * Use online command StateText to translate ON, OFF, HOLD and TOGGLE.
  * Use online command Prefix to translate cmnd, stat and tele.
  *
- * Updated until v9.0.0.1
+ * Updated until v9.3.1.1
 \*********************************************************************/
 
 //#define LANGUAGE_MODULE_NAME         // Enable to display "Module Generic" (ie Spanish), Disable to display "Generic Module" (ie English)
@@ -77,6 +77,7 @@
 #define D_COUNTER "Bộ đếm"
 #define D_CT_POWER "CT Power"
 #define D_CURRENT "Dòng điện"          // As in Voltage and Current
+#define D_CURRENT_NEUTRAL "Current Neutral"
 #define D_DATA "Dữ liệu"
 #define D_DARKLIGHT "Tối"
 #define D_DEBUG "Tìm lỗi"
@@ -101,6 +102,7 @@
 #define D_FILE "Tệp"
 #define D_FLOW_RATE "Tốc độ dòng"
 #define D_FRAGMENTATION "frag."      // Lower case abbreviated version of fragmentation used in "memory fragmentation"
+#define D_FRAME_RATE "Frame rate"
 #define D_FREE_MEMORY "Bộ nhớ trống"
 #define D_PSR_MAX_MEMORY "Bộ nhớ PS-RAM"
 #define D_PSR_FREE_MEMORY "Bộ nhớ PS-RAM trống"
@@ -109,6 +111,7 @@
 #define D_GATEWAY "Cổng kết nối"
 #define D_GROUP "Nhóm"
 #define D_HOST "Máy chủ"
+#define D_HALL_EFFECT "Hall Effect"
 #define D_HOSTNAME "Tên máy chủ"
 #define D_HUMIDITY "Độ ẩm"
 #define D_ILLUMINANCE "Độ sáng"
@@ -136,6 +139,8 @@
 #define D_ORP "ORP"
 #define D_PASSWORD "Mật khẩu"
 #define D_PH "pH"
+#define D_MQ "MQ"
+#define D_PARTITION "Partition"      // As in flash and firmware partition
 #define D_PORT "Cổng"
 #define D_POWER_FACTOR "Hệ số công suất"
 #define D_POWERUSAGE "Công suất"
@@ -179,6 +184,7 @@
 #define D_UPGRADE "nâng cấp"
 #define D_UPLOAD "Tải lên"
 #define D_UPTIME "Thời gian chạy"
+#define D_USED "used"
 #define D_USER "Người dùng"
 #define D_UTC_TIME "UTC"
 #define D_UV_INDEX "UV Index"
@@ -197,6 +203,8 @@
 #define D_WEIGHT "Cân nặng"
 #define D_WARMLIGHT "Ấm"
 #define D_WEB_SERVER "Máy chủ Web"
+#define D_SOC "State of Charge"
+#define D_SOH "State of Health"
 
 // tasmota.ino
 #define D_WARNING_MINIMAL_VERSION "Cảnh báo phiên bản này không hỗ trợ các cài đặt vĩnh viễn"
@@ -238,6 +246,7 @@
 
 // xdrv_02_webserver.ino
 #define D_NOSCRIPT "Để sử dụng Tasmota, vui lòng bật JavaScript"
+#define D_SAFEBOOT "SAFEBOOT"
 #define D_MINIMAL_FIRMWARE_PLEASE_UPGRADE "Đang sử dụng bản MINIMAL <br>vui lòng nâng cấp"
 #define D_WEBSERVER_ACTIVE_ON "Máy chủ Web đã bật"
 #define D_WITH_IP_ADDRESS "với địa chỉ IP"
@@ -255,6 +264,7 @@
 #define D_CONFIGURATION "Cấu hình"
 #define D_INFORMATION "Thông tin"
 #define D_FIRMWARE_UPGRADE "Nâng cấp Firmware"
+#define D_MANAGEMENT "Consoles"
 #define D_CONSOLE "Dòng Lệnh"
 #define D_CONFIRM_RESTART "Xác nhận khởi động lại"
 
@@ -289,10 +299,19 @@
 #define D_WEP "WEP"
 #define D_WPA_PSK "WPA PSK"
 #define D_WPA2_PSK "WPA2 PSK"
-#define D_AP1_SSID "Tên mạng wifi 1"
-#define D_AP1_PASSWORD "Mật khẩu mạng wifi 1"
-#define D_AP2_SSID "Tên mạng wifi 2"
-#define D_AP2_PASSWORD "Mật khẩu mạng wifi 2"
+#define D_AP1_SSID "Tên mạng WiFi"
+#define D_AP1_SSID_HELP "Type or Select your WiFi Network"
+#define D_AP2_SSID "Tên mạng WiFi 2"
+#define D_AP2_SSID_HELP "Type your Alternative WiFi Network"
+#define D_AP_PASSWORD "Mật khẩu mạng WiFi"
+#define D_AP_PASSWORD_HELP "Enter your WiFi Password"
+#define D_SELECT_YOUR_WIFI_NETWORK "Select your WiFi Network"
+#define D_SHOW_MORE_WIFI_NETWORKS "Scan for all WiFi Networks"
+#define D_SHOW_MORE_OPTIONS "More Options"
+#define D_CHECK_CREDENTIALS "Please, check your credentials"
+#define D_SUCCESSFUL_WIFI_CONNECTION "Successful WiFi Connection"
+#define D_NOW_YOU_CAN_CLOSE_THIS_WINDOW "Now you can close this window"
+#define D_REDIRECTING_TO_NEW_IP "Redirecting to new device's IP address"
 
 #define D_MQTT_PARAMETERS "Thông số MQTT"
 #define D_CLIENT "Client"
@@ -315,6 +334,8 @@
 #define D_WEB_ADMIN_PASSWORD "Mật khẩu quản trị Web"
 #define D_MQTT_ENABLE "Kích hoạt MQTT"
 #define D_MQTT_TLS_ENABLE "MQTT TLS"
+#define D_HTTP_API "HTTP API"
+#define D_HTTP_API_ENABLE "Kích hoạt HTTP API"
 #define D_FRIENDLY_NAME "Tên hiển thị thiết bị "
 #define D_BELKIN_WEMO "Belkin WeMo"
 #define D_HUE_BRIDGE "Hue Bridge"
@@ -355,6 +376,7 @@
 #define D_OTA_URL "Đường dẫn OTA"
 #define D_START_UPGRADE "Bắt đầu nâng cấp"
 #define D_UPGRADE_BY_FILE_UPLOAD "Nâng cấp thông qua tải lên tệp"
+#define D_UPLOAD_FACTORY "Switching to safeboot partition"
 #define D_UPLOAD_STARTED "Bắt đầu tải lên"
 #define D_UPGRADE_STARTED "Bắt đầu nâng cấp"
 #define D_UPLOAD_DONE "Hoàn thành tải tệp"
@@ -543,8 +565,8 @@
 #define D_GZ_AXIS "Gyro Z-Axis"
 
 // xsns_34_hx711.ino
-#define D_HX_CAL_REMOVE "Remove weigth"
-#define D_HX_CAL_REFERENCE "Load reference weigth"
+#define D_HX_CAL_REMOVE "Remove weight"
+#define D_HX_CAL_REFERENCE "Load reference weight"
 #define D_HX_CAL_DONE "Đã hiệu chỉnh"
 #define D_HX_CAL_FAIL "Hiệu chỉnh thất bại"
 #define D_RESET_HX711 "Xóa thang chia"
@@ -567,6 +589,8 @@
 
 // xsns_53_sml.ino
 #define D_TPWRIN "Tổng lượng vào"
+#define D_TPWRIN0 "Tổng lượng vào T0"
+#define D_TPWRIN1 "Tổng lượng vào T1"
 #define D_TPWROUT "Tổng lượng ra"
 #define D_TPWRCURR "Dòng vào/ra"
 #define D_TPWRCURR1 "Dòng vào p1"
@@ -585,6 +609,10 @@
 #define D_StL1L2L3 "Dòng L1+L2+L3"
 #define D_SpL1L2L3 "Điện áp L1+L2+L3/3"
 
+// xsns_86_tfminiplus.ino
+#define D_SIGNALSTRENGTH "Signal Strength"
+#define D_CHIPTEMPERATURE "Chip Temperature"
+
 // tasmota_template.h - keep them as short as possible to be able to fit them in GUI drop down box
 #define D_SENSOR_NONE          "Không dùng"
 #define D_SENSOR_USER          "Người Dùng"
@@ -592,9 +620,16 @@
 #define D_SENSOR_DHT11         "DHT11"
 #define D_SENSOR_AM2301        "AM2301"
 #define D_SENSOR_SI7021        "SI7021"
+#define D_SENSOR_MS01          "MS01"
 #define D_SENSOR_DS18X20       "DS18x20"
 #define D_SENSOR_I2C_SCL       "I2C SCL"
 #define D_SENSOR_I2C_SDA       "I2C SDA"
+#define D_SENSOR_I2S_OUT_DATA  "I2S Out Data"
+#define D_SENSOR_I2S_OUT_CLK   "I2S Out Clk"
+#define D_SENSOR_I2S_OUT_SLCT  "I2S Out Slct"
+#define D_SENSOR_I2S_IN_DATA   "I2S In Data"
+#define D_SENSOR_I2S_IN_CLK    "I2S In Clk"
+#define D_SENSOR_I2S_IN_SLCT   "I2S In Slct"
 #define D_SENSOR_WS2812        "WS2812"
 #define D_SENSOR_DFR562        "MP3 Player"
 #define D_SENSOR_IRSEND        "IRsend"
@@ -605,6 +640,8 @@
 #define D_SENSOR_LED_LINK      "LedLink"    // Suffix "i"
 #define D_SENSOR_PWM           "PWM"        // Suffix "1"
 #define D_SENSOR_COUNTER       "Counter"    // Suffix "1"
+#define D_SENSOR_INTERRUPT     "Interrupt"
+#define D_SENSOR_INPUT         "Input"
 #define D_SENSOR_IRRECV        "IRrecv"
 #define D_SENSOR_MHZ_RX        "MHZ Rx"
 #define D_SENSOR_MHZ_TX        "MHZ Tx"
@@ -619,7 +656,13 @@
 #define D_SENSOR_SPI_MISO      "SPI MISO"
 #define D_SENSOR_SPI_MOSI      "SPI MOSI"
 #define D_SENSOR_SPI_CLK       "SPI CLK"
-#define D_SENSOR_BACKLIGHT     "Backlight"
+#define D_SENSOR_SDIO_CMD      "SDIO CMD"
+#define D_SENSOR_SDIO_CLK      "SDIO CLK"
+#define D_SENSOR_SDIO_D0       "SDIO D0"
+#define D_SENSOR_SDIO_D1       "SDIO D1"
+#define D_SENSOR_SDIO_D2       "SDIO D2"
+#define D_SENSOR_SDIO_D3       "SDIO D3"
+#define D_SENSOR_BACKLIGHT    "Backlight"
 #define D_SENSOR_PMS5003_TX    "PMS5003 Tx"
 #define D_SENSOR_PMS5003_RX    "PMS5003 Rx"
 #define D_SENSOR_SDS0X1_RX     "SDS0X1 Rx"
@@ -634,6 +677,8 @@
 #define D_SENSOR_SDM72_RX      "SDM72 Rx"
 #define D_SENSOR_SDM120_TX     "SDMx20 Tx"
 #define D_SENSOR_SDM120_RX     "SDMx20 Rx"
+#define D_SENSOR_SDM230_TX     "SDM230 Tx"
+#define D_SENSOR_SDM230_RX     "SDM230 Rx"
 #define D_SENSOR_SDM630_TX     "SDM630 Tx"
 #define D_SENSOR_SDM630_RX     "SDM630 Rx"
 #define D_SENSOR_WE517_TX      "WE517 Tx"
@@ -643,6 +688,9 @@
 #define D_SENSOR_TM1638_CLK    "TM1638 CLK"
 #define D_SENSOR_TM1638_DIO    "TM1638 DIO"
 #define D_SENSOR_TM1638_STB    "TM1638 STB"
+#define D_SENSOR_MAX7219_DIN    "MAX7219 DIN"
+#define D_SENSOR_MAX7219_CS    "MAX7219 CS"
+#define D_SENSOR_MAX7219_CLK    "MAX7219 CLK"
 #define D_SENSOR_HX711_SCK     "HX711 SCK"
 #define D_SENSOR_HX711_DAT     "HX711 DAT"
 #define D_SENSOR_FTC532        "FTC532"
@@ -674,8 +722,13 @@
 #define D_SENSOR_MCP39F5_TX    "MCP39F5 Tx"
 #define D_SENSOR_MCP39F5_RX    "MCP39F5 Rx"
 #define D_SENSOR_MCP39F5_RST   "MCP39F5 Rst"
+#define D_SENSOR_CSE7761_TX    "CSE7761 Tx"
+#define D_SENSOR_CSE7761_RX    "CSE7761 Rx"
 #define D_SENSOR_CSE7766_TX    "CSE7766 Tx"
 #define D_SENSOR_CSE7766_RX    "CSE7766 Rx"
+#define D_SENSOR_BL0939_RX     "BL0939 Rx"
+#define D_SENSOR_BL0942_RX     "BL0942 Rx"
+#define D_SENSOR_HM330X_SET    "HM330X SET"
 #define D_SENSOR_PN532_TX      "PN532 Tx"
 #define D_SENSOR_PN532_RX      "PN532 Rx"
 #define D_SENSOR_SM16716_CLK   "SM16716 CLK"
@@ -692,14 +745,16 @@
 #define D_SENSOR_ROTARY        "Rotary"     // Suffix "1A"
 #define D_SENSOR_HRE_CLOCK     "HRE Clock"
 #define D_SENSOR_HRE_DATA      "HRE Data"
+#define D_SENSOR_ADE7880_IRQ   "ADE7880 IRQ"
 #define D_SENSOR_ADE7953_IRQ   "ADE7953 IRQ"
 #define D_SENSOR_BUZZER        "Buzzer"
-#define D_SENSOR_OLED_RESET    "OLED Reset"
+#define D_SENSOR_DISP_RESET    "Display Rst"
 #define D_SENSOR_ZIGBEE_TXD    "Zigbee Tx"
 #define D_SENSOR_ZIGBEE_RXD    "Zigbee Rx"
 #define D_SENSOR_ZIGBEE_RST    "Zigbee Rst"
 #define D_SENSOR_SOLAXX1_TX    "SolaxX1 Tx"
 #define D_SENSOR_SOLAXX1_RX    "SolaxX1 Rx"
+#define D_SENSOR_SOLAXX1_RTS   "SolaxX1 RTS"
 #define D_SENSOR_IBEACON_TX    "iBeacon TX"
 #define D_SENSOR_IBEACON_RX    "iBeacon RX"
 #define D_SENSOR_RDM6300_RX    "RDM6300 RX"
@@ -718,6 +773,8 @@
 #define D_SENSOR_DDSU666_RX    "DDSU666 Rx"
 #define D_SENSOR_SM2135_CLK    "SM2135 Clk"
 #define D_SENSOR_SM2135_DAT    "SM2135 Dat"
+#define D_SENSOR_BP5758D_CLK    "BP5758D Clk"
+#define D_SENSOR_BP5758D_DAT    "BP5758D Dat"
 #define D_SENSOR_DEEPSLEEP     "DeepSleep"
 #define D_SENSOR_EXS_ENABLE    "EXS Enable"
 #define D_SENSOR_CLIENT_TX      "Client TX"
@@ -748,6 +805,7 @@
 #define D_SENSOR_ADC_CT_POWER  "ADC CT Power"
 #define D_SENSOR_ADC_JOYSTICK  "ADC Joystick"
 #define D_SENSOR_ADC_PH        "ADC pH"
+#define D_SENSOR_ADC_MQ        "ADC MQ"
 #define D_GPIO_WEBCAM_PWDN     "CAM_PWDN"
 #define D_GPIO_WEBCAM_RESET    "CAM_RESET"
 #define D_GPIO_WEBCAM_XCLK     "CAM_XCLK"
@@ -769,18 +827,22 @@
 #define D_SENSOR_IEM3000_RX    "iEM3000 RX"
 #define D_SENSOR_MIEL_HVAC_TX  "MiEl HVAC Tx"
 #define D_SENSOR_MIEL_HVAC_RX  "MiEl HVAC Rx"
+#define D_SENSOR_PROJECTOR_CTRL_TX  "DLP Tx"
+#define D_SENSOR_PROJECTOR_CTRL_RX  "DLP Rx"
 #define D_SENSOR_SHELLY_DIMMER_BOOT0 "SHD Boot 0"
 #define D_SENSOR_SHELLY_DIMMER_RST_INV "SHD Reset"
 #define D_SENSOR_RC522_RST     "RC522 Rst"
 #define D_SENSOR_RC522_CS      "RC522 CS"
 #define D_SENSOR_NRF24_CS      "NRF24 CS"
 #define D_SENSOR_NRF24_DC      "NRF24 DC"
+#define D_SENSOR_XPT2046_CS    "XPT2046 CS"
 #define D_SENSOR_ILI9341_CS    "ILI9341 CS"
 #define D_SENSOR_ILI9341_DC    "ILI9341 DC"
 #define D_SENSOR_ILI9488_CS    "ILI9488 CS"
 #define D_SENSOR_EPAPER29_CS   "EPaper29 CS"
 #define D_SENSOR_EPAPER42_CS   "EPaper42 CS"
 #define D_SENSOR_SSD1351_CS    "SSD1351 CS"
+#define D_SENSOR_SSD1351_DC    "SSD1351 DC"
 #define D_SENSOR_RA8876_CS     "RA8876 CS"
 #define D_SENSOR_ST7789_CS     "ST7789 CS"
 #define D_SENSOR_ST7789_DC     "ST7789 DC"
@@ -791,7 +853,27 @@
 #define D_SENSOR_WIEGAND_D1    "Wiegand D1"
 #define D_SENSOR_NEOPOOL_TX    "NeoPool Tx"
 #define D_SENSOR_NEOPOOL_RX    "NeoPool Rx"
-
+#define D_SENSOR_VL53LXX_XSHUT "VL53LXX XSHUT"
+#define D_SENSOR_TFMINIPLUS_TX  "TFmini+ TX"
+#define D_SENSOR_TFMINIPLUS_RX  "TFmini+ RX"
+#define D_SENSOR_ZEROCROSS     "ZC Pulse"
+#define D_SENSOR_HALLEFFECT    "HallEffect"
+#define D_SENSOR_EPD_DATA      "EPD Data"
+#define D_SENSOR_MCP2515_CS    "MCP2515 CS"
+#define D_SENSOR_HRG15_RX      "HRG15 Rx"
+#define D_SENSOR_HRG15_TX      "HRG15 Tx"
+#define D_SENSOR_VINDRIKTNING_RX "VINDRIKTNING"
+#define D_SENSOR_BL6523_TX "BL6523 Tx"
+#define D_SENSOR_BL6523_RX "BL6523 Rx"
+#define D_SENSOR_HEARTBEAT     "Heartbeat"
+#define D_SENSOR_RESET         "Reset"
+#define D_GPIO_SHIFT595_SRCLK  "74x595 SRCLK"
+#define D_GPIO_SHIFT595_RCLK   "74x595 RCLK"
+#define D_GPIO_SHIFT595_OE     "74x595 OE"
+#define D_GPIO_SHIFT595_SER    "74x595 SER"
+#define D_SENSOR_CM11_TX       "CM110x TX" 
+#define D_SENSOR_CM11_RX       "CM110x RX"
+#define D_SENSOR_FLOWRATEMETER "Flowrate"
 
 // Units
 #define D_UNIT_AMPERE "A"
@@ -799,10 +881,12 @@
 #define D_UNIT_CENTIMETER "cm"
 #define D_UNIT_DEGREE "°"
 #define D_UNIT_FAHRENHEIT "F"
+#define D_UNIT_FPS "FPS"
 #define D_UNIT_HERTZ "Hz"
 #define D_UNIT_HOUR "h"
 #define D_UNIT_GALLONS "gal"
 #define D_UNIT_GALLONS_PER_MIN "g/m"
+#define D_UNIT_INCH_MERCURY "inHg"
 #define D_UNIT_INCREMENTS "inc"
 #define D_UNIT_KELVIN "K"
 #define D_UNIT_KILOMETER "km"
@@ -838,8 +922,14 @@
 #define D_UNIT_WATT "W"
 #define D_UNIT_WATTHOUR "Wh"
 #define D_UNIT_WATT_METER_QUADRAT "W/m²"
+#define D_UNIT_LITER_PER_MINUTE "l/min"
+#define D_UNIT_CUBICMETER_PER_HOUR "m³/h"
 
-//SDM220, SDM120, SDM72, LE01MR
+#define D_NEW_ADDRESS          "Setting address to"
+#define D_OUT_OF_RANGE         "Out of Range"
+#define D_SENSOR_DETECTED      "detected"
+
+//SDM220, SDM120, SDM72, LE01MR, SDM230
 #define D_EXPORT_POWER    "Export Power"
 #define D_IMPORT_POWER 	  "Import Power"
 #define D_PHASE_ANGLE     "Góc pha"
@@ -851,6 +941,7 @@
 #define D_UNIT_KWARH      "kVArh"
 #define D_UNIT_ANGLE      "Deg"
 #define D_TOTAL_ACTIVE    "Total Active"
+#define D_RESETTABLE_TOTAL_ACTIVE    "Total Active (RST)"
 
 //SOLAXX1
 #define D_PV1_VOLTAGE     "Điện áp PV1"
@@ -862,10 +953,13 @@
 #define D_SOLAR_POWER     "Nguồn năng lượng mặt trời"
 #define D_INVERTER_POWER  "Nguồn Inverter"
 #define D_STATUS          "Trạng thái"
-#define D_WAITING         "Đang chờ"
-#define D_CHECKING        "Đang kiểm tra"
-#define D_WORKING         "Đang làm việc"
-#define D_FAILURE         "Bị lỗi"
+#define D_SOLAX_MODE_0    "Đang chờ"
+#define D_SOLAX_MODE_1    "Đang kiểm tra"
+#define D_SOLAX_MODE_2    "Đang làm việc"
+#define D_SOLAX_MODE_3    "Bị lỗi"
+#define D_SOLAX_MODE_4    "Permanent Failure"  // to be translated
+#define D_SOLAX_MODE_5    "Software Update"  // to be translated
+#define D_SOLAX_MODE_6    "Selftest"  // to be translated
 #define D_SOLAX_ERROR_0   "Không có mã lỗi"
 #define D_SOLAX_ERROR_1   "Lỗi mất lưới điện"
 #define D_SOLAX_ERROR_2   "Điện áp điện lưới bị lỗi"
@@ -893,6 +987,11 @@
 #define D_MANAGE_FILE_SYSTEM   "Manage File system"
 #define D_FS_SIZE              "Size"
 #define D_FS_FREE              "Free"
+#define D_NEW_FILE             "newfile.txt"
+#define D_CREATE_NEW_FILE      "Create and edit new file"
+#define D_EDIT_FILE            "Edit File"
+#define D_CONFIRM_FILE_DEL     "Confirm file deletion"
+#define D_SHOW_HIDDEN_FILES    "Show hidden files"
 
 //xsns_67_as3935.ino
 #define D_AS3935_GAIN "khuếch đại:"
@@ -966,15 +1065,18 @@
 #define D_FP_PASSVERIFY "Password verified"    // 0x21 Verify the fingerprint passed
 #define D_FP_UNKNOWNERROR "Error"              // Any other error
 
+// xsns_96_flowratemeter.ino
+#define D_FLOWRATEMETER_NAME "Flowrate"
+
 // xsns_83_neopool.ino
 #define D_NEOPOOL_MACH_NONE               "NeoPool"           // Machine names
-#define D_NEOPOOL_MACH_HIDROLIFE          "Hidrolife (yellow)"
-#define D_NEOPOOL_MACH_AQUASCENIC         "Aquascenic (blue)"
-#define D_NEOPOOL_MACH_OXILIFE            "Oxilife (green)"
-#define D_NEOPOOL_MACH_BIONET             "Bionet (light blue)"
-#define D_NEOPOOL_MACH_HIDRONISER         "Hidroniser (red)"
-#define D_NEOPOOL_MACH_UVSCENIC           "UVScenic (lilac)"
-#define D_NEOPOOL_MACH_STATION            "Station (orange)"
+#define D_NEOPOOL_MACH_HIDROLIFE          "Hidrolife"
+#define D_NEOPOOL_MACH_AQUASCENIC         "Aquascenic"
+#define D_NEOPOOL_MACH_OXILIFE            "Oxilife"
+#define D_NEOPOOL_MACH_BIONET             "Bionet"
+#define D_NEOPOOL_MACH_HIDRONISER         "Hidroniser"
+#define D_NEOPOOL_MACH_UVSCENIC           "UVScenic"
+#define D_NEOPOOL_MACH_STATION            "Station"
 #define D_NEOPOOL_MACH_BRILIX             "Brilix"
 #define D_NEOPOOL_MACH_GENERIC            "Generic"
 #define D_NEOPOOL_MACH_BAYROL             "Bayrol"
@@ -996,21 +1098,30 @@
 #define D_NEOPOOL_IONIZATION              "Ionization"
 #define D_NEOPOOL_HYDROLYSIS              "Hydrolysis"
 #define D_NEOPOOL_RELAY                   "Relay"
-#define D_NEOPOOL_RELAY_FILTRATION        "Filtration"
+#define D_NEOPOOL_RELAY_FILTRATION        "Filtration"        // Relay assignment
 #define D_NEOPOOL_RELAY_LIGHT             "Light"
 #define D_NEOPOOL_RELAY_PH_ACID           "Acid pump"
 #define D_NEOPOOL_RELAY_PH_BASE           "Base pump"
 #define D_NEOPOOL_RELAY_RX                "Redox level"
 #define D_NEOPOOL_RELAY_CL                "Chlorine pump"
-#define D_NEOPOOL_RELAY_CD                "Brine pump"
+#define D_NEOPOOL_RELAY_CD                "Conductivity"
+#define D_NEOPOOL_RELAY_HEATING           "Heating"
+#define D_NEOPOOL_RELAY_UV                "UV"
+#define D_NEOPOOL_RELAY_VALVE             "Valve"
+#define D_NEOPOOL_RELAY_AUX               "Aux"
 #define D_NEOPOOL_TIME                    "Time"
-#define D_NEOPOOL_FILT_MODE               "Filtration"
+#define D_NEOPOOL_FILT_MODE               "Filtration mode"
+#define D_NEOPOOL_CELL_RUNTIME            "Cell runtime"
 #define D_NEOPOOL_POLARIZATION            "Pol"               // Sensor status
 #define D_NEOPOOL_PR_OFF                  "PrOff"
 #define D_NEOPOOL_SETPOINT_OK             "Ok"
 #define D_NEOPOOL_COVER                   "Cover"
-#define D_NEOPOOL_SHOCK                   "Shock"
-#define D_NEOPOOL_ALARM                   "! "
+#define D_NEOPOOL_SHOCK                   "Boost"
+#define D_NEOPOOL_STATUS_ON               "ON"
+#define D_NEOPOOL_STATUS_OFF              "OFF"
+#define D_NEOPOOL_STATUS_WAIT             "WAIT"
+#define D_NEOPOOL_STATUS_TANK             "TANK"
+#define D_NEOPOOL_STATUS_FLOW             "Flow"
 #define D_NEOPOOL_LOW                     "Low"
 #define D_NEOPOOL_FLOW1                   "FL1"
 #define D_NEOPOOL_FLOW2                   "FL2"

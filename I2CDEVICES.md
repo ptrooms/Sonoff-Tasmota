@@ -1,6 +1,5 @@
 # I2C devices
-
-Tasmota supports several I2C devices but to use them they mostly need to be enabled at compile time to solve possible address conflicts.
+Tasmota supports several I2C devices. To use them I2C and the device need to be enabled at compile time. I2C and some devices are supported also in the official releases. Devices can be de/-actived on runtime to solve possible address conflicts. (e.g. address 0x27 is used by multiple devices)
 
 Using command ``I2cDriver`` individual drivers can be enabled or disabled at runtime allowing duplicate I2C addresses at compile time. Use the Index from the table below to control I2C drivers like ``I2cDriver10 0`` for disabling BMP support.
 
@@ -32,7 +31,8 @@ Index | Define              | Driver  | Device   | Address(es) | Description
   13  | USE_ADS1115         | xsns_12 | ADS1115  | 0x48 - 0x4B | 4-channel 16-bit A/D converter
   14  | USE_INA219          | xsns_13 | INA219   | 0x40 - 0x41, 0x44 - 0x45 | Low voltage current sensor
   15  | USE_SHT3X           | xsns_14 | SHT3X    | 0x44 - 0x45 | Temperature and Humidity sensor
-  15  | USE_SHT3X           | xsns_14 | SHTC3    | 0x70        | Temperature and Humidity sensor
+  15  | USE_SHT3X           | xsns_14 | SHT4X    | 0x44 - 0x45 | Temperature and Humidity sensor
+  15  | USE_SHT3X           | xsns_14 | SHTCX    | 0x70        | Temperature and Humidity sensor
   16  | USE_TSL2561         | xsns_16 | TSL2561  | 0x29, 0x39, 0x49 | Light intensity sensor
   17  | USE_MGS             | xsns_19 | Grove    | 0x04        | Multichannel gas sensor
   18  | USE_SGP30           | xsns_21 | SGP30    | 0x58        | Gas (TVOC) and air quality sensor
@@ -41,7 +41,7 @@ Index | Define              | Driver  | Device   | Address(es) | Description
   19  | USE_SI1145          | xsns_24 | SI1147   | 0x60        | Ultra violet index and light sensor
   20  | USE_LM75AD          | xsns_26 | LM75AD   | 0x48 - 0x4F | Temperature sensor
   21  | USE_APDS9960        | xsns_27 | APDS9960 | 0x39        | Proximity ambient light RGB and gesture sensor
-  22  | USE_MCP230xx        | xsns_29 | MCP23008 | 0x20 - 0x26 | 16-bit I/O expander
+  22  | USE_MCP230xx        | xsns_29 | MCP23008 | 0x20 - 0x26 |  8-bit I/O expander
   22  | USE_MCP230xx        | xsns_29 | MCP23017 | 0x20 - 0x26 | 16-bit I/O expander
   23  | USE_MPR121          | xsns_30 | MPR121   | 0x5A - 0x5D | Proximity capacitive touch sensor
   24  | USE_CCS811          | xsns_31 | CCS811   | 0x5A        | Gas (TVOC) and air quality sensor
@@ -66,6 +66,7 @@ Index | Define              | Driver  | Device   | Address(es) | Description
   42  | USE_DS1624          | xsns_59 | DS1624   | 0x48 - 0x4F | Temperature sensor
   43  | USE_AHT1x           | xsns_63 | AHT10/15 | 0x38 - 0x39 | Temperature and humidity sensor
   43  | USE_AHT2x           | xsns_63 | AHT20    | 0x38        | Temperature and humidity sensor
+  43  | USE_AHT2x           | xsns_63 | AM2301B  | 0x38        | Temperature and humidity sensor
   44  | USE_WEMOS_MOTOR_V1  | xdrv_34 |          | 0x2D - 0x30 | WEMOS motor shield v1.0.0 (6612FNG)
   45  | USE_HDC1080         | xsns_65 | HDC1080  | 0x40        | Temperature and Humidity sensor
   46  | USE_IAQ             | xsns_66 | IAQ      | 0x5a        | Air quality sensor
@@ -91,3 +92,14 @@ Index | Define              | Driver  | Device   | Address(es) | Description
   55  | USE_EZOPMP          | xsns_78 | EZOPMP   | 0x61 - 0x70 | Peristaltic Pump
   56  | USE_SEESAW_SOIL     | xsns_81 | SEESOIL  | 0x36 - 0x39 | Adafruit seesaw soil moisture sensor
   57  | USE_TOF10120        | xsns_84 | TOF10120 | 0x52        | Time-of-flight (ToF) distance sensor
+  58  | USE_MPU_ACCEL       | xsns_85 | MPU_ACCEL| 0x68        | MPU6886/MPU9250 6-axis MotionTracking sensor from M5Stack
+  59  | USE_BM8563          | xdrv_56 | BM8563   | 0x51        | BM8563 RTC from M5Stack
+  60  | USE_AM2320          | xsns_88 | AM2320   | 0x5C        | Temperature and Humidity sensor
+  61  | USE_T67XX           | xsns_89 | T67XX    | 0x15        | CO2 sensor
+  62  | USE_SCD40           | xsns_92 | SCD40    | 0x62        | CO2 sensor Sensirion SCD40/SCD41
+  63  | USE_HM330X          | xsns_93 | HM330X   | 0x40        | Particule sensor
+  64  | USE_HDC2010         | xsns_94 | HDC2010  | 0x40        | Temperature and Humidity sensor
+  65  | USE_ADE7880         | xnrg_23 | ADE7880  | 0x38        | Energy monitor
+  66  | USE_PCF85363        | xsns_99 | PCF85363 | 0x51        | Real time clock
+  67  | USE_DS3502          | xdrv_61 | DS3502   | 0x28 - 0x2B | Digital potentiometer
+  68  | USE_HYT             | xsns_97 | HYTxxx   | 0x28        | Temperature and Humidity sensor
