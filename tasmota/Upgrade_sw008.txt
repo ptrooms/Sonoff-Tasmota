@@ -1,0 +1,214 @@
+
+
+
+
+Tasmota 9.2.0 normal / minimal
+	Executable segment sizes:
+	IRAM   : 28184   / 32768 - code in IRAM          (ICACHE_RAM_ATTR, ISRs...) 
+	DATA   : 1324  )         - initialized variables (global, static) in RAM/HEAP 
+	BSS    : 41944 )         - zeroed variables      (global, static) in RAM/HEAP 
+	IROM   : 381156          - code in flash         (default or ICACHE_FLASH_ATTR) 
+	RODATA : 1464  ) / 81920 - constants             (global, static) in RAM/HEAP 
+	Sketch uses 412128 bytes (42%) of program storage space. Maximum is 958448 bytes.
+	Global variables use 44732 bytes (54%) of dynamic memory, leaving 37188 bytes for local variables. Maximum is 81920 bytes.
+
+Tasmota 9.2.0 normal / sw008
+	Executable segment sizes:
+	DATA   : 1748  )         - initialized variables (global, static) in RAM/HEAP 
+	RODATA : 2828  ) / 81920 - constants             (global, static) in RAM/HEAP 
+	IROM   : 591492          - code in flash         (default or ICACHE_FLASH_ATTR) 
+	IRAM   : 31436   / 32768 - code in IRAM          (ICACHE_RAM_ATTR, ISRs...) 
+	BSS    : 45176 )         - zeroed variables      (global, static) in RAM/HEAP 
+	Sketch uses 627504 bytes (65%) of program storage space. Maximum is 958448 bytes.
+	Global variables use 49752 bytes (60%) of dynamic memory, leaving 32168 bytes for local variables. Maximum is 81920 bytes.
+
+
+sw008_upfatede to 851
+	Sonoff Bridge Module
+	Sonoff sw008 Bridge
+	sonoff-sw008-7087 (192.168.1.24)
+	Program Version	8.5.1(tasmota)
+	Build Date & Time	2020-10-02T10:09:47
+	Core/SDK Version	2_7_4_1/2.2.2-dev(38a443e)
+	Uptime	0T00:00:14
+	Flash write Count	674 at 0xF7000
+	Boot Count	67
+	Restart Reason	Software/System restart
+		 
+	AP1 SSId (RSSI)	Pafo SSID4 (78%, -61 dBm)
+	Hostname	sonoff-sw008-7087
+	MAC Address	C8:2B:96:43:3B:AF
+	IP Address (wifi)	192.168.1.24
+	
+	Gateway	192.168.1.1
+	Subnet Mask	255.255.255.0
+	DNS Server	192.168.1.8
+		 
+	MQTT Host	192.168.1.8
+	MQTT Port	1883
+	MQTT User	ptromqqt
+	MQTT Client	DVES_sw008_433BAF
+	MQTT Topic	sonoff-sw008
+	MQTT Group Topic 1	cmnd/sonoffs/
+	MQTT Full Topic	cmnd/sonoff-sw008/
+	MQTT Fallback Topic	cmnd/DVES_sw008_433BAF_fb/
+	MQTT No Retain	Disabled
+		 
+	Emulation	None
+	mDNS Discovery	Disabled
+		 
+	ESP Chip Id	4406191
+	Flash Chip Id	0x144051
+	Flash Size	1024kB
+	Program Flash Size	1024kB
+	Program Size	596kB
+	Free Program Space	404kB
+	Free Memory	26kB
+
+	Tasmota 8.5.1 by Theo Arends
+
+sw008  updated via web:
+		Sonoff Bridge Module
+		Sonoff sw008 Bridge
+		sonoff-sw008 (192.168.1.24)
+		Program Version	8.1.0.4(tasmota)
+		Build Date & Time	2020-01-23T21:53:53
+		Core/SDK Version	2_6_1/2.2.1(cfd48f3)
+		Uptime	1T03:31:46
+		Flash write Count	665 at 0xF6000
+		Boot Count	66
+		Restart Reason	Power on
+			 
+		AP1 SSId (RSSI)	Pafo SSID4 (78%, -61 dBm)
+		Hostname	sonoff-sw008
+		IP Address	192.168.1.24
+		Gateway	192.168.1.1
+		Subnet Mask	255.255.255.0
+		DNS Server	192.168.1.8
+		MAC Address	C8:2B:96:43:3B:AF
+			 
+		MQTT Host	192.168.1.8
+		MQTT Port	1883
+		MQTT User	ptromqqt
+		MQTT Client	DVES_sw008_433BAF
+		MQTT Topic	sonoff-sw008
+		MQTT Group Topic	cmnd/sonoffs/
+		MQTT Full Topic	cmnd/sonoff-sw008/
+		MQTT Fallback Topic	cmnd/DVES_sw008_433BAF_fb/
+			 
+		Emulation	None
+		mDNS Discovery	Disabled
+			 
+		ESP Chip Id	4406191
+		Flash Chip Id	0x144051
+		Flash Size	1024kB
+		Program Flash Size	1024kB
+		Program Size	592kB
+		Free Program Space	408kB
+		Free Memory	24kB
+
+		Tasmota 8.1.0.4 by Theo Arends
+
+
+
+
+
+
+org.eclipse.smarthome.transform.regex.internal.RegExTransformationService
+
+bout to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfRaw.*Data.*)'
+2021-04-05 04:15:53.126 [DEBUG] [.internal.RegExTransformationService] - the given regex '^(.*RfRaw.*Data.*)$' doesn't match the given content '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' -> couldn't compute transformation
+2021-04-05 04:15:53.130 [WARN ] [eneric.internal.generic.ChannelState] - (ptro240/mqtt) Transformation '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' returned null on 'REGEX', discarding message
+
+2021-04-05 04:15:53.133 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfReceived.*RfKey.*)'
+2021-04-05 04:15:53.140 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function 's/Low/Peter/g'
+2021-04-05 04:15:53.141 [DEBUG] [.internal.RegExTransformationService] - Using substitution form of regex transformation
+2021-04-05 04:15:53.147 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfReceived.*Sync.*)'
+2021-04-05 04:15:53.157 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfReceived.*Low.*)'
+2021-04-05 04:15:53.164 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfReceived.*High.*)'
+2021-04-05 04:15:53.174 [DEBUG] [.internal.RegExTransformationService] - about to transform '{"Time":"2021-04-05T03:15:53","RfReceived":{"Sync":7710,"Low":260,"High":750,"Data":"8974E4","RfKey":4}}' by the function '(.*RfReceived.*Data.*)'
+
+
+
+
+
+<A href="http://sonoff-{{item.label}}.thuis.pafo.nl" target=_{{item.label}}>{{item.label}}</A>
+
+
+
+<h3>Crit <b style="color:Chocolate;" class="text-left"><big>{{ itemValue('P1DateCrc') | date:'HH:mm:ss' }}</big></b></h3>
+<big ng-repeat="item in itemsInGroup('gCritical') | filter:{state:'OFF'} | orderBy:'label'">
+	<u style="background-color:#AA0000;color:Yellow;" class="text-left">
+		<A href="http://sonoff-{{item.label}}.thuis.pafo.nl"
+			target=_{{item.label}}>{{item.label}}</A>&nbsp;&nbsp;</u>
+</big>
+
+
+
+ng-model="myPE11" ng-value="itemValue('SettingPowerErrorsOk1')">
+
+ng-model="mySTL1" ng-value="itemValue('SettingTempLimit1')"
+
+ng-value=""
+
+<big>{{itemValue('P1DateCrc')}}
+
+
+
+</big>
+
+
+<h3 ng-value="itemState('P1DateCrc')">Crit </h3>
+<big ng-repeat="item in itemsInGroup('gCritical') | filter:{state:'OFF'} | orderBy:'label'">
+  <u style="background-color:#AA0000;color:Yellow;" class="text-left">{{item.label}}</u>..
+</big>
+
+
+<h3">Crit </h3>
+<big ng-value="itemState('P1DateCrc')">
+</big>
+<big ng-repeat="item in itemsInGroup('gCritical') | filter:{state:'OFF'} | orderBy:'label'">
+  <u style="background-color:#AA0000;color:Yellow;" class="text-left">{{item.label}}</u>..
+</big>
+
+
+
+<h3>Criticals</h3>
+<big ng-repeat="item in itemsInGroup('gCritical') | filter:{state:'OFF'} | orderBy:'label'">
+  <u style="background-color:#AA0000;color:Yellow;" class="text-left">{{item.label}}</u>..
+</big>
+
+
+<h4><b>Set Values2</h4></b>
+  <div class="form-group">
+	<!-- Number SettingPowerLimit1 "PwrLim1 [%f W]"  // under over use of power-->
+    <input type="number" class="form-control" no-snap-drag="true"
+           ng-model="mySPL1" ng-value="itemValue('SettingPowerLimit1')"></input>
+    PwrLim1<button type="button" class="btn btn-primary"
+           ng-click="sendCmd('SettingPowerLimit1', mySPL1)">Send </button>
+ 	<!-- Number SettingPowerLimit2 "PwrLim2 [%f W]"  // under over use of power-->
+    <input type="number" class="form-control" no-snap-drag="true"
+           ng-model="mySPL2" ng-value="itemValue('SettingPowerLimit2')"></input>
+    PwrLim2<button type="button" class="btn btn-primary"
+           ng-click="sendCmd('SettingPowerLimit2', mySPL2)">Send </button>
+<br></br>
+	<!-- Number SettingTempLimit1 "TempLim1 [%.1f C]" // under over use of temperature-->
+    <input type="number" class="form-control" no-snap-drag="true"
+           ng-model="mySTL1" ng-value="itemValue('SettingTempLimit1')"></input>
+
+    TmpLim1
+	<button type="button" class="btn btn-primary"
+           ng-click="sendCmd('SettingTempLimit1', mySTL1)">Send </button>
+
+    	<!-- Number SettingPowerErrorsOk1 "TempLim1 [%.1f C]" // max number errors after an Ok periode-->
+    <input type="number" class="form-control" no-snap-drag="true"
+           ng-model="myPE11" ng-value="itemValue('SettingPowerErrorsOk1')"></input>
+    PwrErrOk1<button type="button" class="btn btn-primary"
+           ng-click="sendCmd('SettingPowerErrorsOk1', myPE11)">Send </button>
+    
+  </div>
+<!-- 
+	/*
+	  Number HeatGJ "HeatEnergyUse [%.3f GJ]" <energy>  { mqtt="<[mosquitto:/heating/use/gj:state:default]" }
+	*/
+-->

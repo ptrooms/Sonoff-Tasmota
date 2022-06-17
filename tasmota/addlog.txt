@@ -1,0 +1,1955 @@
+    if (!tcp_buf) { AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_TCP "could not allocate buffer")); return; }
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_TCP "Stopping TCP server"));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_TCP "Starting TCP server on port %d"), tcp_port);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_41_tcp_bridge.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("DSP: TM1637"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: num %d, pos %d, lead %d, len %d"), num, position, leadingzeros, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: num %4_f, prec %d, len %d"), &fnum, precision, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Clearing digit %d"), TM1637Data.num_digits);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Text %s"), XdrvMailbox.data);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level totalBars %d"), totalBars);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level barsToDisplay %s"), txt);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level numBars %d"), numBars);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level digit %d"), digit);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level value %d"), value);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: a %d, b %d, c %d, d %d, e %d, f %d, len %d, pos %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: sString %s, pos %d, len %d"), sString, position, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: TM1637Data.show_clock %d, TM1637Data.clock_24 %d"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Size changed. Re-initializing library..."));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Re-initialized library"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: FUNC_DISPLAY_MODEL"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: FUNC_DISPLAY_INIT"));
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_15_tm1637.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("PMS: " D_CHECKSUM_FAILURE));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_18_pms5003.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: SSD1331"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_14_SSD1331.ino]
+.
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled INTCNT for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled INTDEF for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled immediate interrupt/telemetry reporting for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - INTCNT enabled for pin D%i but global INTTIMER is disabled!"),pin);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: relay %d pin_no %d state %d"), i,pin, relay_state);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_29_mcp230xx.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("CMD: " D_GROUP " %d, " D_INDEX " %d, " D_COMMAND " \"%s\", " D_DATA " \"%s\""), grpflg, index, type, dataBuf);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_RESTARTING));
+  AddLog(LOG_LEVEL_INFO, PSTR("Button Touchvalue Hits,"));
+[/home/pafoxp/code-tasmota/tasmota/./support_command.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP "Prometheus"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_75_prometheus.ino]
+.
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem comms timeout"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem crc error"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem bad response"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("PZM: Retry %d"), 5 - Pzem.send_retry);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("PZM: Probing address %d, Max phases %d"), Pzem.phase +1, Energy.phase_count);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_03_pzem004t.ino]
+.
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+	AddLog(LOG_LEVEL_INFO,
+		AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+		AddLog(LOG_LEVEL_ERROR,
+		AddLog(LOG_LEVEL_ERROR,
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_44_miel_hvac.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("RFS: Pulses %d"), (int)rfsns_raw_signal->Number);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_37_rfsensor.ino]
+.
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "MH-Z19 comms timeout"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "MH-Z19 crc error"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "MH-Z19 bad response"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_15_mhz19.ino]
+.
+    if (!tcp_buf) { AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_TCP "could not allocate buffer")); return; }
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_TCP "Stopping TCP server"));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_TCP "Starting TCP server on port %d"), tcp_port);
+      AddLog(LOG_LEVEL_INFO, PSTR("DSP: TM1637"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: num %d, pos %d, lead %d, len %d"), num, position, leadingzeros, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: num %4_f, prec %d, len %d"), &fnum, precision, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Clearing digit %d"), TM1637Data.num_digits);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Text %s"), XdrvMailbox.data);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level totalBars %d"), totalBars);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level barsToDisplay %s"), txt);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level numBars %d"), numBars);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level digit %d"), digit);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: CmndTM1637Level value %d"), value);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: a %d, b %d, c %d, d %d, e %d, f %d, len %d, pos %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: sString %s, pos %d, len %d"), sString, position, length);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: TM1637Data.show_clock %d, TM1637Data.clock_24 %d"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Size changed. Re-initializing library..."));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: Re-initialized library"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: FUNC_DISPLAY_MODEL"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: FUNC_DISPLAY_INIT"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("PMS: " D_CHECKSUM_FAILURE));
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: SSD1331"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled INTCNT for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled INTDEF for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - Disabled immediate interrupt/telemetry reporting for pin D%i"),pin);
+              AddLog(LOG_LEVEL_INFO, PSTR("*** WARNING *** - INTCNT enabled for pin D%i but global INTTIMER is disabled!"),pin);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: relay %d pin_no %d state %d"), i,pin, relay_state);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("CMD: " D_GROUP " %d, " D_INDEX " %d, " D_COMMAND " \"%s\", " D_DATA " \"%s\""), grpflg, index, type, dataBuf);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_RESTARTING));
+  AddLog(LOG_LEVEL_INFO, PSTR("Button Touchvalue Hits,"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP "Prometheus"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem comms timeout"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem crc error"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Pzem bad response"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("PZM: Retry %d"), 5 - Pzem.send_retry);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("PZM: Probing address %d, Max phases %d"), Pzem.phase +1, Energy.phase_count);
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+			AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+	AddLog(LOG_LEVEL_INFO,
+		AddLog(LOG_LEVEL_DEBUG, PSTR(MIEL_HVAC_LOGNAME
+		AddLog(LOG_LEVEL_ERROR,
+		AddLog(LOG_LEVEL_ERROR,
+  AddLog(LOG_LEVEL_DEBUG, PSTR("RFS: Pulses %d"), (int)
+[/home/pafoxp/code-tasmota/tasmota/./addlog.txt]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_WCFG_6_SERIAL " " D_ACTIVE_FOR_3_MINUTES));
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_WCFG_2_WIFIMANAGER " " D_ACTIVE_FOR_3_MINUTES));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI "Retry set Mode..."));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECTING_TO_AP "%d %s%s " D_IN_MODE " 11%c " D_AS " %s..."),
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI "Got IPv6 global address %s"), addr.toString().c_str());
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI "Network (re)scan started..."));
+        AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI "Network %d, AP%c, SSId %s, Channel %d, BSSId %s, RSSI %d, Encryption %d"),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECTED));
+//      AddLog(LOG_LEVEL_INFO, PSTR("Wifi: Set IP addresses"));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECT_FAILED_NO_IP_ADDRESS));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECT_FAILED_AP_NOT_REACHED));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECT_FAILED_WRONG_PASSWORD));
+          AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_CONNECT_FAILED_AP_TIMEOUT));
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI D_ATTEMPTING_CONNECTION));
+          AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_WCFG_2_WIFIMANAGER D_CMND_SSID "1 %s"), SettingsText(SET_STASSID1));
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_WIFI D_CHECKING_CONNECTION));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI "Pre-init done"));
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_WIFI "Sending Gratuitous ARP"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("NTP: No server found"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("NTP: Name %s, IP %_I"), ntp_server, (uint32_t)time_server_ip);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("NTP: IP %_I unsynched"), (uint32_t)time_server_ip);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("NTP: No reply"));
+[/home/pafoxp/code-tasmota/tasmota/./support_wifi.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: Iem3000 error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_16_iem3000.ino]
+.
+  //AddLog(LOG_LEVEL_DEBUG_MORE, "RgbToHsb rgb (%d %d %d) hsb (%d %d %d)", r, g, b, hue, sat, bri);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_04_light_utils.ino]
+.
+        if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: New seendev slot %d"), total);
+            AddLog(LOG_LEVEL_INFO,PSTR("BLE: Delete device %s(%s) by age lastseen %u + maxage %u < now %u."),
+            AddLog(LOG_LEVEL_INFO,PSTR("BLE: Delete device %s(%s) by addrtype filter %d > %d."),
+    AddLog(LOG_LEVEL_INFO,PSTR("BLE: Deleted %d devices"), res);
+  //AddLog(LOG_LEVEL_INFO,PSTR("BLE: getSeen %d"), seenDevices.size());
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: onConnect %s"), ((std::string)pClient->getPeerAddress()).c_str());
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: onDisconnect %s"), ((std::string)pClient->getPeerAddress()).c_str());
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: onConnParamsUpdateRequest %s"), ((std::string)pClient->getPeerAddress()).c_str());
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: exception in advertismentCallbacks"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Scan ended"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: scancompleteCallbacks %d %d"), i, callbackres);
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: exception in operationsCallbacks"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Notify: no remote char!!??"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Notified length: %u"),length);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Notify: no remote service found"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Notify: no remote client!!??"));
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Notify: null op in currentOperations!!??"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: no op for notify"));
+  AddLog(LOG_LEVEL_INFO,PSTR("BLE: registerForAdvertismentCallbacks %s:%x"), tag, (uint32_t) pFn);
+  AddLog(LOG_LEVEL_INFO,PSTR("BLE: registerForOpCallbacks %s:%x"), tag, (uint32_t) pFn);
+  AddLog(LOG_LEVEL_INFO,PSTR("BLE: registerForScnCallbacks %s:%x"), tag, (uint32_t) pFn);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Put WiFi modem in sleep mode"), "BLE");
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: %s: Start operations"),D_CMND_BLE);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Task:Stopping NimBLE"));
+        AddLog(LOG_LEVEL_INFO,PSTR("BLE: disconnecting connected client"));
+      AddLog(LOG_LEVEL_INFO,PSTR("BLE: deleted client"));
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Stopping NimBLE:exception in delete client"));
+    AddLog(LOG_LEVEL_INFO,PSTR("BLE: BLETask:Starting NimBLE"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: Startscan"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: new currentOperation"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: notify timeout"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: notify operation complete"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: operation complete"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: BLETask: op failed %d"), (*pCurrentOperation)->state);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: still connected"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: attempt connect %s"), ((std::string)op->addr).c_str());
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: connected %s -> getservice"), ((std::string)op->addr).c_str());
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: got service"));
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: got notify characteristic"));
+              if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: subscribe for notify"));
+              AddLog(LOG_LEVEL_ERROR,PSTR("BLE: failed subscribe for notify"));
+                AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: subscribe for indicate"));
+                AddLog(LOG_LEVEL_ERROR,PSTR("BLE: failed subscribe for indicate"));
+              AddLog(LOG_LEVEL_ERROR,PSTR("BLE: characteristic can't notify"));
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: notify characteristic not found"));
+            if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: got read/write characteristic"));
+                  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: read characteristic with readmodifywritecallback"));
+                  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: read characteristic"));
+                  AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: characteristic write fail"));
+                  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: write characteristic"));
+            AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: r/w characteristic not found"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: failed - svc not on device?"));
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Hit connection limit? - restarting NimBLE"));
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Connection exists? - restarting NimBLE"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: failed to connect to device"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: runTaskDoneOperation: disconnecting connected client"));
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: wait discon%d"), waits);
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: wait discon%d - kill connection"), waits);
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: >60s waiting -> BLE Failed, restart Tasmota %d"), waits);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: runTaskDoneOperation: exception in disconnect"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: runTaskDoneOperation: add to completedOperations"));
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: BLETask: Restart NimBLE - restart Tasmota in 10 if not complt"));
+  AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLEOperationTask: Left task"));
+    AddLog(LOG_LEVEL_INFO,PSTR("BLE: MasterEnable->%d"), BLEMasterEnable);
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Failure! Restarting Tasmota in %d seconds because %s"), BLERestartTasmota, BLERestartTasmotaReason);
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Failure! Restarting Tasmota because %s"), BLERestartTasmotaReason);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Failure! Restarting BLE Stack because %s"), BLERestartBLEReason);
+    //AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: added operation"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: op - no room"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: op inv in newOperation"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: op invalid"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: extQueueOperation: op added id %d failed"), (lastopid-1));
+  AddLog(LOG_LEVEL_ERROR,PSTR("BLE: StartBLE - wait as BLEStop==1"));
+      AddLog(LOG_LEVEL_INFO,PSTR("BLE: StopBLE - BLEStop->1"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: StopBLE - wait as BLEStop==1"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: StopBLE - was not running"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Alias %d %s"), op, XdrvMailbox.data);
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Alias invalid mac %s"), p);
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Add Alias mac %s = name %s"), mac, p);
+        if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Added %d Aliases"), added);
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Alias clearing %d"), aliases.size());
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: addr used alias: %s"), p);
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: cmd addr: %s -> %s"), p, addr.toString().c_str());
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: addr invalid: %s"), p);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Can't get a newOperation"));
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: got a newOperation from BLE"));
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: write name %s"), name);
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: read name"));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: queue res %d"), res);
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Failed to queue new operation - deleted"));
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: will write name"));
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: will read name"));
+  //AddLog(LOG_LEVEL_INFO,PSTR("BLE: op %d"), op);
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: preview"));
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Could not create new operation"));
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Could not queue new operation"));
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: Operations queued:%d"), queuedOperations.size());
+        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Could not queue new operation"));
+        if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: Operations queued:%d"), queuedOperations.size());
+    if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: some to show"));
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: prep sent %s"), out.c_str());
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: queued %d"), queuedOperations.size());
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: queued %d sent %s"), i, out.c_str());
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: current %d"), currentOperations.size());
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: curr %d sent %s"), i, out.c_str());
+      if (BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO,PSTR("BLE: completed %d"), completedOperations.size());
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: completedOperation removed"));
+      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Stop Timeout - restart Tasmota"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Awaiting BLEStop"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: scan stall? no adverts > 120s, restart BLE"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask stall > 120s, restart Tasmota in 10s"));
+    //AddLog(LOG_LEVEL_INFO,PSTR("BLE: completed %d"), completedOperations.size());
+          if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: op->completecallback %d"), callbackres);
+          AddLog(LOG_LEVEL_ERROR,PSTR("BLE: exception in op->completecallback"));
+            if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: operationsCallbacks %d %d"), i, callbackres);
+            AddLog(LOG_LEVEL_ERROR,PSTR("BLE: exception in operationsCallbacks"));
+        if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: callbackres true -> delete op"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: HandleBleConfiguration"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: !HttpCheckPriviledgedAccess()"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_BLE));
+  if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: arg en is %s"), tmp);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: SETTINGS SAVE"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: !SAVE"));
+  AddLog(LOG_LEVEL_INFO, PSTR("BLE: Stopping if active"));
+  AddLog(LOG_LEVEL_INFO,PSTR("BLE: myOpCallback"));
+  AddLog(LOG_LEVEL_INFO,PSTR("BLE: myOpCallback2"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Could not create new operation"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Failed to queue new operation - deleted"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_79_esp32_ble.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: ElectriQ Mood Lamp Found"));
+[/home/pafoxp/code-tasmota/tasmota/./xlgt_06_electriq_moodl.ino]
+.
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("NONE"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("%sFL_WE"), edge);
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("%sFL_EW"), edge);
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("%sFL_SN"), edge);
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("%sFL_NS"), edge);
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("CW"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("CCW"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("DTAP_CENTRE"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("DTAP_EAST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("DTAP_NORTH"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("DTAP_WEST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("DTAP_SOUTH"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TAP_CENTRE"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TAP_EAST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TAP_NORTH"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TAP_WEST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TAP_SOUTH"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TOUCH_CENTRE"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TOUCH_EAST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TOUCH_NORTH"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TOUCH_WEST"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("TOUCH_SOUTH"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("MGC3130: system_status: response to ID:%02x, error code: %04x"),MGC_data.status.id, MGC_data.status.error);
+          AddLog(LOG_LEVEL_INFO,PSTR("MGC3130: GestIC:%s"),MGC_data.fw.fwVersion);
+        AddLog(LOG_LEVEL_DEBUG,PSTR("MGC3130: missed a packet, mismatch: %u"), _mismatch - 1);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_36_mgc3130.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG_MORE,
+    AddLog(LOG_LEVEL_DEBUG, PSTR("[OTH]: perform handshake"));
+        AddLog(LOG_LEVEL_ERROR,
+    AddLog(LOG_LEVEL_DEBUG, PSTR("[OTH]: getLastResponseStatus SUCCESS. Slave Cfg: %lX"), response);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_69_opentherm.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SCD: FW v%d.%d"), major, minor);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_42_scd30.ino]
+.
+            //AddLog(LOG_LEVEL_INFO, PSTR("double click"));
+            //AddLog(LOG_LEVEL_INFO, PSTR("click"));
+            //AddLog(LOG_LEVEL_INFO, PSTR("button press"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_83_esp32_watch.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("UFS: FlashFS mounted with %d kB free"), UfsInfo(1, 0));
+      AddLog(LOG_LEVEL_INFO, PSTR("UFS: SDCard mounted"));
+      AddLog(LOG_LEVEL_INFO, PSTR("UFS: SDCard mounted with %d kB free"), UfsInfo(1, 0));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TFS: File not found"));
+    AddLog(LOG_LEVEL_INFO, PSTR("TFS: Save failed"));
+    AddLog(LOG_LEVEL_INFO, PSTR("TFS: Erase failed"));
+    AddLog(LOG_LEVEL_INFO, PSTR("TFS: File not found"));
+    AddLog(LOG_LEVEL_INFO, PSTR("TFS: Delete failed"));
+    AddLog(LOG_LEVEL_INFO, PSTR("TFS: Rename failed"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_MANAGE_FILE_SYSTEM));
+    AddLog(LOG_LEVEL_INFO, PSTR("UFS: File not found"));
+    AddLog(LOG_LEVEL_INFO, PSTR("UFS: Could not open file"));
+    AddLog(LOG_LEVEL_INFO, PSTR("UFS: Download is busy"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_50_filesystem.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT D_SUBSCRIBE_TO " %s"), topic);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT D_UNSUBSCRIBE_FROM " %s"), topic);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "Updated shadow: %s"), romram);
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT D_CONNECT_FAILED_TO " %s:%d, rc %d. " D_RETRY_IN " %d " D_UNIT_SECOND), SettingsText(SET_MQTT_HOST), Settings.mqtt_port, state, Mqtt.retry_counter);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT D_CONNECTED));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT D_ATTEMPTING_CONNECTION));
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "TLS connected in %d ms, max ThunkStack used %d"),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "TLS connected in %d ms, stack low mark %d"),
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "MFLN not supported by TLS server"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "Server fingerprint: %s"), buf_fingerprint);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "Fingerprint learned: %s"), buf_fingerprint);
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "TLS connection error: %d"), tlsClient->getLastError());
+        AddLog(LOG_LEVEL_ERROR, ALLOCATE_ERROR);
+          AddLog(LOG_LEVEL_ERROR, ALLOCATE_ERROR);
+            AddLog(LOG_LEVEL_INFO, PSTR("TLSKey: Certificate must be 32 bytes: %d."), bin_len);
+          AddLog(LOG_LEVEL_INFO, PSTR("TLSKey: cannot store Cert if no Key previously stored."));
+          AddLog(LOG_LEVEL_INFO, PSTR("TLSKey: Certificate length too short: %d."), bin_len);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_MQTT));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_02_mqtt.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Init()"));
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Testmode, D0:%u, D1:%u"), Pin(GPIO_WIEGAND_D0), Pin(GPIO_WIEGAND_D1));        // For tests without reader attaiched
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Wiegand Rfid Reader detected"));
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: no GPIOs."));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WIE: %llu parity error"), rfidIn);
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: even (left) parity: %u "), (evenParityBit>>7));
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: even (calc) parity: %u "), (calcParity & 0x80)>>7);
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: odd (right) parity: %u "), oddParityBit);
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: odd (calc) parity: %u "), (calcParity & 0x01));
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Raw tag %llu, Bit count %u"), rfidBuffer, bitCount);
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: Tag out %llu, tag size %u "), rfid, tagSize);
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: ScanForTag()."));
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Raw generated %lX"), rfidBuffer);  // For tests without reader attaiched
+    AddLog(LOG_LEVEL_INFO, PSTR("WIE: Previous tag %llu"), oldTag);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("WIE: Old tag"));
+  AddLog(LOG_LEVEL_INFO, PSTR("WIE: Tag %llu, Bits %u"), rfid, bitCount);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_82_wiegand.ino]
+.
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TCL: ReceiveData"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TCL: SendBytes"));
+  AddLog(LOG_LEVEL_INFO, PSTR("TCL: Found bootloader"));
+//            AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Size %d, Processed %d"), size, processed);
+        AddLog(LOG_LEVEL_INFO, PSTR("TCL: Enabled"));
+        AddLog(LOG_LEVEL_INFO, PSTR("TCL: Version %u"), TClientSettings.features_version);
+          AddLog(LOG_LEVEL_INFO, PSTR("TCL: Version %u not supported!"), TClientSettings.features_version);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TCL: SendCmnd"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_31_tasmota_client.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, PSTR("DGR: Error allocating %u-element array"), device_group_count);
+      AddLog(LOG_LEVEL_ERROR, PSTR("DGR: Error subscribing"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: (Re)discovering members"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("DGR: *** Invalid item=%u"), item);
+    if (attempt > 5) AddLog(LOG_LEVEL_ERROR, PSTR("DGR: Error sending message"));
+  AddLog(LOG_LEVEL_ERROR, PSTR("%s ** incorrect length"), log_buffer);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Building %s %spacket"), device_group->group_name, (message_type == DGR_MSGTYP_FULL_STATUS ? PSTR("full status ") : PSTR("")));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: %u items carried over"), kept_item_count);
+        AddLog(LOG_LEVEL_ERROR, PSTR("DGR: Error allocating member block"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Member %s added"), IPAddressToString(remote_ip));
+AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Checking next_check_time=%u, now=%u"), next_check_time, now);
+            AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Sending initial status request for group %s"), device_group->group_name);
+            AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Checking for ack's"));
+                  AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: Member %s removed"), IPAddressToString(device_group_member->ip_address));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("DGR: next_announcement_time=%u, now=%u"), device_group->next_announcement_time, now);
+[/home/pafoxp/code-tasmota/tasmota/./support_device_groups.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("ADPS on phase %d"), phase);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: [%d]%c %s=%s"), ilabel, c , me->name, me->value);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Tariff changed, now '%s' (%d)"), me->value, tarif);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Tariff name changed, now '%s'"), me->value);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Tariff index changed, now '%d'"), tarif);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Voltage %s, now %d"), me->value, (int) Energy.voltage[0]);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Current %s, now %d"), me->value, (int) Energy.current[0]);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Power %s, now %d"), me->value, (int)  Energy.active_power[0]);
+                    AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Base:%u"), total);
+                    AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: HC:%u  HP:%u  Total:%u"), hc, hp, total);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Total:%uWh"), total);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: HC:%u"),  atoi(me->value));
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: HP:%u"),  atoi(me->value));
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Contract changed, now '%s' (%d)"), me->value, contrat);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: Contract changed, now '%s'"), me->value);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: ISousc set to %d"), isousc);
+                AddLog(LOG_LEVEL_DEBUG, PSTR("TIC: %s set to %s"), me->name, serialNumber);
+         AddLog(LOG_LEVEL_INFO, PSTR("TIC: RX on GPIO%d, baudrate %d"), rx_pin, baudrate);
+            AddLog(LOG_LEVEL_INFO, PSTR("TIC: Enable with GPIO%d"), en_pin);
+            AddLog(LOG_LEVEL_INFO, PSTR("TIC: always enabled"));
+                AddLog(LOG_LEVEL_INFO, PSTR("TIC: using hardware serial"));
+                AddLog(LOG_LEVEL_INFO, PSTR("TIC: using software serial"));
+            AddLog(LOG_LEVEL_INFO, PSTR("TIC: using ESP32 hardware serial"));
+            AddLog(LOG_LEVEL_INFO, PSTR("TIC: Ready"));
+    if (duration > max_time) { max_time = duration; AddLog(LOG_LEVEL_INFO,PSTR("TIC: max_time=%lu"), max_time); }
+    if (tmp_size > max_size) { max_size = tmp_size; AddLog(LOG_LEVEL_INFO,PSTR("TIC: max_size=%d"), max_size); }
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_15_teleinfo.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("TGM: Started"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("TGM: Connected in %d ms, max ThunkStack used %d"), millis() - tls_connect_time, telegramClient->getMaxThunkStackUse());
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("TGM: getUpdates"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("TGM: No new messages"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("TGM: Failed to update"));
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("TGM: sendMessage"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("TGM: Message sent"));
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("TGM: getMe"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_40_telegram.ino]
+.
+         AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE "hre_state:hre_syncing"));
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE D_ERROR));
+         AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE "sync_run:%d, sync_counter:%d"), sync_run, sync_counter);
+         AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE "hre_state:hre_reading"));
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE "pe:%d, re:%d, buff:%s"),
+         AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HRE "hre_state:hre_sleeping"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_43_hre.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("mailsize: %d"),blen);
+  AddLog(LOG_LEVEL_INFO, PSTR("%s - %d - %s - %s"),mserv,port,user,passwd);
+  AddLog(LOG_LEVEL_INFO, PSTR("Connecting: %s on port %d"),host.c_str(),port);
+    AddLog(LOG_LEVEL_INFO, PSTR("Connection failed"));
+    AddLog(LOG_LEVEL_INFO, PSTR("array found %d"),alen);
+[/home/pafoxp/code-tasmota/tasmota/./sendemail_ESP8266.ino]
+.
+      //AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::Constructor RGB raw (%d %d %d) HS (%d %d) bri (%d)", _r, _g, _b, _hue, _sat, _bri);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setColorMode prev_cm (%d) req_cm (%d) new_cm (%d)", prev_cm, cm, _color_mode);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setBri RGB raw (%d %d %d) HS (%d %d) bri (%d)", _r, _g, _b, _hue, _sat, _briRGB);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setCT RGB raw (%d %d %d) HS (%d %d) briRGB (%d) briCT (%d) CT (%d)", _r, _g, _b, _hue, _sat, _briRGB, _briCT, _ct);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setCW CW (%d %d) CT (%d) briCT (%d)", c, w, _ct, _briCT);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setRGB RGB input (%d %d %d)", r, g, b);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setRGB RGB raw (%d %d %d) HS (%d %d) bri (%d)", _r, _g, _b, _hue, _sat, _briRGB);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setHS HS (%d %d) rgb (%d %d %d)", hue, sat, r, g, b);
+      AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setHS RGB raw (%d %d %d) HS (%d %d) bri (%d)", _r, _g, _b, _hue, _sat, _briRGB);
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setChannels (%d %d %d %d %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setChannels CT (%d) briRGB (%d) briCT (%d)", _ct, _briRGB, _briCT);
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightStateClass::setChannels Actuals (%d %d %d %d %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightControllerClass::debugLogs rgb (%d %d %d) cw (%d %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightControllerClass::debugLogs lightCurrent (%d %d %d %d %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightControllerClass::loadSettings Settings.light_color (%d %d %d %d %d - %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightControllerClass::loadSettings light_type/sub (%d %d)",
+    AddLog(LOG_LEVEL_DEBUG_MORE, "LightControllerClass::saveSettings Settings.light_color (%d %d %d %d %d - %d)",
+  //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("LightCalcPWMRange %d %d - %d %d"), Settings.dimmer_hw_min, Settings.dimmer_hw_max, Light.pwm_min, Light.pwm_max);
+  //AddLog(LOG_LEVEL_DEBUG, PSTR("%d colors: %d %d %d %d %d") ,Settings.param[P_RGB_REMAP], Light.color_remap[0],Light.color_remap[1],Light.color_remap[2],Light.color_remap[3],Light.color_remap[4]);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Light signal %d"), signal);
+  AddLog(LOG_LEVEL_DEBUG, "LightPreparePower power=%d Light.power=%d", TasmotaGlobal.power, Light.power);
+  AddLog(LOG_LEVEL_DEBUG, "LightPreparePower End power=%d Light.power=%d", TasmotaGlobal.power, Light.power);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: random %d"), Light.random);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: random %d, wheel %d, hue %d"), Light.random, Light.wheel, hue);
+    // AddLog(LOG_LEVEL_INFO, PSTR("last_color (%02X%02X%02X%02X%02X) new_color (%02X%02X%02X%02X%02X) power %d"),
+        // AddLog(LOG_LEVEL_INFO, PSTR(">>> calcGammaBulbs In  %03X,%03X,%03X,%03X,%03X"), cur_col_10[0], cur_col_10[1], cur_col_10[2], cur_col_10[3], cur_col_10[4]);
+        // AddLog(LOG_LEVEL_INFO, PSTR(">>> calcGammaBulbs Out %03X,%03X,%03X,%03X,%03X"), cur_col_10[0], cur_col_10[1], cur_col_10[2], cur_col_10[3], cur_col_10[4]);
+        // AddLog(LOG_LEVEL_INFO, PSTR("LightApplyFade %d %d %d %d %d"),
+        // AddLog(LOG_LEVEL_INFO, PSTR("delay_seconds %d, save_data_counter %d"), delay_seconds, TasmotaGlobal.save_data_counter);
+    // AddLog(LOG_LEVEL_DEBUG_MORE, "Animate>> Light.power=%d Light.new_color=[%d,%d,%d,%d,%d]",
+        //AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "Cur_Col%d 10 bits %d"), i, cur_col_10[i]);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: Channels %s"), ToHex_P((const unsigned char *)cur_col_10, 10, msg, sizeof(msg)));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: CurCol %03X %03X %03X, ScaleCol %02X %02X %02X, Max %02X"),
+    // AddLog(LOG_LEVEL_INFO, PSTR("+++ from_ct %d, to_ct %d [%03X,%03X,%03X,%03X,%03X] - [%03X,%03X,%03X,%03X,%03X]"),
+    // AddLog(LOG_LEVEL_INFO, PSTR("+++ from10 [%03X,%03X,%03X,%03X,%03X] - to 10 [%03X,%03X,%03X,%03X,%03X]"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_04_light.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("RFR: Data 0x%lX (%u), Bits %d, Protocol %d, Delay %d"), data, data, bits, protocol, delay);
+//  AddLog(LOG_LEVEL_INFO, PSTR("RFR: CmndRfProtocol:: Start responce"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_17_rcswitch.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "VEML6070 resistor error %d"), USE_VEML6070_RSET);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "VEML6070 resistor default used %d"), VEML6070_RSET_DEFAULT);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "VEML6070 mode_cmd"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "VEML6070 out of range %d"), risk);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_11_veml6070.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "SenseAir response error %d"), error);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "SenseAir type id low %04X"), value);
+              AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "SenseAir error %04X"), value);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "SenseAir relay state %d"), relay_state);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "SenseAir temp adjustment %d"), value);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_17_senseair.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG, PSTR("%s: MAC: %s Major: %d Minor: %d UUID: %s Power: %d RSSI: %d"),
+  AddLog(LOG_LEVEL_INFO, PSTR("iBeacon register for advert callbacks"));
+        //AddLog(LOG_LEVEL_INFO, PSTR("iBeacon no device %s %02x%02x%02x%02x%02x%02x"),tmp, mac[0],mac[1], mac[2],mac[3], mac[4],mac[5]);
+        //AddLog(LOG_LEVEL_INFO, PSTR("iBeacon device %s %02x%02x%02x%02x%02x%02x"),tmp, mac[0],mac[1], mac[2],mac[3], mac[4],mac[5]);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_52_esp32_ibeacon_ble.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "Analog pH read. ADC-RAW: %d, cal-low(pH=ADC): %s=%d, cal-high(pH=ADC): %s=%d"), adc, phLow_chr, x1, phHigh_chr,x2);
+            AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION "Analog pH probe calibrated. cal-low(pH=ADC) %2_f=%d, cal-high(pH=ADC) %2_f=%d"),
+[/home/pafoxp/code-tasmota/tasmota/./xsns_02_analog.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("PAC: PzemAc %d error %d"), PZEM_AC_DEVICE_ADDRESS + PzemAc.phase, error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_05_pzem_ac.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 comms timeout"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 failed to find start of response"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 failed to find end of temperature"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 error first delimiter"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 error start of CO2"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 failed to find end of CO2"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 error second delimiter"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 error start of humidity"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 failed to find end of humidity"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "AZ7798 clock updated"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_38_az7798.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BOOT_COUNT " %d"), Settings.bootcount);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_SERIAL_LOGGING_DISABLED));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_SYSLOG_LOGGING_REENABLED));  // Might trigger disable again (on purpose)
+//AddLog(LOG_LEVEL_DEBUG, PSTR("OTA: File type [%s]"), ech);
+          AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "%s"), TasmotaGlobal.mqtt_data);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION "%s"), (TasmotaGlobal.restart_halt) ? PSTR("Halted") : PSTR(D_RESTARTING));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD "Arduino OTA " D_UPLOAD_STARTED));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD "Arduino OTA  %s. " D_RESTARTING), error_str);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD "Arduino OTA " D_SUCCESSFUL ". " D_RESTARTING));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD "Arduino OTA " D_ENABLED " " D_PORT " 8266"));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_COMMAND "Serial buffer overrun"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Used GPIOs %d"), GPIO_SENSOR_END);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("INI: gpio pin %d, mpin %d"), i, mpin);
+[/home/pafoxp/code-tasmota/tasmota/./support_tasmota.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: Ddsu666 error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_11_ddsu666.ino]
+.
+            //AddLog(LOG_LEVEL_INFO, PSTR("ebus crc error"));
+            AddLog(LOG_LEVEL_INFO, PSTR("illegal meter number!"));
+            AddLog(LOG_LEVEL_INFO, PSTR("gpio rx double define!"));
+              AddLog(LOG_LEVEL_INFO, PSTR("gpio tx double define!"));
+            AddLog(LOG_LEVEL_INFO, PSTR("illegal meter number!"));
+              AddLog(LOG_LEVEL_INFO, PSTR("too many decode lines: %d !"), dec_line);
+            AddLog(LOG_LEVEL_INFO, PSTR("illegal meter number!"));
+              AddLog(LOG_LEVEL_INFO, PSTR("too many decode lines: %d !"), dec_line);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_53_sml.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG, PSTR("FTC: SAM=%04X KEY=%X OLD=%X INV=%u NOI=%u FRM=%u OK=%u TIME=%lu Pin=%u"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR("FTC: ILL SAM=%04X"), Ftc532.sample);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_47_ftc532.ino]
+.
+          AddLog(LOG_LEVEL_DEBUG, PSTR("PRF: At %08u XsnsCall %d to Sensor %d took %u mS"), TasmotaGlobal.uptime, Function, x, profile_millis);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("PRF: At %08u XsnsCall %d took %u mS"), TasmotaGlobal.uptime, Function, profile_millis);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_interface.ino]
+.
+  AddLog( LOG_LEVEL_DEBUG, PSTR("%s: %s"), str, fstr );
+  //AddLog( LOG_LEVEL_NONE, PSTR("Config register %04x" ), config);
+  //AddLog( LOG_LEVEL_NONE, "Ina226Init");
+//  AddLog( LOG_LEVEL_NONE, "Size of Settings: %d bytes", sizeof(Settings));
+//    AddLog(LOG_LEVEL_DEBUG, "INA226: Initialization failed: No I2C support");
+  //AddLog( LOG_LEVEL_NONE, PSTR("Sizeof Ina226Cfg: %d" ), sizeof(Ina226Cfg));
+    //AddLog( LOG_LEVEL_NONE, "fs_i[%d]: %d", i, Settings.ina226_i_fs[i]);
+    //AddLog( LOG_LEVEL_NONE, PSTR("INA226 trying address %02x" ), addr );
+      AddLog( LOG_LEVEL_DEBUG, "No INA226 at address: %02X", addr);
+    //AddLog( LOG_LEVEL_NONE, PSTR("INA226 Config register %04x" ), config);
+    //AddLog( LOG_LEVEL_NONE, "Full Scale I in tenths of an amp: %u", Settings.ina226_i_fs[i]);
+    //AddLog( LOG_LEVEL_NONE, "Shunt R in micro-ohms: %u", r_shunt_uohms);
+    //AddLog( LOG_LEVEL_NONE, "INA226 Device %d calibration value: %04X", i, p->calibrationValue);
+  //AddLog( LOG_LEVEL_NONE, "Ina226Read");
+  //AddLog( LOG_LEVEL_NONE, "INA226 Device %d", device );
+  //AddLog( LOG_LEVEL_NONE, "Ina226EverySecond");
+          //AddLog( LOG_LEVEL_DEBUG, "INA226 Device %d dropped off, count: %d", device, reinit_count[device]);
+  //AddLog( LOG_LEVEL_NONE, "Command received: %d", XdrvMailbox.payload);
+  //AddLog( LOG_LEVEL_NONE, "Command data received: %s", XdrvMailbox.data);
+      //AddLog( LOG_LEVEL_NONE, "INA226 Command parameter: %d, value: %s", param_count, params[param_count]);
+        //AddLog( LOG_LEVEL_NONE, "r_shunt_uohms: %d", r_shunt_uohms);
+        //AddLog( LOG_LEVEL_NONE, "r_shunt_compacted: %04X", Settings.ina226_r_shunt[device]);
+        //AddLog( LOG_LEVEL_NONE, "i_fs: %d", Settings.ina226_i_fs[device]);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_54_ina226.ino]
+.
+  AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Goto label not found, label=%d pc=%d"), label, zigbee.pc);
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Label Abort (%d) not present, aborting Zigbee"), ZIGBEE_LABEL_ABORT);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "timeout, goto label %d"), zigbee.on_timeout_goto);
+      AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Invalid pc: %d, aborting"), zigbee.pc);
+          AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Stopping (%d)"), cur_d8);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_7_0_statemachine.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Deinit"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: User template"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Default template"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: PSRAM found"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: PSRAM not found"));
+//  AddLog(LOG_LEVEL_INFO, PSTR("CAM: heap check 1: %d"),ESP_getFreeHeap());
+    AddLog(LOG_LEVEL_INFO, PSTR("CAM: Init failed with error 0x%x"), err);
+//  AddLog(LOG_LEVEL_INFO, PSTR("CAM: heap check 2: %d"),ESP_getFreeHeap());
+    AddLog(LOG_LEVEL_INFO, PSTR("CAM: Init failed to get the frame on time"));
+  AddLog(LOG_LEVEL_INFO, PSTR("CAM: Initialized"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: dl_matrix3du_alloc failed"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: to rgb888 failed"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Can't get frame"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Can't allocate picstore"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: No image #: %d"), bnum);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("CAM: Sending image #: %d"), bnum+1);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP "Capture image"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Frame buffer could not be acquired"));
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("CAM: Image sent"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Handle camserver"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Create client"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Client fail"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Start stream"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Frame fail"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: JPEG compression failed"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Send fail"));
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: send frame"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Stream exit"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Root called"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Stream init"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("CAM: Stream exit"));
+        AddLog(LOG_LEVEL_INFO, PSTR("CAM: RTSP init"));
+          //  AddLog(LOG_LEVEL_INFO, PSTR("CAM: RTSP session frame"));
+            AddLog(LOG_LEVEL_INFO, PSTR("CAM: RTSP stopped"));
+            AddLog(LOG_LEVEL_INFO, PSTR("CAM: RTSP stream created"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_81_esp32_webcam.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("Sensor overload"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("DRV: FIFO Level : %d"), fifo_level);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("DRV: FIFO Dump : %s"), output);
+        AddLog(LOG_LEVEL_DEBUG, GESTURE_UP);
+        AddLog(LOG_LEVEL_DEBUG, GESTURE_DOWN);
+        AddLog(LOG_LEVEL_DEBUG, GESTURE_LEFT);
+        AddLog(LOG_LEVEL_DEBUG, GESTURE_RIGHT);
+          AddLog(LOG_LEVEL_DEBUG, GESTURE_LONG);
+          AddLog(LOG_LEVEL_DEBUG, GESTURE_NONE);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("DRV: %s Chip %X"), APDS9960_TAG, APDS9960_type);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_27_apds9960.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: power %d, ui %d, cnt %d, smpl%s, sum %d, mean %d, median %d"),
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_01_hlw8012.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_TIMER));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_09_timers.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("BL9: Invalid data"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("BL9: U %d, I %d, P %d, C %d, T %d"),
+            AddLog(LOG_LEVEL_DEBUG, PSTR("BL9: " D_CHECKSUM_FAILURE));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("BL9: Overload"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("BL9: Poll"));
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_14_bl0940.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("sps30 found with serial: %s"),dcode);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_44_sps30.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("HdcTriggerRead: failed to open the transaction for HDC_REG_TEMP. Status = %d"), status);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("HdcRead: failed to read HDC_REG_TEMP. Status = %d"), status);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("HdcRead: temperature raw data: 0x%04x; humidity raw data: 0x%04x"), temp_data, rh_data);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("HdcDetect: Address = 0x%02X already in use."), HDC1080_ADDR);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("HdcDetect: detected device with manufacturerId = 0x%04X and deviceId = 0x%04X"), hdc_manufacturer_id, hdc_device_id);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("Xsns65: I2C driver not enabled for this device."));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_65_hdc1080.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_RFR D_HOST D_CODE " 0x%04X, " D_RECEIVED " 0x%06X"), stored_hostcode, Arilux.rf_received_value);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_26_ariluxrf.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: SDM120 error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_08_sdm120.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "FreeRam %d, CPU %d%%(160MHz), Loops/sec %d"), ESP.getFreeHeap(), CPU_load, CPU_loops);
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "FreeRam %d, CPU %d%%(80MHz), Loops/sec %d"), ESP.getFreeHeap(), CPU_load, CPU_loops);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "FreeRam %d, FreeStack %d (%s)"), ESP.getFreeHeap(), 4 * (sp - g_pcont->stack), XdrvMailbox.data);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "FreeRam %d, FreeStack %d (%s)"), ESP.getFreeHeap(), sp - pxTaskGetStackStart(NULL), XdrvMailbox.data);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("Cnfg: Parms %s, Start row %d, rows %d"), parms, srow, mrow);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("Cnfg: Parms %s, Start row %d, rows %d"), parms, srow, mrow);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("Cnfg: Parms %s, Start row %d, rows %d"), parms, srow, mrow);
+  AddLog(LOG_LEVEL_INFO, PSTR("%03X: 0x%0LX (%lu) poked to 0x%0LX (%lu)"), address, data32, data32, ndata32, ndata32);
+    AddLog(LOG_LEVEL_INFO, PSTR("%06X:  %08X %08X %08X %08X  %08X %08X %08X %08X"), pos - flash_start,
+      AddLog(LOG_LEVEL_INFO, PSTR("I2C: Result %d"), result);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_99_debug.ino]
+.
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: Energy Total %4_f %sWh"), &value, (kwh) ? "k" : "");
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: Energy Total updated with hardware value"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: APower %d, HPower0 %d, HPower1 %d, HPower2 %d"), active_power, Energy.power_history[phase][0], Energy.power_history[phase][1], Energy.power_history[phase][2]);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: GlobTemp %1_f"), &TasmotaGlobal.temperature_celsius);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: Energy reset by " STR(ENERGY_WATCHDOG) " seconds invalid data"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_03_energy.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("Set time from DS3231 to RTC (" D_UTC_TIME ") %s, (" D_DST_TIME ") %s, (" D_STD_TIME ") %s"),
+    AddLog(LOG_LEVEL_INFO, PSTR("Write Time TO DS3231 from NTP (" D_UTC_TIME ") %s, (" D_DST_TIME ") %s, (" D_STD_TIME ") %s"),
+[/home/pafoxp/code-tasmota/tasmota/./xsns_33_ds3231.ino]
+.
+  //AddLog(LOG_LEVEL_INFO, PSTR("heap: %d"),mem);
+      AddLog(LOG_LEVEL_INFO, PSTR("heap: %d"),mem);
+    AddLog(LOG_LEVEL_INFO, PSTR("mailsize: %d"),blen);
+[/home/pafoxp/code-tasmota/tasmota/./sendemail_ESP32.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("MFR: RC522 Rfid Reader detected %s"), ver);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_80_mfrc522.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Request co-processor reset in dfu mode"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Update firmware"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "STM32 erase memory"));
+  AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Updating firmware v%u.%u with %u bytes"), Shd.dimmer.version_major, Shd.dimmer.version_minor, size);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Checksum: %x calculated: %x"), chksm, chksm_calc);
+    AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(SHD_LOGNAME "Tx Packet:"));
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(SHD_LOGNAME "Serial send timeout"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Serial %p"), ShdSerial);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set Brightness Want %d, Is %d"), Shd.req_brightness, Shd.dimmer.brightness);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set Fade Want %d, Is %d"), Settings.light_speed, Shd.dimmer.fade_rate);
+        AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "MCU v%d.%d, Brightness:%d(%d%%), Power:%d, Fade:%d"),
+                    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Adding %i mWh to todays usage from %lu to %lu"), (int)(kWhused * 10), Shd.last_power_check, Rtc.utc_time);
+                AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "ShdPacketProcess: Brightness:%d Power:%lu Voltage:%lu Current:%lu Fade:%d"), brightness, wattage_raw, voltage_raw, current_raw, fade_rate);
+                AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "ShdPacketProcess: Version: %u.%u"), Shd.buffer[pos + 1], Shd.buffer[pos]);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Request co-processor reset in app mode"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Poll"));
+    AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Sending version command"));
+        AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Loading params: %s"), SettingsText(SET_SHD_PARAM));
+    AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Shelly Dimmer Driver Starting Tx %d Rx %d"), Pin(GPIO_TXD), Pin(GPIO_RXD));
+            AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Shelly Dimmer Co-processor Version v%u.%u"), Shd.dimmer.version_major, Shd.dimmer.version_minor);
+            AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(SHD_LOGNAME "Rx Packet:"));
+            AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Byte %i of received data frame is invalid. Rx Packet:"), Shd.byte_counter);
+    AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(SHD_LOGNAME "SetChannels:"));
+    AddLog(LOG_LEVEL_INFO, PSTR(SHD_LOGNAME "Set Power, Power 0x%02x"), XdrvMailbox.index);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set to trailing edge"));
+            AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set to leading edge"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set warmup brightness to %d%%"), XdrvMailbox.payload);
+        AddLog(LOG_LEVEL_DEBUG, PSTR(SHD_LOGNAME "Set warmup time to %dms"), XdrvMailbox.payload);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_45_shelly_dimmer.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_02_ssd1306.ino]
+.
+      AddLog(LOG_LEVEL_ERROR, PSTR("DSL: Remain DeepSleep %d"), RtcSettings.ultradeepsleep);
+    AddLog(LOG_LEVEL_ERROR, PSTR("DSL: Reset wrong settings wakeup: %ld, slip %ld"), RtcSettings.nextwakeup, RtcSettings.deepsleep_slip );
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION "Sleeping"));  // Won't show in GUI
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_29_deepsleep.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BUTTON " " D_CODE " %04X"), Button.dual_code);
+          AddLog(LOG_LEVEL_INFO, PSTR("PLOT: %u, %u, %u,"), button_index+1, _value, Button.touch_hits[button_index]);  // Button number (1..4), value, continuous hits under threshold
+          AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BUTTON "%d " D_LEVEL_10), button_index +1);
+          AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BUTTON "%d " D_LEVEL_01), button_index +1);
+              AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BUTTON "%d " D_IMMEDIATE), button_index +1);
+            AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_BUTTON "%d " D_MULTI_PRESS " %d"), button_index +1, Button.press_counter[button_index]);
+//                            AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Relay%d found on GPIO%d"), Button.press_counter[button_index], Pin(GPIO_REL1, Button.press_counter[button_index]-1));
+[/home/pafoxp/code-tasmota/tasmota/./support_button.ino]
+.
+  AddLog(LOG_LEVEL_INFO,PSTR("SR04: Mode %d"), sr04_type);
+    AddLog(LOG_LEVEL_ERROR,PSTR("SR04: Reading CRC error."));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_22_sr04.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("ARM: Send Serial Packet Dim Values=%d,%d"), Armtronix.dim_state[0],Armtronix.dim_state[1]);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("ARM: Send Dim Level skipped due to already set. Value=%d,%d"), Armtronix.dim_state[0],Armtronix.dim_state[1]);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("ARM: Request MCU state"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("ARM: Send CMND_CHANNEL=%s"), scmnd );
+  AddLog(LOG_LEVEL_DEBUG, PSTR("ARM: Set WiFi LED to state %d (%d)"), wifi_state, WifiState());
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_18_armtronix_dimmers.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shtr%d Real %d, Start %d, Stop %d, Dir %d, Delay %d, Rtc %s [s], Freq %d, PWM %d"),
+            //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Accelerator i=%d -> %d"),i, Shutter[i].accelerator);
+        AddLog(LOG_LEVEL_ERROR, PSTR("SHT: RESET/INIT CALIBRATION MATRIX DIV 0"));
+        //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Realposition TEMP1: %d, %d %%, coeff %d"), realpos, percent, Settings.shuttercoeff[k][index]);
+        //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Shutter[%d].open_max: %d"),index, Shutter[index].open_max);
+          //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Realposition TEMP3: %d, %d %%, coeff %d"), realpos, percent, Settings.shuttercoeff[k][index]);
+          //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Realposition TEMP2: %d, %d %%, coeff %d"), addon, (calibrate_pos[k+1] - calibrate_pos[k]), (Settings.shuttercoeff[k][index] -Settings.shuttercoeff[k-1][index]));
+        //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Realpercent TEMP1: %d %%, %d, coeff %d"), realpercent, realpos, Shutter[index].open_max * calibrate_pos[j+1] / 100);
+        //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Shutter[%d].open_max: %d"),index, Shutter[index].open_max);
+          //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Realpercent TEMP2: %d %%, delta %d, %d, coeff %d"), addon,( realpos - (Shutter[index].open_max * calibrate_pos[j] / 100) ) , (calibrate_pos[j+1] - calibrate_pos[j])* Shutter[index].open_max/100, (Settings.shuttercoeff[j][index] -Settings.shuttercoeff[j-1][index]));
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Mode undef.. calculate..."));
+          //AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Interlock state i=%d %d, flag %d, Shuttermask %d, MaskedIL %d"),i, Settings.interlock[i], Settings.flag.interlock,ShutterGlobal.RelayShutterMask, Settings.interlock[i]&ShutterGlobal.RelayShutterMask);
+        //AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shtr%d Shutter[i].open_max %d, 50perc:%d, 0:%d, 1:%d 2:%d"), i, Shutter[i].open_max, Settings.shutter_set50percent[i], Settings.shuttercoeff[0][i],Settings.shuttercoeff[1][i],Settings.shuttercoeff[2][i]);
+      //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d Openvel %d, Closevel: %d"),i, ShutterGlobal.open_velocity_max, Shutter[i].close_velocity_max);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shtr%d Init. Pos %d, Inverted %d, Locked %d, End stop time enabled %d, webButtons inverted %d"),
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shtr%d Real Pos %d"), i+1,Shutter[i].real_position);
+  //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: rules_flag.shutter_moving: %d, moved %d"), TasmotaGlobal.rules_flag.shutter_moving, TasmotaGlobal.rules_flag.shutter_moved);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Velocity %ld, Delta %d"), Shutter[i].pwm_velocity, Shutter[i].accelerator );
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Remain steps %d"), missing_steps);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Real %d, Pulsecount %d, tobe %d, Start %d"), Shutter[i].real_position,RtcSettings.pulse_counter[i],  (uint32_t)(Shutter[i].target_position-Shutter[i].start_position)*Shutter[i].direction*ShutterGlobal.open_velocity_max/RESOLUTION/STEPS_PER_SECOND, Shutter[i].start_position);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Stop Shutter %d. Switchmode %d"), i+1,Shutter[i].switch_mode); // fix log to indicate correct shutter number
+      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Time %d, cStop %d, cVelo %d, mVelo %d, aVelo %d, mRun %d, aPos %d, nStop %d, Trgt %d, mVelo %d, Dir %d"),
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Delay Start. var%d <99>=<%s>, max10s?"),i+i, rules_vars[i]);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Delay Start. Done"));
+    //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: real %d, start %d, counter %d,freq_max %d, dir %d, freq %d"),Shutter[i].real_position, Shutter[i].start_position ,RtcSettings.pulse_counter[i],ShutterGlobal.open_velocity_max , Shutter[i].direction ,ShutterGlobal.open_velocity_max );
+  //AddLog(LOG_LEVEL_DEBUG,  PSTR("SHT: Start shtr%d from %d to %d in direction %d"), i, Shutter[i].start_position, Shutter[i].target_position, Shutter[i].direction);
+  					AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d, Switch OFF motor. Target %ld, Source %s, Powerstate %ld, RelayMask %d, ManualChange %d"),
+              //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d Switch OFF motor."),i);
+                //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d Switch OFF motor."),i);
+             AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d Garage. NewTarget %d"), i, Shutter[i].target_position);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d, Target %ld, Powerstatelocal %d"), i+1, Shutter[i].target_position, powerstate_local);
+            AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: ShutterButton[i] %ld, ShutterIndex %d, ButtonPressCounter[i] %d, minShutterButtonPressCounter %d, i %d"),
+              AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: minShutterButtonPressCounter %d"), min_shutterbutton_press_counter);
+            AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Simultanous press detected"));
+              //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Shtr%d -> %d"), shutter_index+1, position);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Payload toggle: %d, i %d, dir %d, lastdir %d"), XdrvMailbox.payload, XdrvMailbox.index, dir, Shutter[XdrvMailbox.index-1].lastdirection);
+  //AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Payload open: %d, i %d"), XdrvMailbox.payload, XdrvMailbox.index);
+  //AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Payload close: %d, i %d"), XdrvMailbox.payload, XdrvMailbox.index);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Stop moving %d: dir: %d"), XdrvMailbox.index, Shutter[i].direction);
+      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Pos. in: payload %s (%d), payload %d, idx %d, src %d"), XdrvMailbox.data , XdrvMailbox.data_len, XdrvMailbox.payload , XdrvMailbox.index, TasmotaGlobal.last_source );
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: lastsource %d:, real %d, target %d, payload %d"), TasmotaGlobal.last_source, Shutter[index].real_position ,Shutter[index].target_position,target_pos_percent);
+                  AddLog(LOG_LEVEL_INFO, PSTR("SHT: Garage not move in this direction: %d"), Shutter[index].switch_mode == SHT_PULSE);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shtr%d Init1. pwmmin %d, pwmmax %d"), XdrvMailbox.index , Settings.shutter_pwmrange[0][XdrvMailbox.index -1], Settings.shutter_pwmrange[1][XdrvMailbox.index -1]);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("SHT: Shuttercoeff %d, i %d, Value %d, MeasuredValue %d"), i,XdrvMailbox.index -1,Settings.shuttercoeff[i][XdrvMailbox.index -1], messwerte[i]);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Switched relay %d by %s"), ShutterGlobal.RelayCurrentMask,GetTextIndexed(stemp1, sizeof(stemp1), TasmotaGlobal.last_source, kCommandSource));
+          //AddLog(LOG_LEVEL_ERROR, PSTR("SHT: Skip relay change %d"), i+1);
+          AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SHT: Skipping switch off relay %d"), i);
+        AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterPercentToRealPosition error %d: %d <-> %d"),result, ShutterPercentToRealPosition(input_percent[k] , 0), result_percent[i][j][k]);
+    AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterPercentToRealPosition:     PASS"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterPercentToRealPosition:     FAIL"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterRealToPercentPosition error %d: %d <-> %d"),result, ShutterRealToPercentPosition(result_percent[i][j][k] , 0), output_percent[k]);
+    AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterRealToPercentPosition:     PASS"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("SHT: ShutterRealToPercentPosition:     FAIL"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_27_shutter.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: SDM630 error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_10_sdm630.ino]
+.
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Send %s"), tx_buffer);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Rcvd %s"), Ps16dz.rx_buffer);
+//            AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Switch %d"), switch_state);
+//            AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Brightness %d"), Ps16dz.dimmer);
+//            AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Sequence %s"), token3);
+//          AddLog(LOG_LEVEL_DEBUG, PSTR("PSZ: Update"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_19_ps16dz_dimmer.ino]
+.
+      //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("MAX44009 %x: %x, %x"), max44009_address, (int)buffer1, (int)buffer2);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_41_max44009.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG,PSTR("connected %s"), kMI32DeviceType[(MIBLEsensors[MI32.state.sensor].type)-1]);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("disconnected %s"), kMI32DeviceType[(MIBLEsensors[MI32.state.sensor].type)-1]);
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("Advertised Device: %s Buffer: %u"),advertisedDevice->getAddress().toString().c_str(),advertisedDevice->getServiceData(0).length());
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("No Xiaomi Device: %s Buffer: %u"),advertisedDevice->getAddress().toString().c_str(),advertisedDevice->getServiceData(0).length());
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("UUID: %x"),UUID);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("No Xiaomi Device: %x: %s Buffer: %u"), UUID, advertisedDevice->getAddress().toString().c_str(),advertisedDevice->getServiceData(0).length());
+  AddLog(LOG_LEVEL_DEBUG,PSTR("Scan ended"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("Notified length: %u"),length);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("known key"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("New key"));
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("Decrypt Size of Buffer: %u, payload length: %u"), _bufSize, data_len);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("nonceCnt1 and 2: %02x %02x %02x"),nonce[9],nonce[10],nonce[11]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("tag: %02x %02x %02x %02x"),tag[0],tag[1],tag[2],tag[3]);
+  AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Search key for MAC: %02x  %02x  %02x  %02x  %02x  %02x"), packet->MAC[0], packet->MAC[1], packet->MAC[2], packet->MAC[3], packet->MAC[4], packet->MAC[5]);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Decryption Key found"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("M32: No Key found !!"));
+  AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Err:%i, Decrypted : %02x  %02x  %02x  %02x  %02x "), ret, packet->payload[1],packet->payload[2],packet->payload[3],packet->payload[4],packet->payload[5]);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Counters: %x %x"),MIBLEsensors[i].lastCnt, counter);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("Old packet"));
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s: new %s at slot: %u"),D_CMND_MI32, kMI32DeviceType[_type-1],MIBLEsensors.size()-1);
+  AddLog(LOG_LEVEL_INFO,PSTR("M32: pre-init"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Put WiFi modem in sleep mode"));
+    AddLog(LOG_LEVEL_INFO,PSTR("M32: Init BLE device"));
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: found any clients in the list"),D_CMND_MI32);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: got connected client"),D_CMND_MI32);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: got disconnected client"),D_CMND_MI32);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: will create client"),D_CMND_MI32);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: did create new client"),D_CMND_MI32);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: did not connect client"),D_CMND_MI32);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Start scanning"),D_CMND_MI32);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Start sensor connections"),D_CMND_MI32);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: with sensor: %u"),D_CMND_MI32, MI32.state.sensor);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Start time set"),D_CMND_MI32);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: with sensor: %u"),D_CMND_MI32, MI32.state.sensor);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Start unit set"),D_CMND_MI32);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("%s: with sensor: %u"),D_CMND_MI32, MI32.state.sensor);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("MJYD2S: %x"),_beacon.frame);
+        AddLog(LOG_LEVEL_DEBUG,PSTR("MJYD2S: special packet"));
+  AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Decryption failed with error: %d"),decryptRet);
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s at slot %u with payload type: %02x"), kMI32DeviceType[MIBLEsensors[_slot].type-1],_slot,_beacon.type);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 1: U16:  %u Button"), MIBLEsensors[_slot].Btn );
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 4: U16:  %u Temp"), _beacon.temp );
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 6: U16:  %u Hum"), _beacon.hum);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 7: U24: %u Lux"), _beacon.lux & 0x00ffffff);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 8: U8: %u Moisture"), _beacon.moist);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 9: U16: %u Fertility"), _beacon.fert);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode a: U8: %u %%"), _beacon.bat);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode d: U16:  %x Temp U16: %x Hum"), _beacon.HT.temp,  _beacon.HT.hum);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("PIR: primary"),MIBLEsensors[_slot].lux );
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("Mode 17: NMT: %u seconds"), _beacon.NMT);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("PIR: primary"),MIBLEsensors[_slot].lux );
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s at slot %u"), kMI32DeviceType[MIBLEsensors[_slot].type-1],_slot);
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s at slot %u"), kMI32DeviceType[MIBLEsensors[_slot].type-1],_slot);
+    // AddLog(LOG_LEVEL_INFO, PSTR("%02x %02x %02x %02x"),(uint8_t)buf[0], (uint8_t)buf[1],(uint8_t)buf[2],(uint8_t)buf[3]);
+  AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Beacon:____________"));
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("Flags: %02x"), payload[i+2]);
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("UUID: %04x"), *UUID);
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("Name: %s"), (char*)&payload[i+2]);
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("TxPow: %02u"), payload[i+2]);
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("CID: %04x"), *CID);
+        AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("SVC: %04x"), *SVC);
+    AddLog(LOG_LEVEL_INFO,PSTR("M32: Scan buffer full"));
+      // AddLog(LOG_LEVEL_INFO,PSTR("M32: known device"));
+    AddLog(LOG_LEVEL_INFO,PSTR("M32: Beacon%u deactivated"), index);
+    AddLog(LOG_LEVEL_INFO,PSTR("M32: Beacon added with MAC: %s"), _MAC);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("%s: T * 100: %u, H: %u, V: %u"),D_CMND_MI32,LYWSD0x_HT.temp,LYWSD0x_HT.hum, LYWSD0x_HT.volt);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Battery: %u"),D_CMND_MI32,_buf[0]);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Firmware: %s"),D_CMND_MI32,MIBLEsensors[_slot].firmware);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: active sensor now: %u of %u"),D_CMND_MI32, MI32.state.sensor, MIBLEsensors.size()-1);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("will connect to %s"),kMI32DeviceType[MIBLEsensors[MI32.state.sensor].type-1] );
+        AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Will set Time"));
+        AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Will set Unit"));
+        // AddLog(LOG_LEVEL_INFO,PSTR("M32: Size of ilist: %u"), MIBLEBlockList.size());
+        // AddLog(LOG_LEVEL_INFO,PSTR("M32: Size of ilist: %u"), MIBLEBlockList.size());
+[/home/pafoxp/code-tasmota/tasmota/./xsns_62_esp32_mi.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: SDM72 error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_18_sdm72.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("NRF: Started"));
+  // AddLog(LOG_LEVEL_INFO,PSTR("MINRF chip NOT !!!! connected"));
+    // AddLog(LOG_LEVEL_INFO,PSTR("NRF: _lsfrlist: %x, chan: %u, mode: %u"),_lsfrlist[MINRF.currentChan],MINRF.currentChan, MINRF.packetMode);
+                            if(e.showedUp>2) AddLog(LOG_LEVEL_INFO,PSTR("NRF: Beacon %02u: %02X%02X%02X%02X%02X%02X Cid: %04X Svc: %04X UUID: %04X"),i,e.MAC[0],e.MAC[1],e.MAC[2],e.MAC[3],e.MAC[4],e.MAC[5],e.cid,e.svc,e.uuid);
+      // AddLog(LOG_LEVEL_INFO,PSTR("NRF: ADVk: %02x %02x %02x %02x %02x %02x"),MINRF.buffer.bleAdv.MAC[0],MINRF.buffer.bleAdv.MAC[1],MINRF.buffer.bleAdv.MAC[2],MINRF.buffer.bleAdv.MAC[3],MINRF.buffer.bleAdv.MAC[4],MINRF.buffer.bleAdv.MAC[5]);
+  AddLog(LOG_LEVEL_INFO,PSTR("NRF: Beacon activated: %02x:%02x:%02x:%02x:%02x:%02x"),MINRF.beacon.MAC[0],MINRF.beacon.MAC[1],MINRF.beacon.MAC[2],MINRF.beacon.MAC[3],MINRF.beacon.MAC[4],MINRF.beacon.MAC[5]);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: unsupported ADV %02x %02x"), _buf[8],_buf[9]);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Beacon:____________"));
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Size: %u AD: %x i:%u"), size, ADtype,i);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Flags: %02x"), _buf[i+2]);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: UUID: %04x"), entry->uuid);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Name: %s"), (char*)&_buf[i+2]);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: TxPow: %02u"), _buf[i+2]);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Cid: %04x"), entry->cid);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("%s"),_stemp);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Svc: %04x"), entry->svc);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("%s"),_stemp);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("%s"),_stemp);
+    AddLog(LOG_LEVEL_DEBUG, stemp);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("to decrypt: %02x %02x %02x %02x %02x %02x %02x %02x"),(uint8_t)_buf[0],(uint8_t)_buf[1],(uint8_t)_buf[2],(uint8_t)_buf[3],(uint8_t)_buf[4],(uint8_t)_buf[5],(uint8_t)_buf[6],(uint8_t)_buf[7]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("          : %02x %02x %02x %02x %02x %02x %02x %02x"),(uint8_t)_buf[8],(uint8_t)_buf[9],(uint8_t)_buf[10],(uint8_t)_buf[11],(uint8_t)_buf[12],(uint8_t)_buf[13],(uint8_t)_buf[14],(uint8_t)_buf[15]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("          : %02x %02x %02x %02x %02x               "),(uint8_t)_buf[16],(uint8_t)_buf[17],(uint8_t)_buf[18],(uint8_t)_buf[19],(uint8_t)_buf[20]);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("have key"));
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("MAC in packet: %02x  %02x  %02x  %02x  %02x  %02x"), packet->MAC[0], packet->MAC[1], packet->MAC[2], packet->MAC[3], packet->MAC[4], packet->MAC[5]);
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("MAC in vector: %02x  %02x  %02x  %02x  %02x  %02x"), MIBLEbindKeys[i].MAC[0], MIBLEbindKeys[i].MAC[1], MIBLEbindKeys[i].MAC[2], MIBLEbindKeys[i].MAC[3], MIBLEbindKeys[i].MAC[4], MIBLEbindKeys[i].MAC[5]);
+  AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: Err:%i, Decrypted : %02x  %02x  %02x  %02x  %02x "), ret, output[0],output[1],output[2],output[3],output[4]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("nonce: %02x  %02x  %02x  %02x  %02x  %02x %02x  %02x  %02x  %02x  %02x  %02x"), nonce[0], nonce[1], nonce[2], nonce[3], nonce[4], nonce[5], nonce[6], nonce[7], nonce[8], nonce[9], nonce[10], nonce[11]);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("have key"));
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("MAC in packet: %02x  %02x  %02x  %02x  %02x  %02x"), packet->MAC[0], packet->MAC[1], packet->MAC[2], packet->MAC[3], packet->MAC[4], packet->MAC[5]);
+    // AddLog(LOG_LEVEL_DEBUG,PSTR("MAC in vector: %02x  %02x  %02x  %02x  %02x  %02x"), MIBLEbindKeys[i].MAC[0], MIBLEbindKeys[i].MAC[1], MIBLEbindKeys[i].MAC[2], MIBLEbindKeys[i].MAC[3], MIBLEbindKeys[i].MAC[4], MIBLEbindKeys[i].MAC[5]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("size %u"),packet->payloadSize);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("size %u , offset %u"),_size,_offset);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("BEARSSL: Output : %02x  %02x  %02x  %02x  %02x %02x  %02x"), _output[0], _output[1],_output[2],_output[3],_output[4],_output[5],_output[6]);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("BEARSSL: Err:%i, Decrypted : %02x  %02x  %02x  %02x  %02x %02x  %02x"), ret, _output[0], _output[1],_output[2],_output[3],_output[4],_output[5],_output[6]);
+  AddLog(LOG_LEVEL_INFO,PSTR("NRF: new %s at slot: %u"),kMINRFDeviceType[_type-1], MIBLEsensors.size()-1);
+    // AddLog(LOG_LEVEL_INFO,PSTR("NRF: YEE-RC button: %u Long: %u"), MINRF.buffer.miBeacon.Btn.num, MINRF.buffer.miBeacon.Btn.longPress);
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: NLIGHT: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x"),_buf[0],_buf[1],_buf[2],_buf[3],_buf[4],_buf[5],_buf[6],_buf[7],_buf[8],_buf[9],_buf[10],_buf[11],_buf[12],_buf[13],_buf[14],_buf[15],_buf[16],_buf[17],_buf[18]);
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: NLIGHT:%x"),_frame_PID);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: NLIGHT %u: events: %u, Cnt:%u"), _idx,MIBLElights[_idx].events, MIBLElights[_idx].lastCnt);
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: MJYD2S: %02u %04x %04x %04x %02x"),_packet->payloadSize,_packet->UUID,_packet->frameCtrl,_packet->PID,_packet->frameCnt);
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: PAYLOAD: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x"),_packet->data[0],_packet->data[1],_packet->data[2],_packet->data[3],_packet->data[4],_packet->data[5],_packet->data[6],_packet->data[7],_packet->data[8],_packet->data[9],_packet->data[10],_packet->data[11],_packet->data[12],_packet->data[13],_packet->data[14],_packet->data[15],_packet->data[16],_packet->data[17]);
+        // AddLog(LOG_LEVEL_INFO,PSTR("NRF: MJYD2S after motion:%x"),_packet->frameCnt);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: MJYD2S secondary PIR"));
+                AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: MJYD2S primary PIR"));
+            // AddLog(LOG_LEVEL_DEBUG,PSTR("NRF: MJYD2S NMT: %u"), MIBLElights[_idx].NMT );
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: NLIGHT:%x"),_frame_PID);
+        // AddLog(LOG_LEVEL_INFO,PSTR("NRF: NLIGHT!!"));
+        // AddLog(LOG_LEVEL_INFO,PSTR("NRF: MJYD2S !!"));
+      // AddLog(LOG_LEVEL_INFO,PSTR("NRF: NLIGHT: Known MAC!!"));
+  AddLog(LOG_LEVEL_INFO,PSTR("NRF: new %s at slot: %u"),kMINRFDeviceType[_type-1], MIBLElights.size()-1);
+  // AddLog(LOG_LEVEL_DEBUG,PSTR("known %s at slot %u"), kMINRFDeviceType[MIBLEsensors[_slot].type-1],_slot);
+  // AddLog(LOG_LEVEL_INFO,PSTR("NRF: ATC: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x"),MINRF.buffer.raw[0],MINRF.buffer.raw[1],MINRF.buffer.raw[2],MINRF.buffer.raw[3],MINRF.buffer.raw[4],MINRF.buffer.raw[5],MINRF.buffer.raw[6],MINRF.buffer.raw[7],MINRF.buffer.raw[8],MINRF.buffer.raw[9],MINRF.buffer.raw[10],MINRF.buffer.raw[11]);
+    // if (MINRF.packetMode==ATC) AddLog(LOG_LEVEL_INFO,PSTR("no ATC.."));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_61_MI_NRF24.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("Script: nv=%d, tv=%d, vns=%d, ram=%d"), nvars, svars, index, glob_script_mem.script_mem_size);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPNP "SCRIPT UDP started"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPNP "SCRIPT UDP failed"));
+      //AddLog(LOG_LEVEL_DEBUG, PSTR("UDP: Packet %s - %d - %s"), packet_buffer, len, script_udp_remote_ip.toString().c_str());
+      AddLog(LOG_LEVEL_DEBUG, PSTR("UDP: Packet %s - %d - %_I"), packet_buffer, len, (uint32_t)glob_script_mem.script_udp_remote_ip);
+            AddLog(LOG_LEVEL_DEBUG, PSTR("num var found - %s - %d - %d"), vnam, res, index);
+            AddLog(LOG_LEVEL_DEBUG, PSTR("string var found - %s - %d - %d"), vnam, res, index);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("num var updated - %s"), sbuf);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("string var updated - %s"), sbuf);
+                AddLog(LOG_LEVEL_INFO, PSTR("open file for read %d"), cnt);
+                  AddLog(LOG_LEVEL_INFO, PSTR("open file for write %d"), cnt);
+                  AddLog(LOG_LEVEL_INFO, PSTR("open file for append %d"), cnt);
+                AddLog(LOG_LEVEL_INFO, PSTR("file open failed"));
+            AddLog(LOG_LEVEL_INFO, PSTR("closing file %d"), ind);
+            //AddLog(LOG_LEVEL_INFO, PSTR("picture save: %d"), len);
+  AddLog(LOG_LEVEL_INFO, str);
+                  //AddLog(LOG_LEVEL_INFO, tmp);
+                      AddLog(glob_script_mem.script_loglevel&0x7f, PSTR("Script: performs \"%s\""), tmp);
+  //AddLog(LOG_LEVEL_INFO, PSTR("HTP: file upload execute"));
+    //AddLog(LOG_LEVEL_INFO, PSTR("HTP: upload start"));
+    //AddLog(LOG_LEVEL_INFO, PSTR("HTP: upload file %s, %d"),upload.filename.c_str(),upload.totalSize);
+    //AddLog(LOG_LEVEL_INFO, PSTR("HTP: upload write"));
+      //AddLog(LOG_LEVEL_INFO, PSTR("HTP: write %d - %d"),csiz,uplsize);
+      AddLog(LOG_LEVEL_INFO, PSTR("HTP: upload error"));
+      //AddLog(LOG_LEVEL_INFO, PSTR("HTP: upload success"));
+      AddLog(LOG_LEVEL_INFO,PSTR("file not found"));
+      AddLog(LOG_LEVEL_INFO,PSTR("could not open file"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_SCRIPT));
+      AddLog(LOG_LEVEL_INFO, PSTR("script error: must start with >D"));
+  //AddLog(LOG_LEVEL_INFO,PSTR("in string: %s len = %d"),glob_script_mem.script_ram,strlen(glob_script_mem.script_ram));
+    AddLog(LOG_LEVEL_INFO,PSTR("script compressed to %d bytes = %d %%"),len_compressed,len_compressed * 100 / strlen(glob_script_mem.script_ram));
+    AddLog(LOG_LEVEL_INFO, PSTR("script compress error: %d"), len_compressed);
+      AddLog(LOG_LEVEL_INFO, PSTR("script init error: %d"), res);
+        //AddLog(LOG_LEVEL_INFO, PSTR("Hue: %s - %d "),response->c_str(), hue_devs);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("Hue: %d"), hue_devs);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE " Result (%s)"), response.c_str());
+  //AddLog(LOG_LEVEL_INFO,PSTR(">> %s, %s, %d, %d "),XdrvMailbox.topic, XdrvMailbox.data, XdrvMailbox.payload, XdrvMailbox.index);
+  //AddLog(LOG_LEVEL_INFO,">>%d",res);
+  AddLog(LOG_LEVEL_INFO, PSTR("JSON: parsing json key: %s from json: %s"), cp, jpath);
+    AddLog(LOG_LEVEL_INFO, PSTR("JSON: cmp current key: %s"), selem);
+      AddLog(LOG_LEVEL_INFO, PSTR("JSON: obj invalid: %s"), selem);
+      AddLog(LOG_LEVEL_INFO, PSTR("JSON: token invalid: %s"), selem);
+    AddLog(LOG_LEVEL_INFO, PSTR("Script: MQTT Topic %s, Event %s"), XdrvMailbox.topic, XdrvMailbox.data);
+    AddLog(LOG_LEVEL_INFO, PSTR("Script: Match MQTT message Topic %s with subscription topic %s and key %s"), sTopic.c_str(), event_item.Topic.c_str(),event_item.Key.c_str());
+          AddLog(LOG_LEVEL_INFO, PSTR("Script: setting script var %s"), sbuffer);
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("Script: Subscribe command with parameters: %s, %s, %s."), event_name.c_str(), topic.c_str(), key.c_str());
+      // AddLog(LOG_LEVEL_DEBUG, PSTR("Script: New topic: %s."), topic.c_str());
+    //AddLog(LOG_LEVEL_INFO, PSTR("HTTP GET %s"),hbuff);
+    //AddLog(LOG_LEVEL_INFO, PSTR("HTTP POST %s - %s"),hbuff, request);
+  //AddLog(LOG_LEVEL_INFO, PSTR("HTTP RESULT %s"), TasmotaGlobal.mqtt_data);
+        AddLog(LOG_LEVEL_INFO,PSTR("UFILESYSTEM OK!"));
+        AddLog(LOG_LEVEL_INFO,PSTR("UFILESYSTEM fail, using compression!"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_10_scripter.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPNP D_MULTICAST_DISABLED));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPNP D_MULTICAST_REJOINED));
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPNP D_MULTICAST_REJOINED));
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPNP D_MULTICAST_JOIN_FAILED));
+      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("UDP: Packet (%d)"), len);
+      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("UDP: Packet (%d/%d)"), len, pack_len);
+              AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("UDP: HUE"));
+[/home/pafoxp/code-tasmota/tasmota/./support_udp.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPNP D_WEMO " " D_JSON_TYPE " %d, %s " D_TO " %s:%d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP "%s from %s"), msg, Webserver->client().remoteIP().toString().c_str());
+//  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("\n%s"), event);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_21_wemo.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("TYA: TuyaMCU Stat Topic %s"), (Settings.tuyamcu_topic ? PSTR("enabled") : PSTR("disabled")));
+      AddLog(LOG_LEVEL_ERROR, PSTR("TYA: TuyaMcu Invalid function id=%d"), parm[0]);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Send dim skipped value %d for dpid %d"), duty, dpid);  // due to 0 or already set
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Cannot set dimmer. Dimmer Id unknown"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: TX RGB hex %s to dpId %d"), hex_char, dpid);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Read MCU state"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: fnId=%d is set for dpId=%d"), fnId, Tuya.buffer[dpidStart]);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX Relay-%d --> MCU State: %s Current State:%s"), fnId - TUYA_MCU_FUNC_REL1 + 1, Tuya.buffer[dpidStart + 4]?"On":"Off",bitRead(TasmotaGlobal.power, fnId - TUYA_MCU_FUNC_REL1)?"On":"Off");
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX Relay-%d-Inverted --> MCU State: %s Current State:%s"), fnId - TUYA_MCU_FUNC_REL1_INV + 1, Tuya.buffer[dpidStart + 4]?"Off":"On",bitRead(TasmotaGlobal.power, fnId - TUYA_MCU_FUNC_REL1_INV) ^ 1?"Off":"On");
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX Switch-%d --> MCU State: %d Current State:%d"),fnId - TUYA_MCU_FUNC_SWT1 + 1,Tuya.buffer[dpidStart + 4], SwitchGetVirtual(fnId - TUYA_MCU_FUNC_SWT1));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX value %d from dpId %d "), packetValue, Tuya.buffer[dpidStart]);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Rx ID=%d Voltage=%d"), Tuya.buffer[dpidStart], packetValue);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Rx ID=%d Current=%d"), Tuya.buffer[dpidStart], packetValue);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Rx ID=%d Active_Power=%d"), Tuya.buffer[dpidStart], packetValue);
+  AddLog(LOG_LEVEL_INFO, PSTR("TYA: MCU Product ID: %.*s"), dataLength, data);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Heartbeat"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Detected MCU restart"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX WiFi Reset"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX WiFi LED set ACK"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX MCU configuration Mode=%d"), Tuya.buffer[5]);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: RX unknown command"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Request MCU configuration at %d bps"), baudrate);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Reset GPIO triggered"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("TYA: Set WiFi LED %d (%d)"), Tuya.wifi_state, WifiState());
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_16_tuyamcu.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SX1: Solax X1 Inverter Init"));
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_12_solaxX1.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("generated device keys: %08x %08x"), jaroliftDevice.device_key_msb, jaroliftDevice.device_key_lsb);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("KLQ: count: %08x"), jaroliftDevice.count);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("pack high: %08x"), jaroliftDevice.pack>>32);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("pack low:  %08x"), jaroliftDevice.pack);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("CC1101 done."));
+      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("calling command"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_36_keeloq.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CKS=%02X CFR=%02X"), checksum, (frame >> 4) & 0x7);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("BS814: KEY=%0X OLD=%0X LVL=%u CKS=%u STP=%u OK=%u CLK=%u DAT=%u"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_51_bs814a2.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), txt);
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), mtx_buffer);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_03_matrix.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: Op inv svc"));
+    AddLog(LOG_LEVEL_ERROR,PSTR("M32: Can't get a newOperation"));
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Got a newOperation"));
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: No addr"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: MI Bad service string %s"), svc);
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: MI Bad characteristic string %s"), charactistic);
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: MI Bad notifycharacteristic string %s"), notifychar);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: MI s:%d op:%s"), slot, BLE_ESP32::BLETriggerResponse(op).c_str());
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: Failed to queue new operation - deleted"));
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO, PSTR("M32: Req batt read slot %d type %d queued"), slot, MIBLEsensors[slot].type);
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO, PSTR("M32: Req batt read slot %d type %d non-queued res %d"), slot, MIBLEsensors[slot].type, res);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("M32: readOneSensor - already active reading %d"), MI32.sensorreader.slot-1);
+      //AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: readOneSensor past end of slots - %d > %d"), MI32.sensorreader.slot, MIBLEsensors.size());
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: genericSensorReadFn slot %d res %d"), MI32.sensorreader.slot, res);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("M32: readOneSensor no ops available slot %d res %d"), MI32.sensorreader.slot, res);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: readOneSensor reading for slot %d res %d"), MI32.sensorreader.slot-1, res);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO, PSTR("M32: Batt loop complete at %d"), MI32.batteryreader.slot);
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_INFO, PSTR("M32: Batt loop will complete at %d"), MI32.batteryreader.slot);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: MI op complete context %x"), context);
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: Slot mac changed during an operation"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: Operation failed %d for %s"), op->state, slotMAC);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Time write for %s complete"), slotMAC);
+      AddLog(LOG_LEVEL_INFO, PSTR("M32: Batt read slot %d done state %x"), slot, op->state);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Unit write for %s complete"), slotMAC);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Unit read for %s complete %d"), slotMAC, currUnit);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Unit toggle for %s complete %d->%d; datasize was %d"), slotMAC, op->dataRead[0], op->dataToWrite[0], op->readlen);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: HT_LY notify for %s complete"), slotMAC);
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: OpType %d not recognised?"), opType);
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Advertised Device: %s Buffer: %u"),advertisedDevice->getAddress().toString().c_str(),advertisedDevice->getServiceData(0).length());
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("M32: MI:%s svc[0] UUID (%x)"), temp, UUID);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("M32: MI:%s"), temp);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Known key"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("M32: New key"));
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: Search key for MAC: %02x%02x%02x%02x%02x%02x"), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Decryption Key found"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("M32: No Key found"));
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Err:%i, Decrypted : %02x %02x %02x %02x %02x"), ret, payload[1],payload[2],payload[3],payload[4],payload[5]);
+  //if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: MI frame %d"), parsed->framecnt);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Payload decrypted"));
+      AddLog(LOG_LEVEL_ERROR,PSTR("M32: Payload decrypt failed"));
+      AddLog(LOG_LEVEL_ERROR,PSTR("M32: Payload encrypted but no key"));
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: No payload"));
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Payload unencrypted"));
+    AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Payload length mismatch"));
+  //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: will test ID-type: %x"),D_CMND_MI32, _type);
+      //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: ID-type is not: %x"),D_CMND_MI32,kMI32DeviceID[i]);
+  //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: vector size %u"),D_CMND_MI32, MIBLEsensors.size());
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Counters: %x %x"),MIBLEsensors[i].lastCnt, counter);
+        // AddLog(LOG_LEVEL_DEBUG,PSTR("Old packet"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: slot: %u/%u - ign repeat"),D_CMND_MI32, i, MIBLEsensors.size());
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Frame %d, last %d"), counter, MIBLEsensors[i].lastCnt);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: slot: %u/%u"),D_CMND_MI32, i, MIBLEsensors.size());
+        AddLog(LOG_LEVEL_ERROR,PSTR("M32: %s: slot: %u - device type 0x%04x(%s) -> 0x%04x(%s) - check device is only sending one type of advert."),D_CMND_MI32, i,
+    //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: i: %x %x %x %x %x %x"),D_CMND_MI32, MIBLEsensors[i].MAC[5], MIBLEsensors[i].MAC[4],MIBLEsensors[i].MAC[3],MIBLEsensors[i].MAC[2],MIBLEsensors[i].MAC[1],MIBLEsensors[i].MAC[0]);
+    //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: n: %x %x %x %x %x %x"),D_CMND_MI32, mac[5], mac[4], mac[3],mac[2],mac[1],mac[0]);
+  //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: new sensor -> slot: %u"),D_CMND_MI32, MIBLEsensors.size());
+  //AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: found new sensor"),D_CMND_MI32);
+  AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s: new %s at slot: %u"),D_CMND_MI32, kMI32DeviceType[_type-1],MIBLEsensors.size()-1);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Scan complete"));
+  AddLog(LOG_LEVEL_INFO,PSTR("M32: init: request callbacks"));
+        AddLog(LOG_LEVEL_ERROR,PSTR("M32: FLORA: not enough bytes read for firmware?"));
+        AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s: FLORA Firmware: %s"),D_CMND_MI32,MIBLEsensors[slot].firmware);
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Batt read for %s complete %d"), slotMAC, value);
+    AddLog(LOG_LEVEL_ERROR,PSTR("M32: Batt read for %s complete but out of range 1-101 (%d)"), slotMAC, value);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s:pvvx at slot %u"), kMI32DeviceType[MIBLEsensors[_slot].type-1],_slot);
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: PVVX packet mac mismatch - ignored?"));
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: ATC packet with reversed MAC addr?"));
+      AddLog(LOG_LEVEL_ERROR, PSTR("M32: ATC packet with MAC addr mismatch - is this mesh?"));
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s at slot %u"), kMI32DeviceType[MIBLEsensors[_slot].type-1],_slot);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: MI%d payload %s"), _slot, tmp);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 4: temp updated"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 4: temp ignored > 60 (%f)"), _tempFloat);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 4: U16:  %u Temp"), _beacon.temp );
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 6: hum updated"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 6: hum ignored > 101 (%f)"), _tempFloat);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 6: U16:  %u Hum"), _beacon.hum);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 7: U24: %u Lux"), _beacon.lux & 0x00ffffff);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 8: moisture updated"));
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 8: U8: %u Moisture"), _beacon.moist);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode 9: fertility updated"));
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 9: U16: %u Fertility"), _beacon.fert);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode a: bat updated"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode a: bat > 100 (%d)"), pld->bat);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode a: U8: %u %%"), _beacon.bat);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode d: temp updated"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode d: temp ignored > 60 (%f)"), _tempFloat);
+          if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode d: hum updated"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: Mode d: hum ignored > 100 (%f)"), _tempFloat);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode d: U16:  %x Temp U16: %x Hum"), _beacon.HT.temp,  _beacon.HT.hum);
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: PIR: primary"),MIBLEsensors[_slot].lux );
+      // AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Mode 17: NMT: %u seconds"), _beacon.NMT);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Unknown MI pld"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("M32: MI packet with MAC addr mismatch - is this mesh?"));
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: MIParsePacket returned %d"), res);
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: %s: raw data: %x%x%x%x%x%x%x"),D_CMND_MI32,_buf[0],_buf[1],_buf[2],_buf[3],_buf[4],_buf[5],_buf[6]);
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: %s: T * 100: %u, H: %u, V: %u"),D_CMND_MI32,LYWSD0x_HT.temp,LYWSD0x_HT.hum, LYWSD0x_HT.volt);
+    if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: MIBLE: Sensor slot: %u"), _slot);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG_MORE,PSTR("M32: LYWSD0x: hum updated"));
+//  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("M32: onesec"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Kick off readOneSensor"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Kick off tele sending"));
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Hit tele time, restarted but not finished last - lost from slot %d")+MI32.mqttCurrentSlot);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: will set Time"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("M32: cannot set Time on sensor type"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("M32: cannot set Time right now"));
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG, PSTR("M32: will toggle Unit"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("M32: cannot toggle Unit on sensor type"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("M32: cannot toggle Unit right now"));
+      // AddLog(LOG_LEVEL_INFO,PSTR("M32: size of ilist: %u"), MIBLEBlockList.size());
+  if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Key %d %s"), op, XdrvMailbox.data);
+        AddLog(LOG_LEVEL_ERROR,PSTR("M32: Add key mac %s = key %s"), mac, key);
+        if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Added %d Keys"), added);
+      if (BLE_ESP32::BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Keys clearing %d"), MIBLEbindKeys.size());
+  AddLog(LOG_LEVEL_DEBUG, PSTR("M32: HandleMI32Key hit"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("M32: !HttpCheckPriviledgedAccess()"));
+        AddLog(LOG_LEVEL_DEBUG,PSTR("M32: Dev no longer present MAC: %02x%02x%02x%02x%02x%02x"), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  //AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s: show some %d %s"),D_CMND_MI32, MI32.mqttCurrentSlot, TasmotaGlobal.mqtt_data);
+      AddLog(LOG_LEVEL_DEBUG,PSTR("M32: %s: triggered %d %s"),D_CMND_MI32, sensor, TasmotaGlobal.mqtt_data);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_62_esp32_mi_ble.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSOR_CRC_ERROR));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_05_ds18x20_esp32.ino]
+.
+			AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_I2C "MPR121%c: %sRunning"), pS->id[i], (pS->running[i]) ? "" : "NOT");
+		AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_I2C "MPR121: No sensors found"));
+				AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Cannot read data!"), pS->id[i]);
+				AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_I2C "MPR121%c: ERROR: Excess current detected! Fix circuits if it happens repeatedly! Soft-resetting MPR121 ..."), pS->id[i]);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_30_mpr121.ino]
+.
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("SD1: Remote power (%d, %d)"), SnfD1.power, SnfD1.dimmer);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("SD1: Remote dimmer (%d, %d)"), SnfD1.power, SnfD1.dimmer);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("SD1: Tasmota power (%d, %d)"), SnfD1.power, SnfD1.dimmer);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("SD1: Tasmota dimmer (%d, %d)"), SnfD1.power, SnfD1.dimmer);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_37_sonoff_d1.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SRC: %s from %_I"), GetTextIndexed(stemp1, sizeof(stemp1), source, kCommandSource), (uint32_t)Webserver->client().remoteIP());
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_HTTP D_WEBSERVER_ACTIVE_ON " %s%s " D_WITH_IP_ADDRESS " %_I and IPv6 global address %s "),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_HTTP D_WEBSERVER_ACTIVE_ON " %s%s " D_WITH_IP_ADDRESS " %_I"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_HTTP D_WEBSERVER_ACTIVE_ON " %s%s " D_WITH_IP_ADDRESS " %_I"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_HTTP D_WEBSERVER_STOPPED));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI D_WIFIMANAGER_SET_ACCESSPOINT_AND_STATION));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI D_WIFIMANAGER_SET_ACCESSPOINT));
+    AddLog(LOG_LEVEL_INFO, PSTR("HTP: Content too large"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_RESTART));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_MAIN_MENU));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURATION));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_TEMPLATE));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_MODULE));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_WIFI));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI D_SCAN_DONE));
+        AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_WIFI D_NO_NETWORKS_FOUND));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_LOGGING));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_OTHER));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_BACKUP_CONFIGURATION));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_RESET_CONFIGURATION));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_RESTORE_CONFIGURATION));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_INFORMATION));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_FIRMWARE_UPGRADE));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_UPGRADE_STARTED));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_UPLOAD_DONE));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("UPL: Services enabled"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("UPL: Services disabled"));
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "Upload error %d"), Web.upload_error);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD D_FILE " %s"), upload.filename.c_str());
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "File type %d"), Web.upload_file_type);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Size %d"), upload.currentSize);
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "Progress %d kB"), upload.totalSize / 1024);
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD "Transfer %u bytes"), upload.totalSize);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "Head 0x%08X"), values[0]);
+//        AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPLOAD "Transfer error %d"), error);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_UPLOAD D_SUCCESSFUL " %u bytes"), upload.totalSize);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_COMMAND));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONSOLE));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP "Not found (%s)"), Webserver->uri().c_str());
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_REDIRECTED));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_01_webserver.ino]
+.
+    // AddLog(LOG_LEVEL_DEBUG, "MLX90640: send line %u", _line);
+    // AddLog(LOG_LEVEL_DEBUG, PSTR("RAW: %u, POI-%u: x: %u, y: %u"),_poi,_poiNum,MLX90640.pois[_poiNum],MLX90640.pois[_poiNum+1]);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("POI-%u: x: %u, y: %u"),i+1,MLX90640.pois[i*2],MLX90640.pois[(i*2)+1]);
+        AddLog(LOG_LEVEL_INFO, PSTR("POI-%u = x:%u,y:%u"),XdrvMailbox.index,MLX90640.pois[_idx],MLX90640.pois[_idx+1]);
+      AddLog(LOG_LEVEL_INFO, PSTR("Failed to load system parameters"));
+      AddLog(LOG_LEVEL_INFO, PSTR("MLX90640: started"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: will read chunk: %u"), _chunk);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: parameter received after: %u msec, status: %u"), TimePassedSince(_time), status);
+            AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: frame not ready"));
+        // AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: got frame 0 in %u msecs, status: %i"), TimePassedSince(_time), status);
+        // AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: calculated temperatures in %u msecs"), TimePassedSince(_time));
+        // // AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: got frame 1 in %u msecs, status: %i"), TimePassedSince(_time), status);
+        // AddLog(LOG_LEVEL_DEBUG, PSTR("MLX90640: calculated temperatures in %u msecs"), TimePassedSince(_time));
+    // AddLog(LOG_LEVEL_DEBUG, PSTR("Array pos: %u"),MLX90640.pois[i*2]+(MLX90640.pois[(i*2)+1]*32));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("POI-%u: x: %u, y: %u"),i+1,MLX90640.pois[i*2],MLX90640.pois[(i*2)+1]);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_43_mlx90640.ino]
+.
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("ROT: Button1 %d, Position %d"), button_pressed, rotary_position);
+[/home/pafoxp/code-tasmota/tasmota/./support_rotary.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("Set time from BM8563 to RTC (" D_UTC_TIME ") %s, (" D_DST_TIME ") %s, (" D_STD_TIME ") %s"),
+  AddLog(LOG_LEVEL_INFO, PSTR("RTC: %02d:%02d:%02d"), RTCtime.Hours, RTCtime.Minutes, RTCtime.Seconds);
+  AddLog(LOG_LEVEL_INFO, PSTR("RTC: %02d.%02d.%04d"),  RTCdate.Date, RTCdate.Month, RTCdate.Year);
+      AddLog(LOG_LEVEL_INFO, PSTR("Write Time TO BM8563 from NTP (" D_UTC_TIME ") %s, (" D_DST_TIME ") %s, (" D_STD_TIME ") %s"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_84_esp32_core2.ino]
+.
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("RFB: Erased"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_06_snfbridge.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE D_ZIGBEE_RANDOMIZING_ZBCONFIG));
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE D_ZIGBEE_EEPROM_FOUND_AT_ADDRESS " 0x%02X"), USE_ZIGBEE_ZBBRIDGE_EEPROM);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_A_impl.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_ADD " GA #%d: %s " D_TO " %d/%d/%d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_DELETE " GA #%d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_ADD " CB #%d: %d/%d/%d " D_TO " %s"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_DELETE " CB #%d"), CBnum );
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_START));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_DELETE " " D_KNX_PARAMETERS));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX D_RECEIVED_FROM " %d.%d.%d " D_COMMAND " %s: %s " D_TO " %s"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s = %d " D_SENT_TO " %d.%d.%d"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s = %d " D_SENT_TO " %d.%d.%d"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s " D_SENT_TO " %d.%d.%d "),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_KNX));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_ENABLED ": %d, " D_KNX_ENHANCEMENT ": %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX D_KNX_PHYSICAL_ADDRESS ": %d.%d.%d "),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX "GA: %d"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX "GA #%d: %s " D_TO " %d/%d/%d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX "CB: %d"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_KNX "CB #%d: %d/%d/%d " D_TO " %s"),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s = %d " D_SENT_TO " %d.%d.%d"),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s = %s " D_SENT_TO " %d.%d.%d"),
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_KNX "%s = %s " D_SENT_TO " %d.%d.%d"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_11_knx.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: ILI9488"));
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_08_ILI9488.ino]
+.
+        AddLog(LOG_LEVEL_INFO,
+    AddLog(LOG_LEVEL_INFO,
+    AddLog(LOG_LEVEL_INFO,
+        AddLog(LOG_LEVEL_ERROR,
+[/home/pafoxp/code-tasmota/tasmota/./xsns_69_opentherm_protocol.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_SHT1 D_SENSOR_DID_NOT_ACK_COMMAND));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_SHT1 D_SENSOR_BUSY));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_I2C D_SHT1X_FOUND));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_07_sht1x.ino]
+.
+  // AddLog(LOG_LEVEL_DEBUG, "iAQ: buffer %x %x %x %x %x %x %x %x %x ", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8]);
+      AddLog(LOG_LEVEL_INFO, PSTR("iAQ: " D_ERROR " %x" ),iAQ.status);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_66_iAQ.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, "%s addr %x is reset, reconfig: %x", ds1624_sns[idx].name, addr, config);
+    AddLog(LOG_LEVEL_INFO, "Hot Plug %s addr %x config: %x", ds1624_sns[idx].name, addr, config);
+  AddLog(LOG_LEVEL_INFO, "Hot UnPlug %s", ds1624_sns[idx].name);
+    AddLog(LOG_LEVEL_INFO, "%s device missing (errors: %i)", ds1624_sns[idx].name, ds1624_sns[idx].misscnt);
+    AddLog(LOG_LEVEL_INFO, "%s config error, restart... (errors: %i)", ds1624_sns[idx].name, ds1624_sns[idx].errcnt);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_59_ds1624.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("RUL: Stored uncompressed, would compress from %d to %d (-%d%%)"), len_uncompressed, len_compressed, 100 - changeUIntScale(len_compressed, 0, len_uncompressed, 0, 100));
+      AddLog(LOG_LEVEL_INFO, PSTR("RUL: Compressed from %d to %d (-%d%%)"), len_in, len_compressed, 100 - changeUIntScale(len_compressed, 0, len_in, 0, 100));
+      // AddLog(LOG_LEVEL_INFO, PSTR("RUL: First bytes: %02X%02X%02X%02X"), Settings.rules[idx][0], Settings.rules[idx][1], Settings.rules[idx][2], Settings.rules[idx][3]);
+      // AddLog(LOG_LEVEL_INFO, PSTR("RUL: GetRuleLenStorage = %d"), GetRuleLenStorage(idx));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("RUL: No valid JSON (%s)"), buf.c_str());
+      AddLog(LOG_LEVEL_INFO, PSTR("RUL: %s performs \"%s\""), event_trigger.c_str(), command);
+          AddLog(LOG_LEVEL_ERROR, PSTR("RUL: Not enough space"));
+        AddLog(LOG_LEVEL_INFO, PSTR("RUL: Rule%d %s%s"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_10_rules.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: ST7789"));
+//AddLog(LOG_LEVEL_INFO, PSTR("touch %d - %d"), FT5206_found, function);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_12_ST7789.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("RTC: " D_UTC_TIME " %s, " D_DST_TIME " %s, " D_STD_TIME " %s"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR("RTC: Not synced"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("RTC: Synced"));
+[/home/pafoxp/code-tasmota/tasmota/./support_rtc.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("NEO: modbus receive error %d"), error);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("NEO: modbus block 0x%04X - 0x%04X skipped"), NeoPoolReg[neopool_read_state].addr, NeoPoolReg[neopool_read_state].addr+NeoPoolReg[neopool_read_state].cnt);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("NEO: modbus send(%d, %d, 0x%04X, %d)"), NEOPOOL_MODBUS_ADDRESS, NEOPOOL_READ_REGISTER, NeoPoolReg[neopool_read_state].addr, NeoPoolReg[neopool_read_state].cnt);
+          AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("NEO: notify 0x%04X - addr block 0x%04X ignored"), NeoPoolGetData(MBF_NOTIFICATION), NeoPoolReg[neopool_read_state].addr);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("NEO: Init - addr 0x%04x cnt %d data %p"), NeoPoolReg[i].addr, NeoPoolReg[i].cnt, NeoPoolReg[i].data);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: Init - out of memory"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: %s(0x%04X, %d)=[%s]"), name, addr, cnt, log_data);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X read data error %d"), addr, error);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X read out of memory"), addr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X read data timeout"), addr);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X write out of memory"), addr);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X write data response error %d"), addr, error);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: addr 0x%04X write data response timeout"), addr);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: set time to %ld (%04X%04X)"), new_time, data[0], data[1]);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("NEO: time read 0x%04X%04X %ld"), data[1], data[0], (uint32_t)data[0] | ((uint32_t)data[1] << 16));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_83_neopool.ino]
+.
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: MAC: %s Major: %d Minor: %d UUID: %s Power: %d RSSI: %d"),
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Start scanning"),"BLE");
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Clear scanning results"),"BLE");
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Stop scanning"),"BLE");
+  AddLog(LOG_LEVEL_DEBUG, PSTR("%s: Pausing scanner task"),"BLE");
+  AddLog(LOG_LEVEL_DEBUG, PSTR("%s: Resumed scanner task"),"BLE");
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Put WiFi modem in sleep mode"),"BLE");
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Initializing Bluetooth..."),"BLE");
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Upgrade procedure started"),"BLE");
+      AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Resuming scan"),"BLE");
+  if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("hm17cmd %d"),cmd);
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("AT OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("ROLE OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("IMME OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("IBEA OK"));
+          if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("SCAN OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("RESET OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("RENEW OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("CONNA OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("CONNE ERROR"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("CONNF ERROR"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("CONN OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("DISCS OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("DISIS OK"));
+        if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR("DISCE OK"));
+            AddLog(LOG_LEVEL_INFO, PSTR("NAME OK"));
+            AddLog(LOG_LEVEL_INFO, PSTR(">>%s"),&hm17_sbuffer[8]);
+              AddLog(LOG_LEVEL_INFO, PSTR("DIS0 OK"));
+              AddLog(LOG_LEVEL_INFO, PSTR(">>%s"),&hm17_sbuffer[8]);
+              AddLog(LOG_LEVEL_INFO, PSTR("DISC: OK"));
+              AddLog(LOG_LEVEL_INFO, PSTR(">>%s"),&hm17_sbuffer[8]);
+          if (hm17_debug) AddLog(LOG_LEVEL_INFO, PSTR(">->%s"),&hm17_sbuffer[8]);
+     AddLog(LOG_LEVEL_INFO, PSTR("%s"),hm17_sbuffer);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_52_ibeacon.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("FiF-LE: LE01MR Modbus error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_13_fif_le01mr.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_01_lcd.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("ADE: %d, %d, [%d, %d, %d, %d], [%d, %d, %d, %d]"),
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("ADE: U %d, C %d, I %d + %d = %d, P %d + %d = %d"),
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_07_ade7953.ino]
+.
+//          AddLog(LOG_LEVEL_DEBUG, PSTR("SL1: Rcvd sequence %s"), token3);
+//          AddLog(LOG_LEVEL_DEBUG, PSTR("SL1: Rcvd switch %d (%d)"), switch_state, Light.power);
+//            AddLog(LOG_LEVEL_DEBUG, PSTR("SL1: Rcvd color R%d G%d B%d (R%d G%d B%d)"),
+//          AddLog(LOG_LEVEL_DEBUG, PSTR("SL1: Rcvd dimmer %d (%d)"), dimmer, Settings.light_dimmer);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: Sonoff L1 Found"));
+[/home/pafoxp/code-tasmota/tasmota/./xlgt_05_sonoff_l1.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, PSTR("PID: No local temperature sensor found"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_49_pid.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("UBX: start recording - appending"));
+      AddLog(LOG_LEVEL_INFO, PSTR("UBX: start recording - new log"));
+      AddLog(LOG_LEVEL_INFO, PSTR("UBX: stop recording"));
+        AddLog(LOG_LEVEL_INFO, PSTR("UBX: UTC-Time is valid, set system time"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("UBX: possible device-reset, will re-init"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_60_GPS.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("ETH: " D_ATTEMPTING_CONNECTION));
+      AddLog(LOG_LEVEL_INFO, PSTR("ETH: " D_CONNECTED " at %dMbps%s"),
+      AddLog(LOG_LEVEL_DEBUG, PSTR("ETH: Mac %s, IPAddress %_I, Hostname %s"),
+      AddLog(LOG_LEVEL_INFO, PSTR("ETH: Disconnected"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("ETH: Stopped"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("ETH: No ETH MDC and/or ETH MDIO GPIO defined"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("ETH: Bad PHY type or init error"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_82_esp32_ethernet.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("WEM: %s Rev. %u found"), WemosMotorDriver, i2c_data[1]);
+  AddLog(LOG_LEVEL_INFO, PSTR("WEM: Ch: %u Cmd: %u"), motor, cmd);
+  AddLog(LOG_LEVEL_INFO, PSTR("WEM: Duty: %u"), duty);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_34_wemos_motor_v1.ino]
+.
+        AddLog(LOG_LEVEL_DEBUG, PSTR("DRV: DrvText%02d %s"), i, Drv98Settings.drv_text[i]);
+  AddLog(LOG_LEVEL_INFO, PSTR("DRV: " D_USE_DEFAULTS));
+      AddLog(LOG_LEVEL_INFO, PSTR("DRV: Update oldest version restore"));
+      AddLog(LOG_LEVEL_INFO, PSTR("DRV: Update old version restore"));
+  AddLog(LOG_LEVEL_INFO, PSTR("DRV: About to load settings from file %s"), filename);
+    AddLog(LOG_LEVEL_INFO, PSTR("DRV: ERROR File system not ready or file not found"));
+  AddLog(LOG_LEVEL_INFO, PSTR("DRV: ERROR File system not enabled"));
+    AddLog(LOG_LEVEL_INFO, PSTR("DRV: About to save settings to file %s"), filename);
+      AddLog(LOG_LEVEL_INFO, PSTR("DRV: ERROR File system not ready or unable to save file"));
+    AddLog(LOG_LEVEL_INFO, PSTR("DRV: ERROR File system not enabled"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_98_file_settings_demo.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Device #%d listening on port %d"), _deviceId, _localPort);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Device #%d listening on port %d"), _deviceId, _localPort);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: WemoRespondToMSearch device #%d: %d"), _deviceId, echo_type);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Sending packet device %d: %s"), _deviceId, response);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: WeMo Type %d, %s to %s:%d"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP "%s from %s"), msg, _webServer->client().remoteIP().toString().c_str());
+    //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("\n%s"), event);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: HandleUpnpEvent for deviceId %d: %s"), _deviceId, event);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: HandleUpnpService"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: HandleUpnpMetaService"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Sending device #%d: %s"), _deviceId, setup_xml.c_str());
+    AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Register device #%d"), _deviceId);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("WMO: Adding handlers for %d devices"), TasmotaGlobal.devices_present);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_21_wemo_multi.ino]
+.
+          //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("CNT: [%d] dimm_time_CCs %d, current_cycle_CC: %d, timelag %lu, lastcc %lu, currentSteps %d, curr %d"), i, ac_zero_cross_dimmer.dimm_timeClockCycles,ac_zero_cross_dimmer.current_cycle_ClockCycles , timelag_ClockCycles, ac_zero_cross_dimmer.currentCycleCount, ac_zero_cross_dimmer.currentSteps, Light.fade_cur_10[i]);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_01_counter.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_OSWATCH " FreeRam %d, rssi %d %% (%d dBm), last_run %d"), ESP_getFreeHeap(), WifiGetRssiAsQuality(rssi), rssi, last_run);
+//    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_OSWATCH " " D_BLOCKED_LOOP ". " D_RESTARTING));  // Save iram space
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_SERIAL "Set to %s %d bit/s"), GetSerialConfig().c_str(), TasmotaGlobal.baudrate);
+  AddLog(LOG_LEVEL_INFO, PSTR("SNS: Hardware Serial"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SRC: %s"), GetTextIndexed(stemp1, sizeof(stemp1), source, kCommandSource));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("FNC: TemplateConvert"));
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("FNC: ConvertGpios"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Template %d, Option %d"), module_template, option);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("FNC: GetInternalTemplate option %d"), option);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("TPL: Converting template ..."));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TPL: Converted"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TPL: Show"));
+  AddLog(LOG_LEVEL_INFO, PSTR("JSON: parsing json key: %s from json: %s"), cp, jpath);
+    AddLog(LOG_LEVEL_INFO, PSTR("JSON: cmp current key: %s"), selem);
+      AddLog(LOG_LEVEL_INFO, PSTR("JSON: obj invalid: %s"), selem);
+      AddLog(LOG_LEVEL_INFO, PSTR("JSON: token invalid: %s"), selem);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("I2C: Active %08X,%08X,%08X,%08X"), i2c_active[0], i2c_active[1], i2c_active[2], i2c_active[3]);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("I2C: Active %08X,%08X,%08X,%08X"), i2c_active[0], i2c_active[1], i2c_active[2], i2c_active[3]);
+  AddLog(LOG_LEVEL_INFO, S_LOG_I2C_FOUND_AT, types, addr);
+ *   AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_LOG "Any value %d"), value);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_APPLICATION D_SYSLOG_HOST_NOT_FOUND ". " D_RETRY_IN " %d " D_UNIT_SECOND), SYSLOG_TIMER);
+void AddLog(uint32_t loglevel, PGM_P formatP, ...) {
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SNS: %s missed %d"), sensor, SENSOR_MAX_MISS - misses);
+      AddLog(LOG_LEVEL_INFO, PSTR("SPI: %s using GPIO%02d(CLK) and GPIO%02d(MOSI)"),
+      AddLog(LOG_LEVEL_INFO, PSTR("SPI: %s using GPIO%02d(CLK) and GPIO%02d(MISO)"),
+      AddLog(LOG_LEVEL_INFO, PSTR("SPI: %s using GPIO%02d(CLK), GPIO%02d(MOSI) and GPIO%02d(MISO)"),
+[/home/pafoxp/code-tasmota/tasmota/./support.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: E-Paper 4.2"));
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_06_epaper_42.ino]
+.
+      //AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "Cur_Col%d 10 bits %d, Pwm%d %d"), i, cur_col[i], i+1, curcol);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: SM16716 Found"));
+[/home/pafoxp/code-tasmota/tasmota/./xlgt_03_sm16716.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("DSP: ILI934x invalid GPIOs"));
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: ILI9341"));
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: ILI9342"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), txt);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_04_ili9341.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_ERASE " from 0x%08X to 0x%08X"), start_sector * SPI_FLASH_SEC_SIZE, (end_sector * SPI_FLASH_SEC_SIZE) -1);
+[/home/pafoxp/code-tasmota/tasmota/./support_esptool.ino]
+.
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("model %d, mode %d, fanspeed %d, swingv %d, swingh %d"),
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("IRS: protocol %d, bits %d, data 0x%s (%s), repeat %d"),
+      // AddLog(LOG_LEVEL_DEBUG, PSTR("sendRaw count=%d, space=%d, mark=%d, freq=%d"), count, space, mark, freq);
+      // AddLog(LOG_LEVEL_DEBUG, PSTR("sendRaw %d %d %d %d %d %d"), raw_array[0], raw_array[1], raw_array[2], raw_array[3], raw_array[4], raw_array[5]);
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("IrRemoteSendRawStandard: count_1 = %d"), count);
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("IrRemoteSendRawStandard: count_2 = %d"), count);
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("Arr %d %d %d %d %d %d %d %d"), arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7]);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_05_irremote_full.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_ZIGBEE "Discarding duplicate command from 0x%04X, endpoint %d"), _srcaddr, _srcendpoint);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_5_converters.ino]
+.
+      //AddLog(LOG_LEVEL_INFO, PSTR("displaytext %s"), cp);
+//  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "Display model %d"), Settings.display_model);
+//AddLog(LOG_LEVEL_DEBUG, PSTR("DSP: Power %d"), disp_power);
+              //AddLog(LOG_LEVEL_INFO, PSTR("tbut: %d pressed"), tbut);
+      //AddLog(LOG_LEVEL_INFO, PSTR("touch %d - %d"), pLoc.x, pLoc.y);
+        //AddLog(LOG_LEVEL_INFO, PSTR("tbut: %d released"), tbut);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_13_display.ino]
+.
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Start padding from %d"), ZbUpload.byte_counter);
+//      AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("XMD: Rcvd3 0x%02X"), in_char);
+    AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("XMD: Rcvd %*_H"), buf_len, serial_buffer);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Init bootloader"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Bootloader software reset send timeout"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Bootloader software reset timeout"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Bootloader hardware reset timeout"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Init bootloader"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Bootloader timeout"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Init sync"));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: SYNC timeout"));
+//        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("XMD: Rcvd2 0x%02X"), xmodem_sync);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Init packet send"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Progress %d kB"), ZbUpload.byte_counter / 1024);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Packet %d send failed"), XModem.packet_no);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Transferred %d bytes"), ZbUpload.ota_size);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: EOT ACK timeout"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Transfer invalid"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: " D_SUCCESSFUL));
+        AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: Bootloader timeout"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: " D_RESTARTING));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("XMD: " D_FAILED));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_UPLOAD_TRANSFER));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_9a_upload.ino]
+.
+//        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MDNS D_ATTEMPTING_CONNECTION));
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MDNS "%s"), (Mdns.begun) ? PSTR(D_INITIALIZED) : PSTR(D_FAILED));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MDNS D_QUERY_DONE " %d"), n);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MDNS D_MQTT_SERVICE_FOUND " %s," D_PORT " %d"), SettingsText(SET_MQTT_HOST), Settings.mqtt_port);
+   // AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_MDNS "MDNS.update"));
+[/home/pafoxp/code-tasmota/tasmota/./support_network.ino]
+.
+  //  AddLog(LOG_LEVEL_DEBUG, PSTR("IrReceive initialized"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_IRR "RawLen %d, Overflow %d, Bits %d, Value 0x%s, Decode %d"),
+  // AddLog(LOG_LEVEL_DEBUG, PSTR("IRS: protocol_text %s, protocol %s, bits %d, data %s (0x%s), repeat %d, protocol_code %d"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_05_irremote.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, "TOF: No value read");
+  AddLog(LOG_LEVEL_DEBUG_MORE, "TOF: Distance %u", distance);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_84_tof10120.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("CSE: Abnormal hardware"));
+            AddLog(LOG_LEVEL_DEBUG, PSTR("CSE: " D_CHECKSUM_FAILURE));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("CSE: Overload"));
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_02_cse7766.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_LOG "Home Assistant MQTT Discovery disabled."));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_12_home_assistant.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("BUZ: Count %d(%d), Time %d/%d, Tune 0x%08X(0x%08X), Size %d, Mode %d"),
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_24_buzzer.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_UPNP D_HUE " %s " D_TO " %s:%d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_HUE_BRIDGE_SETUP));
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE_API_NOT_IMPLEMENTED " (%s)"), path->c_str());
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE " Authentication Result (%s)"), response);
+      //AddLog(LOG_LEVEL_DEBUG_MORE, "XY RGB (%d %d %d) HS (%d %d)", rr,gg,bb,hue,sat);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("Settings.shutter_invert: %d"), Settings.shutter_options[device-1] & 1);
+    AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("/lights path=%s"), path->c_str());
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE " Result (%s)"), response.c_str());
+  //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE " HueGroups (%s)"), path->c_str());
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE " HueGroups Result (%s)"), path->c_str());
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE_API " (%s) from %s"), path->c_str(), Webserver->client().remoteIP().toString().c_str());         // HTP: Hue API (//lights/1/state) from 192.168.1.20
+    AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_HTTP D_HUE_POST_ARGS " (%s)"), json.c_str());  // HTP: Hue POST args ({"on":false})
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_20_hue.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Invalid len (<4) %d"), len);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "buffer len overflow %d > %d"), len, expected_len);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_2_devices.ino]
+.
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: Overflow"));
+//        AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: Send " D_CHECKSUM_FAILURE));
+//        AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: NAck"));
+          AddLog(LOG_LEVEL_DEBUG, PSTR("MCP: " D_CHECKSUM_FAILURE));
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_04_mcp39f501.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("PDC: PzemDc %d error %d"), PZEM_DC_DEVICE_ADDRESS + PzemDc.channel, error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_06_pzem_dc.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: RA8876"));
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_10_RA8876.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_HX711));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_WIFI D_JSON_WEIGHT_REF " %s, " D_JSON_WEIGHT_ITEM " %s"), weigth_ref_chr, weigth_item_chr);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_34_hx711.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_UPLOAD_ERR_2));  // Not enough (memory) space
+      AddLog(LOG_LEVEL_INFO, PSTR("QPC: Count %d"), counter);
+      AddLog(LOG_LEVEL_INFO, PSTR("QPC: Reset"));
+      AddLog(LOG_LEVEL_INFO, PSTR("QPC: Count %d"), counter);
+    AddLog(LOG_LEVEL_INFO, PSTR("QPC: Reset"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("TST: start %d, end %d, len %d, current %d, replace %d, diff %d"),
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_CONFIG "Text overflow by %d char(s)"), too_long);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_CONFIG "CR %d/%d, Busy %d, Id %02d = \"%s\""), GetSettingsTextLen(), settings_text_size, settings_text_busy_count, index_save, replace);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_CONFIG "CR %d/%d, Busy %d"), GetSettingsTextLen(), settings_text_size, settings_text_busy_count);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_CONFIG D_SAVED_TO_FLASH_AT " %X, " D_COUNT " %d, " D_BYTES " %d"), settings_location, Settings.save_flag, sizeof(Settings));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_CONFIG "Saved, " D_COUNT " %d, " D_BYTES " %d"), Settings.save_flag, sizeof(Settings));
+      AddLog(LOG_LEVEL_NONE, PSTR(D_LOG_CONFIG "Loaded from File, " D_COUNT " %lu"), Settings.save_flag);
+      AddLog(LOG_LEVEL_NONE, PSTR(D_LOG_CONFIG D_LOADED_FROM_FLASH_AT " %X, " D_COUNT " %lu"), settings_location, Settings.save_flag);
+  AddLog(LOG_LEVEL_NONE, PSTR(D_LOG_CONFIG "Loaded from %s, " D_COUNT " %lu"), (source)?"File":"Nvm", Settings.save_flag);
+      AddLog(LOG_LEVEL_NONE, PSTR(D_LOG_CONFIG "Loaded from LKG File, " D_COUNT " %lu"), Settings.save_flag);
+  AddLog(LOG_LEVEL_NONE, PSTR(D_LOG_CONFIG D_USE_DEFAULTS));
+[/home/pafoxp/code-tasmota/tasmota/./settings.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG,PSTR("%s: new %s at slot: %u"),D_CMND_HM10, kHM10DeviceType[_type-1],MIBLEsensors.size()-1);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("%s start serial communication fixed to 115200 baud"),D_CMND_HM10);
+  //   AddLog(LOG_LEVEL_DEBUG, PSTR("%s: remove garbage sensor"),D_CMND_HM10);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("%s: %s mibeacon type: %x"),D_CMND_HM10, kHM10DeviceType[MIBLEsensors[_slot].type-1], _beacon.type);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("%s: T * 100: %u, H: %u"),D_CMND_HM10,packet->temp,packet->hum);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("%s: T * 100: %u, H * 100: %u"),D_CMND_HM10,_packet->temp,_packet->hum);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("%s: T * 10: %u, H * 10: %u"),D_CMND_HM10,_temp,_hum);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("%s: T * 10: %u, L: %u, M: %u, F: %u"),D_CMND_HM10,_packet->temp,_packet->lux,_packet->moist,_packet->fert);
+    AddLog(LOG_LEVEL_DEBUG,PSTR("%s: Battery: %u"),D_CMND_HM10,_buf[0]);
+    AddLog(LOG_LEVEL_INFO,PSTR("HM10: Scan buffer full"));
+      // AddLog(LOG_LEVEL_INFO,PSTR("HM10: known device"));
+    AddLog(LOG_LEVEL_INFO,PSTR("HM10: beacon%u deactivated"), index);
+    AddLog(LOG_LEVEL_INFO,PSTR("HM10: beacon added with MAC: %s"), _MAC);
+        // AddLog(LOG_LEVEL_DEBUG, PSTR("%s packet size: %u"),D_CMND_HM10,HM10.rxBuffer[16]);
+          // AddLog(LOG_LEVEL_DEBUG, PSTR("%04x %02x %04x %04x %04x"),HM10.rxAdvertisement.UUID,HM10.rxAdvertisement.TX,HM10.rxAdvertisement.CID,HM10.rxAdvertisement.SVC, _type);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("%s: response: %s"),D_CMND_HM10, (char *)HM10.rxBuffer);
+        //   AddLog(LOG_LEVEL_DEBUG, PSTR("%02x %02x %02x %02x %02x %02x %02x %02x"),(uint8_t)ret[j],(uint8_t)ret[j+1],(uint8_t)ret[j+2],(uint8_t)ret[j+3],(uint8_t)ret[j+4],(uint8_t)ret[j+5],(uint8_t)ret[j+6],(uint8_t)ret[j+7]);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: set role to 1"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: set imme to 1"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: start discovery"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read version"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read name"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: %s connect %s"),D_CMND_HM10,kHM10DeviceType[MIBLEsensors[HM10.state.sensor].type-1],_con);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: disconnect"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: Reset Device"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: subscribe"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: un-subscribe"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: subscribe"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: un-subscribe"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: set time"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG,PSTR("%s Time-string: %x%x%x%x%x"),D_CMND_HM10, HM10.timebuf[0],HM10.timebuf[1],HM10.timebuf[2],HM10.timebuf[3],(Rtc.time_timezone /60));
+        //   AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 003A"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 0043"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 0038"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: write to handle 0033"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 0035"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 0011"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: subscribe 4b"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: un-subscribe 4b"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: scan time to 9"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: read handle 0x18"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: subscribe to 0x0f"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: get response"),D_CMND_HM10);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("%s: show status"),D_CMND_HM10);
+          // AddLog(LOG_LEVEL_DEBUG, PSTR("%sFound done HM10_TASK"),D_CMND_HM10);
+          // AddLog(LOG_LEVEL_DEBUG, PSTR("%snext slot:%u, i: %u"),D_CMND_HM10, HM10_TASK_LIST[i+1][0],i);
+  AddLog(LOG_LEVEL_INFO, stemp);
+        // AddLog(LOG_LEVEL_INFO,PSTR("HM10: size of ilist: %u"), MIBLEBlockList.size());
+        // AddLog(LOG_LEVEL_INFO,PSTR("HM10: size of ilist: %u"), MIBLEBlockList.size());
+[/home/pafoxp/code-tasmota/tasmota/./xsns_62_MI_HM10.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "DDS2382 response error %d"), error);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_09_dds2382.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DHT D_TIMEOUT_WAITING_FOR " %s " D_PULSE),
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DHT D_CHECKSUM_FAILURE " %s =? %02X"),
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DHT "Invalid NAN reading"));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DHT "(v5) " D_SENSORS_FOUND " %d"), dht_sensors);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_06_dht.ino]
+.
+    //AddLog(LOG_LEVEL_DEBUG, PSTR("PCF: Pcf8574.max_devices %d requested pin %d"), Pcf8574.max_devices,Pcf8574.pin[i]);
+      //AddLog(LOG_LEVEL_DEBUG, PSTR("PCF: Pcf8574SwitchRelay %d on pin %d"), i,state);
+      AddLog(LOG_LEVEL_INFO, PSTR("PCF: Address 0x%02x reserved for MCP320xx skipped"), pcf8574_address);
+  //  AddLog(LOG_LEVEL_DEBUG, PSTR("PCF: Probing addr: 0x%x for PCF8574"), pcf8574_address);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("PCF: Device %d config 0x%02x"), idx +1, Settings.pcf8574_config[idx]);
+    AddLog(LOG_LEVEL_INFO, PSTR("PCF: Total devices %d, PCF8574 output ports %d"), Pcf8574.max_devices, Pcf8574.max_connected_ports);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP  D_CONFIGURE_PCF8574));
+  //AddLog(LOG_LEVEL_DEBUG, PSTR("PCF: Start working on Save arguements: inverted:%d")), Webserver->hasArg("b1");
+    //AddLog(LOG_LEVEL_INFO, PSTR("PCF: I2C Board: %d, Config: %2x")),  idx, Settings.pcf8574_config[idx];
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_28_pcf8574.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "invalid device wide data length=%d"), segment_len);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "invalid segment_len=%d"), segment_len);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "invalid shortaddr=0x%04X"), shortaddr);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee device data in EEPROM (%d bytes)"), file_length);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "No Zigbee device data in EEPROM"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "ZbData - %d bytes written to EEPROM"), ret);
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Error writing Devices to EEPROM"));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data saved in %s (%d bytes)"), PSTR("EEPROM"), ret);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "No Zigbee device information in %s"), PSTR("EEPROM"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee device information in %s (%d bytes)"), PSTR("EEPROM"), file_len);
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "File too short when reading EEPROM"));
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data erased in %s"), PSTR("EEPROM"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_4b_eeprom.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: MY29x1 Found"));
+[/home/pafoxp/code-tasmota/tasmota/./xlgt_02_my92x1.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_07_sh1106.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("ORNO: WE517 error %d"), error);
+          AddLog(LOG_LEVEL_DEBUG, PSTR("ORNO: WE517 HW serial init 8E1 at %d baud"), WE517_SPEED);
+[/home/pafoxp/code-tasmota/tasmota/./xnrg_17_ornowe517.ino]
+.
+        AddLog(LOG_LEVEL_INFO, PSTR("ZbInput forgiven first byte %02X (only for statistics)"), zigbee_in_byte);
+      AddLog(LOG_LEVEL_INFO, PSTR("ZbInput discarding byte %02X"), zigbee_in_byte);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_9_serial.ino]
+.
+        AddLog(LOG_LEVEL_INFO,"NFC: PN532 NFC Reader detected v%u.%u",(ver>>16) & 0xFF, (ver>>8) & 0xFF);
+            AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Erase success"));
+            AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Data write successful"));
+              AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Data write successful"));
+            AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Data must be alphanumeric"));
+          AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Erase fail - exiting erase mode"));
+          AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Write failed - exiting set mode"));
+    AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Next scanned tag data block 1 will be erased"));
+      AddLog(LOG_LEVEL_INFO, PSTR("NFC: PN532 NFC - Next scanned tag data block 1 will be set to '%s'"), Pn532.newdata);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_40_pn532.ino]
+.
+    //AddLog(LOG_LEVEL_INFO, "Logging ADS1115 %02x", Ads1115.addresses[t]);
+        //AddLog(LOG_LEVEL_INFO, "Logging ADS1115 %02x (%i) = %i", Ads1115.address, i, values[i] );
+[/home/pafoxp/code-tasmota/tasmota/./xsns_12_ads1115.ino]
+.
+  AddLog(LOG_LEVEL_INFO,PSTR("CCL: programmer init"));
+            AddLog(LOG_LEVEL_INFO,PSTR("CCL: debug init"));
+                AddLog(LOG_LEVEL_INFO,PSTR("CCL: found chip with ID: %x, Rev: %x -> %s"), CCL.chip.ID, CCL.chip.rev, CCLChipName(CCL.chip.ID).c_str());
+                AddLog(LOG_LEVEL_INFO,PSTR("CCL: no chip found"));
+    AddLog(LOG_LEVEL_INFO,PSTR("CCL: .bin file downloaded with size: %u blocks"), size/512);
+        AddLog(LOG_LEVEL_INFO,PSTR("CCL: will flash ...."));
+                    AddLog(LOG_LEVEL_INFO,PSTR("CCL: flashing error, erasing flash!!"));
+            AddLog(LOG_LEVEL_INFO,PSTR("CCL: written block %u of %u"), block, size/512);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_46_ccloader.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("NRF: Model 24L01 initialized"));
+        AddLog(LOG_LEVEL_INFO, PSTR("NRF: Model 24L01+ detected"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_33_nrf24l01.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("AS6: Detected with %d fingerprint(s) stored"), As608Finger->templateCount);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("AS6: No matching finger"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_79_as608.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("PAJ: ID: 0x%x and VER: %u"), PAJ7620_id, PAJ7620_ver);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_50_paj7620.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Channel %2d: %s"), i + USE_ZIGBEE_CHANNEL_MIN, bar_str);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_ZIGBEE "Sniffing group 0x%04X"), group_addr);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "sending `ZbMap 0x%04X`"), shortaddr);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "ZbMap done"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Sending Enroll Zone %d"), Z_B0(value));
+            AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "internal error, unsupported attribute type"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_ZIGBEE  "loopback message, ignoring"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_8_parsers.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: SSD1351"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_09_SSD1351.ino]
+.
+  //AddLog(LOG_LEVEL_INFO, PSTR("rectime: %d ms"), millis()-stime);
+    //AddLog(LOG_LEVEL_INFO,PSTR("WR-Title: %s"),wr_title);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_42_i2s_audio.ino]
+.
+    AddLog(LOG_LEVEL_DEBUG, PSTR("LGT: SM2135 %s Found"), (SM2135_WCBGR == (Sm2135.model &1)) ? PSTR("BGR") : PSTR("GRB"));
+[/home/pafoxp/code-tasmota/tasmota/./xlgt_04_sm2135.ino]
+.
+  // AddLog(LOG_LEVEL_INFO, PSTR("TPR: Timeprop Init"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_48_timeprop.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("DSP: E-Paper 2.9"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), txt);
+[/home/pafoxp/code-tasmota/tasmota/./xdsp_05_epaper_29.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR("input %s, log %s, taylor %s"), logxs, log1s, log2s);
+[/home/pafoxp/code-tasmota/tasmota/./support_float.ino]
+.
+    AddLog(LOG_LEVEL_INFO, PSTR("I2C: AS3935 Fatal Failure of TRCO or SRCO calibration"));
+      AddLog(LOG_LEVEL_INFO, PSTR("I2C: AS3935 GPIO Pin not defined!"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_67_as3935.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_SERIAL D_TRANSMIT " %s"), data);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_SERIAL D_RECEIVED " %s"), rcvstat);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_04_snfsc.ino]
+.
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("WMET: Counter %d"), WindMeter.counter);
+  //AddLog(LOG_LEVEL_INFO, PSTR("delta_time: %d"), delta_time);
+  //AddLog(LOG_LEVEL_DEBUG, PSTR("WMET: Speed %s [m/s] - %s [unit]"), speed_string, uspeed_string);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_68_windmeter.ino]
+.
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("SGP: Serialnumber 0x%04X-0x%04X-0x%04X"), sgp.serialnumber[0], sgp.serialnumber[1], sgp.serialnumber[2]);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("SGP: Baseline values eCO2 0x%04X, TVOC 0x%04X"), eCO2_base, TVOC_base);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_21_sgp30.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SEE: HWID mismatch ADDR=%X, ID=%X"), addr, buf);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SEE: FOUND sensor %u at %02X"), i, addr);
+      AddLog(LOG_LEVEL_DEBUG, PSTR("SEE: ILL CMD:%02X"), command);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SEE: SNS=%u ADDR=%02X CMD=%02X ERR=%u"), i, addr, command, err);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SEE: READ #%u ADDR=%02X NUM=%u RET=%X"), i, SeeSoilSNS[i].address, num, ret);
+[/home/pafoxp/code-tasmota/tasmota/./xsns_81_seesaw_soil.ino]
+.
+          AddLog(LOG_LEVEL_INFO, PSTR("CHIRP: wrote new address %u, please power off device"), addr);
+  AddLog(LOG_LEVEL_INFO, PSTR("CHIRP: address %u incorrect and not used"), addr);
+        AddLog(LOG_LEVEL_DEBUG, PSTR("CHIRP: fw %x"), chirp_sensor[chirp_found_sensors].version);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Found %u CHIRP sensor(s)."), chirp_found_sensors);
+            AddLog(LOG_LEVEL_INFO, PSTR("CHIRP: TELEPERIOD must be > 16 seconds !"));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_48_chirp.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(""));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("------ Thermostat Start ------"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.counter_seconds: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.thermostat_mode: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].diag.state_emergency: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].diag.output_inconsist_ctr: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.controller_mode: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.command_output: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.status_output: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.status_input: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.phase_hybrid_ctr: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.sensor_alive: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].status.status_cycle_active: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].temp_pi_error: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].temp_pi_accum_error: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_proportional_pi: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_integral_pi: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_total_pi: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].temp_measured_gradient: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_rampup_deadtime: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].temp_rampup_meas_gradient: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_ctr_changepoint: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].temp_rampup_output_off: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("Thermostat[ctr_output].time_ctr_checkpoint: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("uptime: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("power: %s"), result_chr);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("------ Thermostat End ------"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR(""));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_39_thermostat.ino]
+.
+//  AddLog(LOG_LEVEL_DEBUG, PSTR("SDS: Send %s"), ToHex_P((unsigned char*)novasds_cmnd, 19, hex_char, sizeof(hex_char), ' '));
+    AddLog(LOG_LEVEL_DEBUG, PSTR("SDS: " D_CHECKSUM_FAILURE));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_20_novasds.ino]
+.
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_ERASE " Tasmota data (%d,%d,%d)"), r1, r2, r3);
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_ERASE " PHY data (%d)"), r1);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_ERASE " Tasmota (%d,%d) and PHY data (%d)"), r1, r2, r3);
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION D_ERASE " Tasmota data (%d,%d,%d)"), r1, r2, r3);
+  AddLog(LOG_LEVEL_INFO, PSTR("NVS: Used %d/%d entries, NameSpaces %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Spi_flash_map %d"), err);
+    AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Partition start 0x%08X, Partition end 0x%08X, Mmap data 0x%08X"), partition->address, partition->size, TasmotaGlobal_mmap_data);
+  AddLog(LOG_LEVEL_DEBUG, PSTR("DBG: Flash start address 0x%08X, Mmap address 0x%08X"), address, data);
+[/home/pafoxp/code-tasmota/tasmota/./support_esp.ino]
+.
+      AddLog(LOG_LEVEL_INFO, PSTR("FRC: " D_LOG_SOME_SETTINGS_RESET " (%d)"), RtcReboot.fast_reboot_count);
+  AddLog(LOG_LEVEL_INFO, PSTR(D_PROJECT " %s %s " D_VERSION " %s%s-" ARDUINO_CORE_RELEASE "(%s)"),
+  AddLog(LOG_LEVEL_INFO, PSTR(D_WARNING_MINIMAL_VERSION));
+[/home/pafoxp/code-tasmota/tasmota/./tasmota.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, D_LOG_BERRY "Error be_top is non zero=%d", top);
+      AddLog(log_level, PSTR("%s"), msg);
+  AddLog(LOG_LEVEL_INFO, PSTR("%s"), berry_buf);
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_BERRY "Event (%s) serviced=%d"), TasmotaGlobal.mqtt_data, serviced);
+//   AddLog(LOG_LEVEL_INFO, D_LOG_BERRY "callBerryMqttData");
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_BERRY "Berry VM created, RAM consumed=%u (Heap=%u)"), heap_before - ESP.getFreeHeap(), ESP.getFreeHeap());
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_BERRY "Berry function registered, RAM consumed=%u (Heap=%u)"), heap_before - ESP.getFreeHeap(), ESP.getFreeHeap());
+      AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_BERRY "ERROR: be_loadstring [%s] %s"), be_tostring(berry.vm, -2), be_tostring(berry.vm, -1));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_BERRY "Berry code loaded, RAM consumed=%u (Heap=%u)"), heap_before - ESP.getFreeHeap(), ESP.getFreeHeap());
+      AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_BERRY "ERROR: be_pcall [%s] %s"), be_tostring(berry.vm, -2), be_tostring(berry.vm, -1));
+    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_BERRY "Berry code ran, RAM consumed=%u (Heap=%u)"), heap_before - ESP.getFreeHeap(), ESP.getFreeHeap());
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_BERRY "Berry initialized, RAM consumed=%u (Heap=%u)"), heap_before - ESP.getFreeHeap(), ESP.getFreeHeap());
+    // AddLog(LOG_LEVEL_INFO, PSTR("Delete Berry VM"));
+    // AddLog(LOG_LEVEL_INFO, PSTR("After Berry"));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_52_berry.ino]
+.
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Cannot allocate 4KB buffer"));
+//  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_ZIGBEE "Memory %d"), ESP_getFreeHeap());
+  // AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_ZIGBEE "Zigbee signature in Flash: %08X - %d"), flashdata.name, flashdata.len);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee device information in %s (%d bytes)"), PSTR("Flash"), buf_len);
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "No Zigbee device information in %s"), PSTR("Flash"));
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Buffer too big to fit in Flash (%d bytes)"), buf_len);
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Cannot allocate 4KB buffer"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data store in Flash (0x%08X - %d bytes)"), z_dev_start, buf_len);
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data saved in %s (%d bytes)"), PSTR("Flash"), buf_len);
+    AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_ZIGBEE "Cannot allocate 4KB buffer"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data erased in %s"), PSTR("Flash"));
+  AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_ZIGBEE "Zigbee Devices Data erased (%d bytes)"), z_block_len);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_23_zigbee_4_persistence.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR(D_LOG_DOMOTICZ "idx %d, nvalue %d"), idx, nvalue);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_HTTP D_CONFIGURE_DOMOTICZ));
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_07_domoticz.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSORS_FOUND " %d"), ds18x20_sensors);
+  AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DSB D_SENSOR_CRC_ERROR));
+[/home/pafoxp/code-tasmota/tasmota/./xsns_05_ds18x20.ino]
+.
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: Tx Packet:"));
+      AddLog(LOG_LEVEL_DEBUG, PSTR("ESX: serial send timeout"));
+  AddLog(LOG_LEVEL_DEBUG, PSTR("EXS: Channel %d Power Want %d, Is %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("EXS: Set Channel %d Brightness Want %d, Is %d"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("EXS: Serial %p, Cmd %d"), ExsSerial, Exs.cmd_status);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: SetChannels:"));
+  AddLog(LOG_LEVEL_INFO, PSTR("EXS: Set Power, Device %d, Power 0x%02x"),
+  AddLog(LOG_LEVEL_DEBUG, PSTR("EXS: Request MCU configuration, PIN %d to Low"), Pin(GPIO_EXS_ENABLE));
+  AddLog(LOG_LEVEL_INFO, PSTR("EXS: Starting Tx %d Rx %d"), Pin(GPIO_TXD), Pin(GPIO_RXD));
+    AddLog(LOG_LEVEL_INFO, PSTR("EXS: Serial In Byte 0x%02x"), serial_in_byte);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: CRC: 0x%02x, RX Packet:"), crc);
+[/home/pafoxp/code-tasmota/tasmota/./xdrv_30_exs_dimmer.ino]
+.
