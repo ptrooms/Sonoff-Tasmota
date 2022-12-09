@@ -18,7 +18,6 @@
 #include <ctype.h>
 
 #define BYTES_DEFAULT_SIZE          28              // default pre-reserved size for buffer (keep 4 bytes for len/size)
-#define BYTES_MAX_SIZE              (32*1024)       // max 32Kb
 #define BYTES_OVERHEAD              4               // bytes overhead to be added when allocating (used to store len and size)
 #define BYTES_HEADROOM              8               // keep a natural headroom of 8 bytes when resizing
 
@@ -506,7 +505,7 @@ void m_write_attributes(bvm *vm, int rel_idx, const buf_impl * attr)
 void bytes_realloc(bvm *vm, buf_impl * attr, int32_t size)
 {
     if (!attr->fixed && size < 4) { size = 4; }
-    if (size > BYTES_MAX_SIZE) { size = BYTES_MAX_SIZE; }
+    if (size > vm->bytesmaxsize) { size = vm->bytesmaxsize; }
     size_t oldsize = attr->bufptr ? attr->size : 0;
     attr->bufptr = (uint8_t*) be_realloc(vm, attr->bufptr, oldsize, size);  /* malloc */
     attr->size = size;
@@ -1216,7 +1215,7 @@ static int m_fromhex(bvm *vm)
             from = be_toint(vm, 3);
         }
         const char *s = be_tostring(vm, 2);
-        size_t s_len = strlen(s);
+        int32_t s_len = strlen(s);
         if (from < 0) { from = 0; }
         if (from > s_len) { from = s_len; }
         int32_t bin_len = (s_len - from) / 2;
@@ -1259,6 +1258,20 @@ static int m_buffer(bvm *vm)
 {
     buf_impl attr = m_read_attributes(vm, 1);
     be_pushcomptr(vm, attr.bufptr);
+    be_return(vm);
+}
+
+/*
+ * Returns `btrue` if the buffer is mapped to memory
+ * or `bfalse` if memory was allocated by us.
+ * 
+ * `ismapped() -> bool`
+ */
+static int m_is_mapped(bvm *vm)
+{
+    buf_impl attr = m_read_attributes(vm, 1);
+    bbool mapped = (attr.mapped || (attr.bufptr == NULL));
+    be_pushbool(vm, mapped);
     be_return(vm);
 }
 
@@ -1547,6 +1560,7 @@ void be_load_byteslib(bvm *vm)
         { ".len", NULL },
         { "_buffer", m_buffer },
         { "_change_buffer", m_change_buffer },
+        { "ismapped", m_is_mapped },
         { "init", m_init },
         { "deinit", m_deinit },
         { "tostring", m_tostring },
@@ -1590,6 +1604,7 @@ class be_class_bytes (scope: global, name: bytes) {
     .len, var
     _buffer, func(m_buffer)
     _change_buffer, func(m_change_buffer)
+    ismapped, func(m_is_mapped)
     init, func(m_init)
     deinit, func(m_deinit)
     tostring, func(m_tostring)

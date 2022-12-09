@@ -245,7 +245,7 @@ static bvalue* load_cached(bvm *vm, bstring *path)
     return v;
 }
 
-static void cache_module(bvm *vm, bstring *name)
+void be_cache_module(bvm *vm, bstring *name)
 {
     bvalue *v;
     if (vm->module.loaded == NULL) {
@@ -282,7 +282,7 @@ int be_module_load(bvm *vm, bstring *path)
         if (res == BE_OK) {
             /* on first load of the module, try running the '()' function */
             module_init(vm);
-            cache_module(vm, path);
+            be_cache_module(vm, path);
         }
     }
     return res;
@@ -339,7 +339,7 @@ int be_module_attr(bvm *vm, bmodule *module, bstring *attr, bvalue *dst)
                 bmodule *mod = var_toobj(dst);
                 if (strcmp(be_module_name(mod), "undefined") == 0) {
                     return BE_NONE;     /* if the return value is module `undefined`, consider it is an error */
-                }
+            }
             }
             return type;
         }
@@ -373,6 +373,19 @@ bbool be_module_setmember(bvm *vm, bmodule *module, bstring *attr, bvalue *src)
             vm->top += 3;   /* prevent collection results */
             be_dofunc(vm, top, 2); /* call method 'setmember' */
             vm->top -= 3;
+            int type = var_type(vm->top);
+            if (type == BE_BOOL) {
+                bbool ret = var_tobool(vm->top);
+                if (!ret) {
+                    return bfalse;
+                }
+            } else if (type == BE_MODULE) {
+                /* check if the module is named `undefined` */
+                bmodule *mod = var_toobj(vm->top);
+                if (strcmp(be_module_name(mod), "undefined") == 0) {
+                    return bfalse;     /* if the return value is module `undefined`, consider it is an error */
+                }
+            }
             return btrue;
         }
     }

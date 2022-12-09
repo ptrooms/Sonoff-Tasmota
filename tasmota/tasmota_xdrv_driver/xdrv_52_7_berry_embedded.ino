@@ -31,8 +31,8 @@ const char berry_prog[] =
 #ifdef USE_BERRY_PYTHON_COMPAT
   // enable python syntax compatibility mode
   "import python_compat "
-  "import cb "
 #endif
+  "import cb "
 
 #ifdef USE_ENERGY_SENSOR
   "import energy "
@@ -42,6 +42,14 @@ const char berry_prog[] =
   "tasmota = Tasmota() "
   "def log(m,l) tasmota.log(m,l) end "
   "def load(f) return tasmota.load(f) end "
+
+  // try to resize FS to max at first boot
+  // "tasmota.log('>>> bootcount=' + str(tasmota.settings.bootcount), 2) "
+  "if tasmota.settings.bootcount == 0 "
+    "import partition_core "
+    "var p = partition_core.Partition() "
+    "p.resize_fs_to_max() "
+  "end "
 
 #ifdef USE_AUTOCONF
   // autoconf

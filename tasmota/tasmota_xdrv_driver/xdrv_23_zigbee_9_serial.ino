@@ -19,6 +19,8 @@
 
 #ifdef USE_ZIGBEE
 
+const uint32_t ZIGBEE_LED_SERIAL = 0;     // LED<1> blinks when receiving
+
 #ifdef USE_ZIGBEE_ZNP
 const uint32_t ZIGBEE_BUFFER_SIZE = 256;  // Max ZNP frame is SOF+LEN+CMD1+CMD2+250+FCS = 255
 const uint8_t  ZIGBEE_SOF = 0xFE;
@@ -28,11 +30,8 @@ const uint8_t  ZIGBEE_SOF_ALT = 0xFF;
 #ifdef USE_ZIGBEE_EZSP
 const uint32_t ZIGBEE_BUFFER_SIZE = 256;
 const uint8_t  ZIGBEE_EZSP_CANCEL = 0x1A;  // cancel byte
-const uint8_t  ZIGBEE_EZSP_EOF = 0x7E;          // end of frame
-const uint8_t  ZIGBEE_EZSP_ESCAPE = 0x7D;       // escape byte
-
-const uint32_t ZIGBEE_LED_RECEIVE = 0;     // LED<1> blinks when receiving
-const uint32_t ZIGBEE_LED_SEND = 0;        // LED<2> blinks when receiving
+const uint8_t  ZIGBEE_EZSP_EOF = 0x7E;     // end of frame
+const uint8_t  ZIGBEE_EZSP_ESCAPE = 0x7D;  // escape byte
 
 class EZSP_Serial_t {
 public:
@@ -47,26 +46,26 @@ public:
 
 EZSP_Serial_t EZSP_Serial;
 
+#endif // USE_ZIGBEE_EZSP
+
 //
 // Blink Led Status
 //
-const uint32_t Z_LED_STATUS_ON_MILLIS = 50;   // keep led on at least 50 ms
+const uint32_t Z_LED_STATUS_ON_MILLIS = 40;   // keep led on at least 40 ms
 bool Z_LedStatusSet(bool onoff) {
   static bool led_status_on = false;
   static uint32_t led_on_time = 0;
 
   if (onoff) {
-    SetLedPowerIdx(ZIGBEE_LED_RECEIVE, 1);
+    SetLedPowerIdx(ZIGBEE_LED_SERIAL, 1);
     led_status_on = true;
     led_on_time = millis();
   } else if ((led_status_on) && (TimePassedSince(led_on_time) >= Z_LED_STATUS_ON_MILLIS)) {
-    SetLedPowerIdx(ZIGBEE_LED_RECEIVE, 0);
+    SetLedPowerIdx(ZIGBEE_LED_SERIAL, 0);
     led_status_on = false;
   }
   return led_status_on;
 }
-
-#endif // USE_ZIGBEE_EZSP
 
 #include <TasmotaSerial.h>
 TasmotaSerial *ZigbeeSerial = nullptr;
@@ -89,7 +88,10 @@ void ZigbeeInputLoop(void) {
   // 04..FD - Data Field
   // FE (or last) - FCS Checksum
 
+  Z_LedStatusSet(false);
   while (ZigbeeSerial->available()) {
+    Z_LedStatusSet(true); // turn on receive LED<1>
+
     yield();
     uint8_t zigbee_in_byte = ZigbeeSerial->read();
 		//AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("ZbInput byte=%d len=%d"), zigbee_in_byte, zigbee_buffer->len());
@@ -331,6 +333,9 @@ void ZigbeeZNPSend(const uint8_t *msg, size_t len) {
 	uint8_t data_len = len - 2;		// removing CMD1 and CMD2
 
   if (ZigbeeSerial) {
+    // turn send led on
+    Z_LedStatusSet(true);
+
 		uint8_t fcs = data_len;
 
 		ZigbeeSerial->write(ZIGBEE_SOF);		// 0xFE
@@ -770,14 +775,19 @@ void ZigbeeZCLSend_Raw(const ZCLFrame &zcl) {
     buf.add8(zcl.dstendpoint);             // dest endpoint
   }
   buf.add16(0x0000);                // dest Pan ID, 0x0000 = intra-pan
-  buf.add8(0x01);                   // source endpoint
+  if (zcl.srcendpoint) {
+    buf.add8(zcl.srcendpoint);        // source endpoint
+  } else {
+    buf.add8(1);                      // set endpoint to 1 if not specified
+  }
   buf.add16(zcl.cluster);
   buf.add8(zcl.transactseq);              // transactseq
-  buf.add8(0x30);                   // 30 options
+  buf.add8(zcl.direct ? 0x00 : 0x30);                   // 30 options
   buf.add8(0x1E);                   // 1E radius
 
   buf.add16(3 + zcl.payload.len() + (zcl.manuf ? 2 : 0));
-  buf.add8((zcl.needResponse ? 0x00 : 0x10) | (zcl.clusterSpecific ? 0x01 : 0x00) | (zcl.manuf ? 0x04 : 0x00));                 // Frame Control Field
+  buf.add8((zcl.needResponse ? 0x00 : 0x10) | (zcl.clusterSpecific ? 0x01 : 0x00) |
+           (zcl.manuf ? 0x04 : 0x00) | (zcl.direction ? 0x08 : 0x00));                 // Frame Control Field
   if (zcl.manuf) {
     buf.add16(zcl.manuf);               // add Manuf Id if not null
   }

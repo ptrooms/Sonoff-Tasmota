@@ -25,7 +25,6 @@ be_extern_native_module(strict);
 be_extern_native_module(undefined);
 
 /* Berry extensions */
-#include "be_mapping.h"
 be_extern_native_module(cb);
 
 /* Tasmota specific */
@@ -50,9 +49,13 @@ be_extern_native_module(animate);
 be_extern_native_module(partition_core);
 be_extern_native_module(crc);
 be_extern_native_module(crypto);
+be_extern_native_module(ULP);
 #ifdef USE_ZIGBEE
 be_extern_native_module(zigbee);
 #endif // USE_ZIGBEE
+// BLE
+be_extern_native_module(MI32);
+be_extern_native_module(BLE);
 #ifdef USE_LVGL
 be_extern_native_module(lv);
 be_extern_native_module(lv_extra);
@@ -107,13 +110,14 @@ BERRY_LOCAL const bntvmodule* const be_module_table[] = {
 #endif
     &be_native_module(undefined),
 
+    &be_native_module(re),
+#ifdef TASMOTA
     /* Berry extensions */
     &be_native_module(cb),
 
     /* user-defined modules register start */
     
     &be_native_module(python_compat),
-    &be_native_module(re),
     &be_native_module(path),
     &be_native_module(mqtt),
     &be_native_module(persist),
@@ -162,7 +166,14 @@ BERRY_LOCAL const bntvmodule* const be_module_table[] = {
 #ifdef USE_ALEXA_AVS
     &be_native_module(crypto),
 #endif
-
+#if defined(USE_BERRY_ULP) && defined(CONFIG_IDF_TARGET_ESP32)
+    &be_native_module(ULP),
+#endif // USE_BERRY_ULP
+#if defined(USE_MI_ESP32) && !defined(USE_BLE_ESP32)
+    &be_native_module(MI32),
+    &be_native_module(BLE),
+#endif //USE_MI_ESP32
+#endif // TASMOTA
     /* user-defined modules register end */
     NULL /* do not remove */
 };
@@ -179,6 +190,7 @@ be_extern_native_class(light_state);
 be_extern_native_class(Wire);
 be_extern_native_class(I2C_Driver);
 be_extern_native_class(AXP192);
+be_extern_native_class(AXP202);
 be_extern_native_class(OneWire);
 be_extern_native_class(Leds_ntv);
 be_extern_native_class(Leds);
@@ -195,10 +207,8 @@ be_extern_native_class(md5);
 be_extern_native_class(udp);
 be_extern_native_class(webclient);
 be_extern_native_class(tcpclient);
+be_extern_native_class(tcpserver);
 be_extern_native_class(energy_struct);
-// BLE
-be_extern_native_class(MI32);
-be_extern_native_class(BLE);
 // LVGL core classes
 be_extern_native_class(lv_color);
 be_extern_native_class(lv_font);
@@ -216,6 +226,7 @@ be_extern_native_class(lv_clock_icon);
 be_extern_native_class(int64);
 
 BERRY_LOCAL bclass_array be_class_table = {
+#ifdef TASMOTA
     /* first list are direct classes */
     &be_native_class(tasmota),
     &be_native_class(Trigger),
@@ -235,6 +246,7 @@ BERRY_LOCAL bclass_array be_class_table = {
     &be_native_class(Wire),
     &be_native_class(I2C_Driver),
     &be_native_class(AXP192),
+    &be_native_class(AXP202),
 #endif // USE_I2C
     &be_native_class(md5),
 #ifdef USE_WEBCLIENT
@@ -242,6 +254,9 @@ BERRY_LOCAL bclass_array be_class_table = {
     &be_native_class(webclient),
     &be_native_class(tcpclient),
 #endif // USE_WEBCLIENT
+#ifdef USE_BERRY_TCPSERVER
+    &be_native_class(tcpserver),
+#endif // USE_BERRY_TCPSERVER
 #ifdef USE_WS2812
     &be_native_class(Leds_ntv),
     &be_native_class(Leds),
@@ -279,10 +294,7 @@ BERRY_LOCAL bclass_array be_class_table = {
 #ifdef USE_BERRY_INT64
     &be_native_class(int64),
 #endif
-#if defined(USE_MI_ESP32) && !defined(USE_BLE_ESP32)
-    &be_native_class(MI32),
-    &be_native_class(BLE),
-#endif //USE_MI_ESP32
+#endif // TASMOTA
     NULL, /* do not remove */
 };
 

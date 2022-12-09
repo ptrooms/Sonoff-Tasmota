@@ -469,6 +469,12 @@ static int new_upval(bvm *vm, bfuncinfo *finfo, bstring *name, bexpdesc *var)
 static void new_var(bparser *parser, bstring *name, bexpdesc *var)
 {
     bfuncinfo *finfo = parser->finfo;
+    if (comp_is_strict(parser->vm)) {
+        /* check if we are masking a builtin */
+        if (be_builtin_find(parser->vm, name) >= 0) {
+            push_error(parser, "strict: redefinition of builtin '%s'", str(name));
+        }
+    }
     if (finfo->prev || finfo->binfo->prev || parser->islocal) {
         init_exp(var, ETLOCAL, 0);
         var->v.idx = new_localvar(parser, name); /* if local, contains the index in current local var list */
@@ -982,7 +988,6 @@ static void compound_assign(bparser *parser, int op, bexpdesc *l, bexpdesc *r)
 /* A new implicit local variable is created if no global has the same name (excluding builtins) */
 /* This means that you can override a builtin silently */
 /* This also means that a function cannot create a global, they must preexist or create with `global` module */
-/* TODO add warning in strict mode */
 static int check_newvar(bparser *parser, bexpdesc *e)
 {
     if (e->type == ETGLOBAL) {
@@ -1446,26 +1451,32 @@ static void classdef_stmt(bparser *parser, bclass *c, bbool is_static)
 static void classstatic_stmt(bparser *parser, bclass *c, bexpdesc *e)
 {
     bstring *name;
-    /* 'static' ID ['=' expr] {',' ID ['=' expr] } */
+    /* 'static' ['var'] ID ['=' expr] {',' ID ['=' expr] } */
+    /* 'static' 'def' ID '(' varlist ')' block 'end' */
     scan_next_token(parser); /* skip 'static' */
     if (next_type(parser) == KeyDef) {  /* 'static' 'def' ... */
         classdef_stmt(parser, c, btrue);
-    } else if (match_id(parser, name) != NULL) {
-        check_class_attr(parser, c, name);
-        be_class_member_bind(parser->vm, c, name, bfalse);
-        class_static_assignment_expr(parser, e, name);
-
-        while (match_skip(parser, OptComma)) { /* ',' */
-            if (match_id(parser, name) != NULL) {
-                check_class_attr(parser, c, name);
-                be_class_member_bind(parser->vm, c, name, bfalse);
-                class_static_assignment_expr(parser, e, name);
-            } else {
-                parser_error(parser, "class static error");
-            }
-        }
     } else {
-        parser_error(parser, "class static error");
+        if (next_type(parser) == KeyVar) {
+            scan_next_token(parser); /* skip 'var' if any */
+        }
+        if (match_id(parser, name) != NULL) {
+            check_class_attr(parser, c, name);
+            be_class_member_bind(parser->vm, c, name, bfalse);
+            class_static_assignment_expr(parser, e, name);
+
+            while (match_skip(parser, OptComma)) { /* ',' */
+                if (match_id(parser, name) != NULL) {
+                    check_class_attr(parser, c, name);
+                    be_class_member_bind(parser->vm, c, name, bfalse);
+                    class_static_assignment_expr(parser, e, name);
+                } else {
+                    parser_error(parser, "class static error");
+                }
+            }
+        } else {
+            parser_error(parser, "class static error");
+        }
     }
 }
 

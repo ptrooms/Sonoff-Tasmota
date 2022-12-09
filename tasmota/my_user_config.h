@@ -79,6 +79,7 @@
 #define WIFI_CONFIG_TOOL       WIFI_RETRY        // [WifiConfig] Default tool if Wi-Fi fails to connect (default option: 4 - WIFI_RETRY)
                                                  // (WIFI_RESTART, WIFI_MANAGER, WIFI_RETRY, WIFI_WAIT, WIFI_SERIAL, WIFI_MANAGER_RESET_ONLY)
                                                  // The configuration can be changed after first setup using WifiConfig 0, 2, 4, 5, 6 and 7.
+#define DNS_TIMEOUT            1000              // [DnsTimeout] Number of ms before DNS timeout
 #define WIFI_ARP_INTERVAL      60                // [SetOption41] Send gratuitous ARP interval
 #define WIFI_SCAN_AT_RESTART   false             // [SetOption56] Scan Wi-Fi network at restart for configured AP's
 #define WIFI_SCAN_REGULARLY    true              // [SetOption57] Scan Wi-Fi network every 44 minutes for configured AP's
@@ -100,9 +101,9 @@
 #ifdef CONFIG_IDF_TARGET_ESP32C3
 #define OTA_URL                "http://ota.tasmota.com/tasmota32/release/tasmota32c3.bin"  // [OtaUrl]
 #elif defined(CONFIG_IDF_TARGET_ESP32S2)
-#define OTA_URL                "no official version (yet)"  // [OtaUrl]
+#define OTA_URL                "http://ota.tasmota.com/tasmota32/release/tasmota32s2.bin"  // [OtaUrl]
 #elif defined(CONFIG_IDF_TARGET_ESP32S3)
-#define OTA_URL                "no official version (yet)"  // [OtaUrl]
+#define OTA_URL                "http://ota.tasmota.com/tasmota32/release/tasmota32s3.bin"  // [OtaUrl]
 #elif defined(CORE32SOLO1)
 #define OTA_URL                "http://ota.tasmota.com/tasmota32/release/tasmota32solo1.bin"  // [OtaUrl]
 #else
@@ -130,6 +131,7 @@
 #define MQTT_SENSOR_RETAIN     false             // [SensorRetain] Sensor may send retain flag (false = off, true = on)
 #define MQTT_INFO_RETAIN       false             // [InfoRetain] Info may send retain flag (false = off, true = on)
 #define MQTT_STATE_RETAIN      false             // [StateRetain] State may send retain flag (false = off, true = on)
+#define MQTT_STATUS_RETAIN     false             // [StatusRetain] Status may send retain flag (false = off, true = on)
 #define MQTT_NO_HOLD_RETAIN    false             // [SetOption62] Disable retain flag on HOLD messages
 #define MQTT_NO_RETAIN         false             // [SetOption104] No Retain - disable all MQTT retained messages, some brokers don't support it: AWS IoT, Losant
 
@@ -282,6 +284,7 @@
                                                  //   (POWER_ALL_OFF, POWER_ALL_ON, POWER_ALL_SAVED_TOGGLE, POWER_ALL_SAVED, POWER_ALL_ALWAYS_ON, POWER_ALL_OFF_PULSETIME_ON)
 #define APP_BLINKTIME          10                // [BlinkTime] Time in 0.1 Sec to blink/toggle power for relay 1
 #define APP_BLINKCOUNT         10                // [BlinkCount] Number of blinks (0 = 32000)
+#define APP_BISTABLE_PULSE     40                // [SetOption45] Pulse time in ms for two coil bistable latching relays
 
 #define APP_NORMAL_SLEEP       false             // [SetOption60] Enable normal sleep instead of dynamic sleep
 #define APP_SLEEP              0                 // [Sleep] Sleep time to lower energy consumption (0 = Off, 1 - 250 mSec),
@@ -358,6 +361,7 @@
 #define ZIGBEE_DISTINCT_TOPICS false             // [SetOption89] Enable unique device topic based on Zigbee device ShortAddr
 #define ZIGBEE_RMV_ZBRECEIVED  false             // [SetOption100] Remove ZbReceived form JSON message
 #define ZIGBEE_INDEX_EP        false             // [SetOption101] Add the source endpoint as suffix to attributes, ex `Power3` instead of `Power` if sent from endpoint 3
+#define ZIGBEE_TOPIC_FNAME     false             // [SetOption112] Enable friendly name in Zigbee topic (use with ZIGBEE_DISTINCT_TOPICS)
 
 /*********************************************************************************************\
  * END OF SECTION 1
@@ -371,6 +375,7 @@
   // If non selected the default en-GB will be used
 //#define MY_LANGUAGE            af_AF           // Afrikaans in South Africa
 //#define MY_LANGUAGE            bg_BG           // Bulgarian in Bulgaria
+//#define MY_LANGUAGE            ca_AD           // Catalan in All catalan speaking countries ( Andorra )
 //#define MY_LANGUAGE            cs_CZ           // Czech in Czech
 //#define MY_LANGUAGE            de_DE           // German in Germany
 //#define MY_LANGUAGE            el_GR           // Greek in Greece
@@ -423,6 +428,7 @@
 
 #define MQTT_TELE_RETAIN       0                 // Tele messages may send retain flag (0 = off, 1 = on)
 #define MQTT_CLEAN_SESSION     1                 // Mqtt clean session connection (0 = No clean session, 1 = Clean session (default))
+#define MQTT_DISABLE_SSERIALRECEIVED 0           // 1 = Disable sserialreceived mqtt messages, 0 = Enable sserialreceived mqtt messages (default)
 
 // -- MQTT - Domoticz -----------------------------
 #define USE_DOMOTICZ                             // Enable Domoticz (+6k code, +0.3k mem)
@@ -555,6 +561,7 @@
 #define USE_MY92X1                               // Add support for MY92X1 RGBCW led controller as used in Sonoff B1, Ailight and Lohas
 #define USE_SM16716                              // Add support for SM16716 RGB LED controller (+0k7 code)
 #define USE_SM2135                               // Add support for SM2135 RGBCW led control as used in Action LSC (+0k6 code)
+#define USE_SM2335                               // Add support for SM2335 RGBCW led control as used in SwitchBot Color Bulb (+0k7 code)
 #define USE_BP5758D                              // Add support for BP5758D RGBCW led control as used in some Tuya lightbulbs (+0k8 code)
 #define USE_SONOFF_L1                            // Add support for Sonoff L1 led control
 #define USE_ELECTRIQ_MOODL                       // Add support for ElectriQ iQ-wifiMOODL RGBW LED controller (+0k3 code)
@@ -572,6 +579,7 @@
 // -- One wire sensors ----------------------------
 #define USE_DS18x20                              // Add support for DS18x20 sensors with id sort, single scan and read retry (+2k6 code)
 //  #define W1_PARASITE_POWER                      // Optimize for parasite powered sensors
+//  #define DS18x20_USE_ID_ALIAS
 
 // -- I2C sensors ---------------------------------
 #define USE_I2C                                  // I2C using library wire (+10k code, 0k2 mem, 124 iram)
@@ -590,6 +598,7 @@
     #define USE_VEML6070_SHOW_RAW                // VEML6070, shows the raw value of UV-A
 //  #define USE_ADS1115                            // [I2cDriver13] Enable ADS1115 16 bit A/D converter (I2C address 0x48, 0x49, 0x4A or 0x4B) based on Adafruit ADS1x15 library (no library needed) (+0k7 code)
 //  #define USE_INA219                             // [I2cDriver14] Enable INA219 (I2C address 0x40, 0x41 0x44 or 0x45) Low voltage and current sensor (+1k code)
+  //  #define INA219_SHUNT_RESISTOR (0.100)        // 0.1 Ohm default shunt resistor, can be overriden in user_config_override or using Sensor13
 //  #define USE_INA226                             // [I2cDriver35] Enable INA226 (I2C address 0x40, 0x41 0x44 or 0x45) Low voltage and current sensor (+2k3 code)
 //  #define USE_SHT3X                              // [I2cDriver15] Enable SHT3x (I2C address 0x44 or 0x45) or SHTC3 (I2C address 0x70) sensor (+0k7 code)
 //  #define USE_TSL2561                            // [I2cDriver16] Enable TSL2561 sensor (I2C address 0x29, 0x39 or 0x49) using library Joba_Tsl2561 (+2k3 code)
@@ -597,6 +606,7 @@
 //  #define USE_MGS                                // [I2cDriver17] Enable Xadow and Grove Mutichannel Gas sensor using library Multichannel_Gas_Sensor (+10k code)
     #define MGS_SENSOR_ADDR    0x04              // Default Mutichannel Gas sensor i2c address
 //  #define USE_SGP30                              // [I2cDriver18] Enable SGP30 sensor (I2C address 0x58) (+1k1 code)
+//  #define USE_SGP40                              // [I2cDriver69] Enable SGP40 sensor (I2C address 0x59) (+1k4 code)
 //  #define USE_SI1145                             // [I2cDriver19] Enable SI1145/46/47 sensor (I2C address 0x60) (+1k code)
 //  #define USE_LM75AD                             // [I2cDriver20] Enable LM75AD sensor (I2C addresses 0x48 - 0x4F) (+0k5 code)
 //  #define USE_APDS9960                           // [I2cDriver21] Enable APDS9960 Proximity Sensor (I2C address 0x39). Disables SHT and VEML6070 (+4k7 code)
@@ -675,6 +685,13 @@
 //  #define USE_HDC2010                            // [I2cDriver64] Enable HDC2010 temperature/humidity sensor (I2C address 0x40) (+1k5 code)
 //  #define USE_DS3502                             // [I2CDriver67] Enable DS3502 digital potentiometer (I2C address 0x28 - 0x2B) (+0k4 code)
 //  #define USE_HYT                                // [I2CDriver68] Enable HYTxxx temperature and humidity sensor (I2C address 0x28) (+0k5 code)
+//  #define USE_LUXV30B                            // [I2CDriver70] Enable RFRobot SEN0390 LuxV30b ambient light sensor (I2C address 0x4A) (+0k5 code)
+//  #define USE_QMC5883L                           // [I2CDriver71] Enable QMC5883L magnetic induction sensor (I2C address 0x0D) (+0k8 code)
+//    #define QMC5883L_TEMP_SHIFT       23         // sensor temperature are not calibrated (only relativ measurement) and need an absolute ground value in °C (see datasheet)
+//  #define USE_INA3221                            // [I2CDriver72] Enable INA3221 3-channel DC voltage and current sensor (I2C address 0x40-0x44) (+3.2k code)
+//    #define INA3221_ADDRESS1                     // allow to change the 1st address to search for INA3221 to 0x41..0x43
+//    #define INA3221_MAX_COUNT                    // change the number of devices to search for (default 4).
+//                                                 // Both settings together allow to limit searching for INA3221 to only a subset of addresses
 
 //  #define USE_RTC_CHIPS                          // Enable RTC chip support and NTP server - Select only one
 //    #define USE_DS3231                           // [I2cDriver26] Enable DS3231 RTC (I2C address 0x68) (+1k2 code)
@@ -729,6 +746,8 @@
 //  #define USE_RC522                              // Add support for MFRC522 13.56Mhz Rfid reader (+6k code)
 //    #define USE_RC522_DATA_FUNCTION              // Add support for reading data block content (+0k4 code)
 //    #define USE_RC522_TYPE_INFORMATION           // Add support for showing card type (+0k4 code)
+//  #define USE_MCP2515                            // Add support for can bus using MCP2515 (+7k code)
+//  #define USE_CANSNIFFER                         // Add support for can bus sniffer using MCP2515 (+5k code)
 
 #endif  // USE_SPI
 
@@ -750,6 +769,8 @@
   #define SR04_MAX_SENSOR_DISTANCE  500          // Set sensor max detection distance
 //#define USE_DYP                                  // Add support for DYP ME-007 ultrasonic distance sensor, serial port version (+0k5 code)
 #define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge (+0k8 code)
+//#define USE_MODBUS_BRIDGE                        // Add support for software Modbus Bridge (+4.5k code)
+//#define USE_MODBUS_BRIDGE_TCP                    // Add support for software Modbus TCP Bridge (also enable Modbus TCP Bridge) (+2k code)
 //#define USE_TCP_BRIDGE                           //  Add support for Serial to TCP bridge (+1.3k code)
 //#define USE_MP3_PLAYER                           // Use of the DFPlayer Mini MP3 Player RB-DFR-562 commands: play, pause, stop, track, volume and reset
   #define MP3_VOLUME           30                // Set the startup volume on init, the range can be 0..100(max)
@@ -893,6 +914,8 @@
   #define USE_ZIGBEE_DEBOUNCE_COMMANDS   200     // if commands are received from the same device/endpoint with same ZCL transaction number, discard packet in this time window (ms)
   #define USE_ZIGBEE_MODELID      "Tasmota Z2T"  // reported "ModelId"      (cluster 0000 / attribute 0005)
   #define USE_ZIGBEE_MANUFACTURER "Tasmota"      // reported "Manufacturer" (cluster 0000 / attribute 0004)
+  #define USE_ZIGBEE_BATT_REPROBE (24*3600)      // Period in seconds during which we don't ask again for battery, default 1 day
+  #define USE_ZIGBEE_BATT_REPROBE_PAUSE (3600)   // Min wait period when sending an autoprobe, default: wait at least 1 hour
   #define USE_ZBBRIDGE_TLS                       // TLS support for zbbridge
   #define USE_ZIGBEE_ZBBRIDGE_EEPROM 0x50        // I2C id for the ZBBridge EEPROM
   // #define USE_ZIGBEE_FORCE_NO_CHILDREN           // This feature forces `CONFIG_MAX_END_DEVICE_CHILDREN` to zero which means that the coordinator does not accept any direct child. End-devices must pair through a router.
@@ -951,7 +974,7 @@
 //#define USE_NEOPOOL                              // Add support for Sugar Valley NeoPool Controller - also known under brands Hidrolife, Aquascenic, Oxilife, Bionet, Hidroniser, UVScenic, Station, Brilix, Bayrol and Hay (+6k flash, +60 mem)
 //  #define NEOPOOL_MODBUS_ADDRESS       1         // Any modbus address
 
-//#define FLOWRATEMETER                            // Add support for water flow meter YF-DN50 and similary (+1k7 code)
+//#define USE_FLOWRATEMETER                        // Add support for water flow meter YF-DN50 and similary (+1k7 code)
 
 // -- Thermostat control ----------------------------
 //#define USE_THERMOSTAT                           // Add support for Thermostat
@@ -1002,9 +1025,17 @@
 
 #define SET_ESP32_STACK_SIZE  (8 * 1024)         // Set the stack size for Tasmota. The default value is 8192 for Arduino, some builds might need to increase it
 
+#ifdef SOC_TOUCH_VERSION_1                       // ESP32
+  #define ESP32_TOUCH_THRESHOLD   40             // [TouchThres] Below this level a touch is detected
+#endif
+#ifdef SOC_TOUCH_VERSION_2                       // ESP32-S2 and ESP32-S3
+  #define ESP32_TOUCH_THRESHOLD   40000          // [TouchThres] Above this level a touch is detected
+#endif
+
 #define USE_ESP32_SENSORS                        // Add support for ESP32 temperature and optional hall effect sensor
 
 //#define USE_SONOFF_SPM                           // Add support for ESP32 based Sonoff Smart Stackable Power Meter (+11k code)
+//#define USE_DISPLAY_TM1621_SONOFF                // Add support for TM1621 dsiplay driver used by Sonoff POWR3xxD and THR3xxD
 
 //#define USE_ETHERNET                             // Add support for ethernet (+20k code)
 //  #define USE_WT32_ETH01                         // Add support for Wireless-Tag WT32-ETH01
@@ -1045,6 +1076,8 @@
                                                  // Note that only one cipher is enabled: ECDHE_RSA_WITH_AES_128_GCM_SHA256 which is very commonly used and highly secure
     #define USE_BERRY_WEBCLIENT_USERAGENT  "TasmotaClient" // default user-agent used, can be changed with `wc.set_useragent()`
     #define USE_BERRY_WEBCLIENT_TIMEOUT  2000    // Default timeout in milliseconds
+  #define USE_BERRY_TCPSERVER                    // Enable TCP socket server (+0.6k)
+  // #define USE_BERRY_ULP                          // Enable ULP (Ultra Low Power) support (+4.9k)
 #define USE_CSE7761                              // Add support for CSE7761 Energy monitor as used in Sonoff Dual R3
 
 // -- LVGL Graphics Library ---------------------------------
@@ -1128,7 +1161,15 @@
 \*********************************************************************************************/
 
 #ifdef USE_CONFIG_OVERRIDE
-  #include "user_config_override.h"         // Configuration overrides for my_user_config.h
+  #include "user_config_override.h"              // Configuration overrides for my_user_config.h
+#endif
+
+/*********************************************************************************************\
+ * Post-process obsoletes
+\*********************************************************************************************/
+
+#ifdef USE_ESP32MAIL
+#define USE_SENDMAIL                             // USE_ESP32MAIL is replaced by USE_SENDMAIL
 #endif
 
 /*********************************************************************************************\
@@ -1167,8 +1208,14 @@
  * Post-process compile options for TLS
 \*********************************************************************************************/
 
-#if defined(USE_MQTT_TLS) || defined(USE_SENDMAIL) || defined(USE_TELEGRAM) || defined(USE_WEBCLIENT_HTTPS) || defined(USE_ALEXA_AVS)
-  #define USE_TLS                                  // flag indicates we need to include TLS code
+#ifdef ESP8266
+#ifdef USE_SENDMAIL
+  #define USE_TLS                                // flag indicates we need to include TLS code
+#endif
+#endif
+
+#if defined(USE_MQTT_TLS) || defined(USE_TELEGRAM) || defined(USE_WEBCLIENT_HTTPS) || defined(USE_ALEXA_AVS)
+  #define USE_TLS                                // flag indicates we need to include TLS code
 #endif
 
 /*********************************************************************************************\

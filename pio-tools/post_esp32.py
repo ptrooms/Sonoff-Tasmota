@@ -18,8 +18,6 @@
 # - 0xe0000 | ~\Tasmota\.pio\build\<env name>/firmware.bin
 # - 0x3b0000| ~\Tasmota\.pio\build\<env name>/littlefs.bin
 
-Import("env")
-
 env = DefaultEnvironment()
 platform = env.PioPlatform()
 
@@ -35,14 +33,24 @@ import subprocess
 sys.path.append(join(platform.get_package_dir("tool-esptoolpy")))
 import esptool
 
-FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif32")
+extra_flags = ''.join([element.replace("-D", " ") for element in env.BoardConfig().get("build.extra_flags", "")])
+build_flags = ''.join([element.replace("-D", " ") for element in env.GetProjectOption("build_flags")])
+
+if "CORE32SOLO1" in extra_flags or "FRAMEWORK_ARDUINO_SOLO1" in build_flags:
+    FRAMEWORK_DIR = platform.get_package_dir("framework-arduino-solo1")
+elif "CORE32ITEAD" in extra_flags or "FRAMEWORK_ARDUINO_ITEAD" in build_flags:
+    FRAMEWORK_DIR = platform.get_package_dir("framework-arduino-ITEAD")
+else:
+    FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif32")
+
 variants_dir = join(FRAMEWORK_DIR, "variants", "tasmota")
 
 def esp32_create_chip_string(chip):
     tasmota_platform = env.subst("$BUILD_DIR").split(os.path.sep)[-1]
     tasmota_platform = tasmota_platform.split('-')[0]
-    if 'tasmota' and chip[3:] not in tasmota_platform: # quick check for a valid name like 'tasmota' + '32c3'
+    if 'tasmota' + chip[3:] not in tasmota_platform: # quick check for a valid name like 'tasmota' + '32c3'
         print('Unexpected naming conventions in this build environment -> Undefined behavior for further build process!!')
+        print("Expected build environment name like 'tasmota32-whatever-you-want'")
     return tasmota_platform
 
 def esp32_build_filesystem(fs_size):
@@ -74,7 +82,7 @@ def esp32_build_filesystem(fs_size):
     return True
 
 def esp32_fetch_safeboot_bin(tasmota_platform):
-    safeboot_fw_url = "https://github.com/arendst/Tasmota-firmware/raw/main/firmware/tasmota32/" + tasmota_platform + "-safeboot.bin"
+    safeboot_fw_url = "http://ota.tasmota.com/tasmota32/release/" + tasmota_platform + "-safeboot.bin"
     safeboot_fw_name = join(variants_dir, tasmota_platform + "-safeboot.bin")
     if(exists(safeboot_fw_name)):
         print("safeboot binary already in place.")
@@ -131,12 +139,26 @@ def esp32_create_combined_bin(source, target, env):
     else:
         esp32_fetch_safeboot_bin(tasmota_platform)
     flash_size = env.BoardConfig().get("upload.flash_size", "4MB")
+    flash_freq = env.BoardConfig().get("build.f_flash", "40000000L")
+    flash_freq = str(flash_freq).replace("L", "")
+    flash_freq = str(int(int(flash_freq) / 1000000)) + "m"
+    flash_mode = env.BoardConfig().get("build.flash_mode", "dio")
+    memory_type = env.BoardConfig().get("build.arduino.memory_type", "qio_qspi")
+
+    if flash_mode == "qio" or flash_mode == "qout":
+        flash_mode = "dio"
+    if memory_type == "opi_opi" or memory_type == "opi_qspi":
+        flash_mode = "dout"
     cmd = [
         "--chip",
         chip,
         "merge_bin",
         "-o",
         new_file_name,
+        "--flash_mode",
+        flash_mode,
+        "--flash_freq",
+        flash_freq,
         "--flash_size",
         flash_size,
     ]
@@ -155,9 +177,13 @@ def esp32_create_combined_bin(source, target, env):
     else:
         print("Upload new safeboot binary only")
 
-    if(fs_offset != -1):
+#    if(fs_offset != -1):
+    upload_port = env.subst("$UPLOAD_PORT")
+    if("upload-tasmota.php" not in upload_port) and (fs_offset != -1):
         fs_bin = join(env.subst("$BUILD_DIR"),"littlefs.bin")
         if exists(fs_bin):
+            before_reset = env.BoardConfig().get("upload.before_reset", "default_reset")
+            after_reset = env.BoardConfig().get("upload.after_reset", "hard_reset")
             print(f" - {hex(fs_offset)}| {fs_bin}")
             cmd += [hex(fs_offset), fs_bin]
             env.Replace(
@@ -165,8 +191,8 @@ def esp32_create_combined_bin(source, target, env):
             "--chip", chip,
             "--port", '"$UPLOAD_PORT"',
             "--baud", "$UPLOAD_SPEED",
-            "--before", "default_reset",
-            "--after", "hard_reset",
+            "--before", before_reset,
+            "--after", after_reset,
             "write_flash", "-z",
             "--flash_mode", "${__get_board_flash_mode(__env__)}",
             "--flash_freq", "${__get_board_f_flash(__env__)}",
