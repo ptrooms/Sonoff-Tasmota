@@ -25,6 +25,9 @@ platformio_tasmota_cenv.ini
 *.txt
 *.bin
 
+# ignore zipped firmwares
+*.gz
+
 
 ## Visual Studio Code specific ######
 .vscode
