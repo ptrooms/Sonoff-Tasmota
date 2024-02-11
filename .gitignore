@@ -25,6 +25,11 @@ firmware.asm
 tasmota/tasmota.ino.cpp
 platformio_override.ini
 platformio_tasmota_cenv.ini
+
+*.txt
+*.bin
+*.gz
+
 lib/libesp32/berry/generate/*
 lib/libesp32/berry/berry
 
