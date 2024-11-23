@@ -32,15 +32,16 @@ firmware.asm
 tasmota/tasmota.ino.cpp
 platformio_override.ini
 platformio_tasmota_cenv.ini
-# <<<<<<< HEAD
 
 *.txt
 *.bin
 *.gz
-# =======
 platformio_tasmota_user_env.ini
 platformio_tasmota_core3_env.ini
-# >>>>>>> TheoArends/master
+
+platformio_tasmota_user_env.ini
+platformio_tasmota_core3_env.ini
+
 lib/libesp32/berry/generate/*
 lib/libesp32/berry/berry
 
