@@ -124,8 +124,7 @@ void ExsSerialSend(const uint8_t data[] = nullptr, uint16_t len = 0)
   char rc;
 
 #ifdef EXS_DEBUG
-  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: Tx Packet:"));
-  AddLogBuffer(LOG_LEVEL_DEBUG_MORE, (uint8_t *)data, len);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: Tx Packet %*_H"), len, (uint8_t *)data);
 #endif
 
   while (retries)
@@ -136,8 +135,8 @@ void ExsSerialSend(const uint8_t data[] = nullptr, uint16_t len = 0)
     ExsSerial->flush();
 
     // wait for any response
-    uint32_t snd_time = millis();
-    while ((TimePassedSince(snd_time) < EXS_ACK_TIMEOUT) &&
+    uint32_t snd_time = millis() + EXS_ACK_TIMEOUT;
+    while ((!TimeReached(snd_time)) &&
            (!ExsSerial->available()))
       ;
 
@@ -355,7 +354,7 @@ bool ExsModuleSelected(void)
   Settings->flag3.pwm_multi_channels = 1;  // SetOption68 - Enable multi-channels PWM instead of Color PWM
   SetSeriallog(LOG_LEVEL_NONE);
 
-  TasmotaGlobal.devices_present = +2;
+  UpdateDevicesPresent(2);
   TasmotaGlobal.light_type = LT_SERIAL2;
   return true;
 }
@@ -363,8 +362,7 @@ bool ExsModuleSelected(void)
 bool ExsSetChannels(void)
 {
 #ifdef EXS_DEBUG
-  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: SetChannels:"));
-  AddLogBuffer(LOG_LEVEL_DEBUG_MORE, (uint8_t *)XdrvMailbox.data, XdrvMailbox.data_len);
+  AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: SetChannels %*_H"), XdrvMailbox.data_len, (uint8_t *)XdrvMailbox.data);
 #endif
 
   Exs.dimm[0] = ((uint8_t *)XdrvMailbox.data)[0];
@@ -417,6 +415,9 @@ void ExsInit(void)
       {
         ClaimSerial();
       }
+#ifdef ESP32
+      AddLog(LOG_LEVEL_DEBUG, PSTR("EXS: Serial UART%d"), ExsSerial->getUart());
+#endif  // ESP32
       ExsSerial->flush();
       EsxMcuStart();
       ExsSendCmd(EXS_CH_LOCK, 0);
@@ -456,8 +457,7 @@ void ExsSerialInput(void)
         Exs.cmd_status = 0;
 
 #ifdef EXS_DEBUG
-        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: CRC: 0x%02x, RX Packet:"), crc);
-        AddLogBuffer(LOG_LEVEL_DEBUG_MORE, (uint8_t *)Exs.buffer, Exs.byte_counter);
+        AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("EXS: CRC 0x%02x, RX Packet %*_H"), crc, Exs.byte_counter, (uint8_t *)Exs.buffer);
 #endif
 
         if (Exs.buffer[0] == crc)
@@ -550,8 +550,8 @@ void CmndExsState(void)
   ExsSendCmd(EXS_GET_VALUES, 0);
 
   // wait for data
-  uint32_t snd_time = millis();
-  while ((TimePassedSince(snd_time) < EXS_ACK_TIMEOUT) &&
+  uint32_t snd_time = millis() + EXS_ACK_TIMEOUT;
+  while ((!TimeReached(snd_time)) &&
          (!ExsSerial->available()))
     ;
   ExsSerialInput();
@@ -585,7 +585,7 @@ void CmndExsState(void)
  * Interface
  */
 
-bool Xdrv30(uint8_t function)
+bool Xdrv30(uint32_t function)
 {
   bool result = false;
 
@@ -614,6 +614,9 @@ bool Xdrv30(uint8_t function)
       result = DecodeCommand(kExsCommands, ExsCommand);
       break;
 #endif
+    case FUNC_ACTIVE:
+      result = true;
+      break;
     }
   }
   return result;

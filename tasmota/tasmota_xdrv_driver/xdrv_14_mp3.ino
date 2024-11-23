@@ -183,6 +183,10 @@ void MP3PlayerInit(void)
   // start serial communication fixed to 9600 baud
   if (MP3Player->begin(9600))
   {
+    if (MP3Player->hardwareSerial()) { ClaimSerial(); }
+#ifdef ESP32
+    AddLog(LOG_LEVEL_DEBUG, PSTR("MP3: Serial UART%d"), MP3Player->getUart());
+#endif  // ESP32
     MP3Player->flush();
     delay(1000);
     MP3_CMD(MP3_CMD_RESET, MP3_CMD_RESET_VALUE);    // reset the player to defaults
@@ -395,7 +399,7 @@ if (PinUsed(GPIO_MP3_DFR562_BUSY))                // optional MP3 player busy pi
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv14(uint8_t function)
+bool Xdrv14(uint32_t function)
 {
   bool result = false;
 
@@ -413,6 +417,10 @@ bool Xdrv14(uint8_t function)
 
       case FUNC_EVERY_SECOND:
         MP3_EVERY_SECOND();
+        break;
+
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

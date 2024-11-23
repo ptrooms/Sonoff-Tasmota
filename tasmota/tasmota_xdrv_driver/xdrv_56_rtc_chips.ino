@@ -10,6 +10,19 @@
 #ifdef USE_RTC_CHIPS
 /*********************************************************************************************\
  * RTC chip support
+ * 
+ * #define USE_DS3231
+ *   DS1307 and DS3231 at I2C address 0x68
+ *   Used by Ulanzi TC001
+ * #define USE_BM8563
+ *   BM8563 at I2C address 0x51
+ *   Used by M5Stack and IOTTIMER (v3)
+ * #define USE_PCF85363
+ *   PCF85363 at I2C address 0x51
+ *   Used by Shelly 3EM
+ * #define USE_RX8010
+ *   RX8010 at I2C address 0x32
+ *   Used by IOTTIMER (v1 and v2)
 \*********************************************************************************************/
 
 #define XDRV_56             56
@@ -23,6 +36,7 @@ struct {
   void (* SetTime)(uint32_t);
   int32_t (* MemRead)(uint8_t *, uint32_t);
   int32_t (* MemWrite)(uint8_t *, uint32_t);
+  void (* ShowSensor)(bool);
   bool detected;
   int8_t mem_size = -1;
   uint8_t address;
@@ -51,6 +65,8 @@ struct {
 #define DS3231_YEAR         0x06
 #define DS3231_CONTROL      0x0E
 #define DS3231_STATUS       0x0F
+#define DS3231_TEMP_MSB     0x11
+#define DS3231_TEMP_LSB     0x12
 
 // Control register bits
 #define DS3231_OSF          7
@@ -77,9 +93,57 @@ uint32_t DS3231ReadTime(void) {
   tm.day_of_week = I2cRead8(RtcChip.address, DS3231_DAY);
   tm.day_of_month = Bcd2Dec(I2cRead8(RtcChip.address, DS3231_DATE));
   tm.month = Bcd2Dec(I2cRead8(RtcChip.address, DS3231_MONTH) & ~_BV(DS3231_CENTURY));  // Don't use the Century bit
-  tm.year = Bcd2Dec(I2cRead8(RtcChip.address, DS3231_YEAR));
+  // MakeTime requires tm.year as number of years since 1970, 
+  // However DS3231 is supposed to hold the true year but before this PR it was written tm.year directly
+  // Assuming we read ... means ...
+  //   00..21   = 1970..1990 written before PR (to support a RTC written with 1970) => don't apply correction
+  //   22..51   = 2022..2051 written after PR => apply +30 years correction
+  //   52..99   = 2022..2069 written before PR => don't apply correction
+  uint8_t year = Bcd2Dec(I2cRead8(RtcChip.address, DS3231_YEAR));
+  tm.year = ((year <= 21) || (year >= 52)) ? (year) : (year+30);
   return MakeTime(tm);
 }
+
+/*-------------------------------------------------------------------------------------------*\
+ * Read temperature from DS3231 internal sensor, return as float
+\*-------------------------------------------------------------------------------------------*/
+#ifdef DS3231_ENABLE_TEMP
+float DS3231ReadTemp(void) {
+  int16_t temp_reg = I2cReadS16(RtcChip.address, DS3231_TEMP_MSB) >> 6;
+  float temp = temp_reg * 0.25;
+  //AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("RTC: DS3231 temp_reg=%d"), temp_reg);
+  return temp;
+}
+#endif // #ifdef DS3231_ENABLE_TEMP
+
+/*-------------------------------------------------------------------------------------------*\
+ * Show temperature from DS3231 internal sensor, Web or SENSOR
+\*-------------------------------------------------------------------------------------------*/
+#ifdef DS3231_ENABLE_TEMP
+void D3231ShowSensor(bool json) {
+    float f_temperature = ConvertTemp(DS3231ReadTemp());
+
+    if (json) {
+        ResponseAppend_P(PSTR(",\"DS3231\":{\"" D_JSON_TEMPERATURE "\":%*_f}"), Settings->flag2.temperature_resolution, &f_temperature);
+#ifdef USE_DOMOTICZ
+        if (0 == TasmotaGlobal.tele_period) {
+          DomoticzFloatSensor(DZ_TEMP, f_temperature);
+        }
+#endif  // USE_DOMOTICZ
+#ifdef USE_KNX
+        if (0 == TasmotaGlobal.tele_period) {
+          KnxSensor(KNX_TEMPERATURE, f_temperature);
+        }
+#endif  // USE_KNX
+    } 
+#ifdef USE_WEBSERVER
+    else {
+        WSContentSend_Temp("DS3231", f_temperature);
+    }
+#endif // #ifdef USE_WEBSERVER
+}
+#endif // #ifdef DS3231_ENABLE_TEMP
+
 
 /*-------------------------------------------------------------------------------------------*\
  * Get time as TIME_T and set the DS3231 time to this value
@@ -93,7 +157,9 @@ void DS3231SetTime(uint32_t epoch_time) {
   I2cWrite8(RtcChip.address, DS3231_DAY, tm.day_of_week);
   I2cWrite8(RtcChip.address, DS3231_DATE, Dec2Bcd(tm.day_of_month));
   I2cWrite8(RtcChip.address, DS3231_MONTH, Dec2Bcd(tm.month));
-  I2cWrite8(RtcChip.address, DS3231_YEAR, Dec2Bcd(tm.year));
+  // BreakTime returns tm.year as number of years since 1970, while DS3231 expect the true year. Adusting to avoir leap year error
+  uint8_t true_year = (tm.year < 30) ? (tm.year + 70) : (tm.year - 30);
+  I2cWrite8(RtcChip.address, DS3231_YEAR, Dec2Bcd(true_year));
   I2cWrite8(RtcChip.address, DS3231_STATUS, I2cRead8(RtcChip.address, DS3231_STATUS) & ~_BV(DS3231_OSF));  // Clear the Oscillator Stop Flag
 }
 
@@ -109,6 +175,9 @@ void DS3231Detected(void) {
         strcpy_P(RtcChip.name, PSTR("DS3231"));
         RtcChip.ReadTime = &DS3231ReadTime;
         RtcChip.SetTime = &DS3231SetTime;
+#ifdef DS3231_ENABLE_TEMP
+        RtcChip.ShowSensor = &D3231ShowSensor;
+#endif
         RtcChip.mem_size = -1;
       }
     }
@@ -193,7 +262,6 @@ void BM8563Detected(void) {
   }
 }
 #endif  // USE_BM8563
-
 
 /*********************************************************************************************\
  * PCF85363 support
@@ -327,6 +395,92 @@ void Pcf85363Detected(void) {
 #endif // USE_PCF85363
 
 /*********************************************************************************************\
+ * RX8010 - Real Time Clock
+ * based on linux/rtc-rx8010.c
+ *
+ * I2C Address: 0x32
+\*********************************************************************************************/
+#ifdef USE_RX8010
+
+#define XI2C_90             90       // See I2CDEVICES.md
+
+#define RX8010_ADDRESS      0x32     // RX8010 I2C Address
+
+// RX8010 Register Addresses
+#define RX8010_REG_SEC		  0x10
+#define RX8010_REG_MIN		  0x11
+#define RX8010_REG_HOUR		  0x12
+#define RX8010_REG_WDAY		  0x13
+#define RX8010_REG_MDAY		  0x14
+#define RX8010_REG_MONTH	  0x15
+#define RX8010_REG_YEAR		  0x16
+#define RX8010_REG_CTRL		  0x1F
+
+// Control Register (1Fh) bit positions
+#define RX8010_BIT_CTRL_STOP	6
+
+/*-------------------------------------------------------------------------------------------*\
+ * Read time from RX8010 and return the epoch time (second since 1-1-1970 00:00)
+\*-------------------------------------------------------------------------------------------*/
+uint32_t Rx8010ReadTime(void) {
+  TIME_T tm;
+
+  uint8_t data[7];
+  I2cReadBuffer(RtcChip.address, RX8010_REG_SEC, data, 7, RtcChip.bus);
+  tm.second = Bcd2Dec(data[0] & 0x7F);
+  tm.minute = Bcd2Dec(data[1] & 0x7F);
+  tm.hour = Bcd2Dec(data[2] & 0x3F);    // Assumes 24hr clock
+  tm.day_of_month = Bcd2Dec(data[3] & 0x3F);
+  tm.month = Bcd2Dec(data[4] & 0x3F) -1;
+  tm.year = Bcd2Dec(data[5]);
+	if (tm.year < 70) { tm.year += 100; }
+  tm.day_of_week = Bcd2Dec(data[6] & 0x7F);
+  return MakeTime(tm);
+}
+
+/*-------------------------------------------------------------------------------------------*\
+ * Get time as TIME_T and set the RX8010 time to this value
+\*-------------------------------------------------------------------------------------------*/
+void Rx8010SetTime(uint32_t epoch_time) {
+  TIME_T tm;
+  BreakTime(epoch_time, tm);
+	// Set STOP bit before changing clock/calendar
+  I2cWrite8(RtcChip.address, RX8010_REG_CTRL, I2cRead8(RtcChip.address, RX8010_REG_CTRL, RtcChip.bus) | _BV(RX8010_BIT_CTRL_STOP), RtcChip.bus);
+  uint8_t data[7];
+  data[0] = Dec2Bcd(tm.second);
+  data[1] = Dec2Bcd(tm.minute);
+  data[2] = Dec2Bcd(tm.hour);
+  data[3] = Dec2Bcd(tm.day_of_month);
+  data[4] = Dec2Bcd(tm.month +1);
+  data[5] = Dec2Bcd(tm.year % 100);
+  data[6] = Dec2Bcd(tm.day_of_week);
+  I2cWriteBuffer(RtcChip.address, RX8010_REG_SEC, data, 7, RtcChip.bus);
+	// Clear STOP bit after changing clock/calendar
+  I2cWrite8(RtcChip.address, RX8010_REG_CTRL, I2cRead8(RtcChip.address, RX8010_REG_CTRL, RtcChip.bus) & ~_BV(RX8010_BIT_CTRL_STOP), RtcChip.bus);
+}
+
+/*-------------------------------------------------------------------------------------------*\
+ * Detection
+\*-------------------------------------------------------------------------------------------*/
+void Rx8010Detected(void) {
+  if (!RtcChip.detected && I2cEnabled(XI2C_90)) {
+    RtcChip.address = RX8010_ADDRESS;
+    for (RtcChip.bus = 0; RtcChip.bus < 2; RtcChip.bus++) {
+      if (!I2cSetDevice(RtcChip.address, RtcChip.bus)) { continue; }
+      if (I2cValidRead(RtcChip.address, RX8010_REG_CTRL, 1, RtcChip.bus)) {
+        RtcChip.detected = 1;
+        strcpy_P(RtcChip.name, PSTR("RX8010"));
+        RtcChip.ReadTime = &Rx8010ReadTime;
+        RtcChip.SetTime = &Rx8010SetTime;
+        RtcChip.mem_size = -1;
+        break;
+      }
+    }
+  }
+}
+#endif  // USE_RX8010
+
+/*********************************************************************************************\
  * RTC Detect and time set
 \*********************************************************************************************/
 
@@ -343,6 +497,9 @@ void RtcChipDetect(void) {
 #ifdef USE_PCF85363
   Pcf85363Detected();
 #endif // USE_PCF85363
+#ifdef USE_RX8010
+  Rx8010Detected();
+#endif  // USE_RX8010
 
   if (!RtcChip.detected) { return; }
 
@@ -404,6 +561,8 @@ NtpServer RtcChipTimeServer(PortUdp);
 void RtcChipEverySecond(void) {
   static bool ntp_server_started = false;
 
+  if (TasmotaGlobal.global_state.network_down) { return; }  // Exception on ESP32 if network is down (#17338)
+
   if (Settings->sbflag1.local_ntp_server && (Rtc.utc_time > START_VALID_TIME)) {
     if (!ntp_server_started) {
       if (RtcChipTimeServer.beginListening()) {
@@ -418,7 +577,7 @@ void RtcChipEverySecond(void) {
 
 void CmndRtcNtpServer(void) {
   // RtcChipNtpServer 0 or 1
-  if (XdrvMailbox.payload >= 0) {
+  if ((XdrvMailbox.payload >= 0) && !TasmotaGlobal.global_state.network_down) {
     Settings->sbflag1.local_ntp_server = 0;
     if ((XdrvMailbox.payload &1) && RtcChipTimeServer.beginListening()) {
       Settings->sbflag1.local_ntp_server = 1;
@@ -432,7 +591,7 @@ void CmndRtcNtpServer(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv56(uint8_t function) {
+bool Xdrv56(uint32_t function) {
   bool result = false;
 
 #ifdef RTC_NTP_SERVER
@@ -446,13 +605,22 @@ bool Xdrv56(uint8_t function) {
   }
 #endif  // RTC_NTP_SERVER
 
-  if (FUNC_I2C_INIT == function) {
+  if (FUNC_SETUP_RING1 == function) {
     RtcChipDetect();
   }
   else if (RtcChip.detected) {
     switch (function) {
       case FUNC_TIME_SYNCED:
         RtcChipTimeSynced();
+        break;
+      case FUNC_WEB_SENSOR:
+        if (RtcChip.ShowSensor) RtcChip.ShowSensor(0);
+        break;
+      case FUNC_JSON_APPEND:
+        if (RtcChip.ShowSensor) RtcChip.ShowSensor(1);
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

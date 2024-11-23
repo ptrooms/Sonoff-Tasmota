@@ -51,11 +51,16 @@ void CB_MESHDataSent(const uint8_t *MAC, esp_now_send_status_t sendStatus) {
   AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: Sent to %s status %d"), _destMAC, sendStatus);
 }
 
-void CB_MESHDataReceived(const uint8_t *MAC, const uint8_t *packet, int len) {
+//void CB_MESHDataReceived(const uint8_t *MAC, const uint8_t *packet, int len) {
+void CB_MESHDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *packet, int len);
+void CB_MESHDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *packet, int len) {
   static bool _locked = false;
   if (_locked) { return; }
 
   _locked = true;
+
+  uint8_t *MAC = esp_now_info->src_addr;
+
   char _srcMAC[18];
   ToHex_P(MAC, 6, _srcMAC, 18, ':');
   AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: Rcvd from %s"), _srcMAC);
@@ -65,8 +70,7 @@ void CB_MESHDataReceived(const uint8_t *MAC, const uint8_t *packet, int len) {
       MESHencryptPayload(_recvPacket, 0); //decrypt it and check
       if (memcmp(_recvPacket->payload, MESH.broker, 6) == 0) {
         MESHaddPeer((uint8_t*)MAC);
-//        AddLog(LOG_LEVEL_INFO, PSTR("MSH: Rcvd topic %s"), (char*)_recvPacket->payload + 6);
-//        AddLogBuffer(LOG_LEVEL_INFO,(uint8_t *)&MESH.packetToConsume.front().payload,MESH.packetToConsume.front().chunkSize+5);
+//        AddLog(LOG_LEVEL_INFO, PSTR("MSH: Rcvd topic %s, payload %*_H"), (char*)_recvPacket->payload + 6, MESH.packetToConsume.front().chunkSize+5, (uint8_t *)&MESH.packetToConsume.front().payload);
         for (auto &_peer : MESH.peers) {
           if (memcmp(_peer.MAC, _recvPacket->sender, 6) == 0) {
             strcpy(_peer.topic, (char*)_recvPacket->payload + 6);
@@ -340,8 +344,7 @@ bool MESHrouteMQTTtoMESH(const char* _topic, char* _data, bool _retained) {
     }
     MESH.sendPacket.chunkSize += _byteLeftInChunk;
     MESH.packetToResend.push(MESH.sendPacket);
-//    AddLog(LOG_LEVEL_INFO, PSTR("MSH: chunk:%u, size: %u"),MESH.sendPacket.chunk,MESH.sendPacket.chunkSize);
-//    AddLogBuffer(LOG_LEVEL_INFO, (uint8_t*)MESH.sendPacket.payload, MESH.sendPacket.chunkSize);
+//    AddLog(LOG_LEVEL_INFO, PSTR("MSH: chunk %u, size %u, payload %*_H"),MESH.sendPacket.chunk,MESH.sendPacket.chunkSize,MESH.sendPacket.chunkSize,(uint8_t*)MESH.sendPacket.payload);
     if (MESH.sendPacket.chunk == MESH.sendPacket.chunks) {
 //      AddLog(LOG_LEVEL_INFO, PSTR("MSH: Too many chunks %u"), MESH.sendPacket.chunk +1);
     }
@@ -379,7 +382,7 @@ void MESHstartNode(int32_t _channel, uint8_t _role){ //we need a running broker 
 #ifdef ESP8266 // for now only ESP8266, might be added for the ESP32 later
   MESH.channel = _channel;
   WiFi.mode(WIFI_STA);
-  WiFi.begin("", "", MESH.channel, nullptr, false); //fake connection attempt to set channel
+  WiFiHelper::begin("", "", MESH.channel, nullptr, false); //fake connection attempt to set channel
   wifi_promiscuous_enable(1);
   wifi_set_channel(MESH.channel);
   wifi_promiscuous_enable(0);
@@ -454,11 +457,9 @@ void MESHevery50MSecond(void) {
   //   // pass the packets
   // }
   if (MESH.packetToConsume.size() > 0) {
-//    AddLog(LOG_LEVEL_DEBUG, PSTR("_"));
-//    AddLogBuffer(LOG_LEVEL_DEBUG,(uint8_t *)&MESH.packetToConsume.front(), 15);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: _ %15_H"), (uint8_t *)&MESH.packetToConsume.front());
     for (auto &_headerBytes : MESH.packetsAlreadyReceived) {
-//      AddLog(LOG_LEVEL_DEBUG, PSTR("."));
-//      AddLogBuffer(LOG_LEVEL_DEBUG,(uint8_t *)_headerBytes.raw, 15);
+//      AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: . %15_H"), (uint8_t *)_headerBytes.raw);
       if (memcmp(MESH.packetToConsume.front().sender, _headerBytes.raw, 15) == 0) {
         MESH.packetToConsume.pop();
         return;
@@ -467,21 +468,36 @@ void MESHevery50MSecond(void) {
     mesh_first_header_bytes _bytes;
     memcpy(_bytes.raw, &MESH.packetToConsume.front(), 15);
     MESH.packetsAlreadyReceived.push_back(_bytes);
-//    AddLog(LOG_LEVEL_DEBUG, PSTR("..."));
-//    AddLogBuffer(LOG_LEVEL_DEBUG,(uint8_t *)_bytes.raw, 15);
+//    AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: ... %15_H"), (uint8_t *)_bytes.raw);
     if (MESH.packetsAlreadyReceived.size() > MESH_MAX_PACKETS) {
       MESH.packetsAlreadyReceived.erase(MESH.packetsAlreadyReceived.begin());
 //      AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: Erase received data"));
     }
 
     // do something on the node
-    // AddLogBuffer(LOG_LEVEL_DEBUG,(uint8_t *)&MESH.packetToConsume.front(), 30);
+    // AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: %30_H), (uint8_t *)&MESH.packetToConsume.front());
+
+#ifdef USE_TASMESH_HEARTBEAT
+    for (auto &_peer : MESH.peers){
+      if (memcmp(_peer.MAC, MESH.packetToConsume.front().sender, 6) == 0) {
+        _peer.lastHeartbeatFromPeer = millis();
+
+        if (!_peer.isAlive) {
+          _peer.isAlive = true;
+          char stopic[TOPSZ];
+          GetTopic_P(stopic, TELE, _peer.topic, S_LWT);
+          MqttPublishPayload(stopic, PSTR(MQTT_LWT_ONLINE));
+        }
+        break;
+      }
+    }
+#endif // USE_TASMESH_HEARTBEAT
 
     MESHencryptPayload(&MESH.packetToConsume.front(), 0);
     switch (MESH.packetToConsume.front().type) {
       // case PACKET_TYPE_REGISTER_NODE:
       //   AddLog(LOG_LEVEL_INFO, PSTR("MSH: received topic: %s"), (char*)MESH.packetToConsume.front().payload + 6);
-      //   // AddLogBuffer(LOG_LEVEL_INFO,(uint8_t *)&MESH.packetToConsume.front().payload,MESH.packetToConsume.front().chunkSize+5);
+      //   // AddLog(LOG_LEVEL_INFO, PSTR("MSH: %*_H), MESH.packetToConsume.front().chunkSize+5, (uint8_t *)&MESH.packetToConsume.front().payload);
       //   for(auto &_peer : MESH.peers){
       //     if(memcmp(_peer.MAC,MESH.packetToConsume.front().sender,6)==0){
       //       strcpy(_peer.topic,(char*)MESH.packetToConsume.front().payload+6);
@@ -534,7 +550,7 @@ void MESHevery50MSecond(void) {
           }
         } else {
 //          AddLog(LOG_LEVEL_INFO, PSTR("MSH: chunk: %u size: %u"), MESH.packetToConsume.front().chunk, MESH.packetToConsume.front().chunkSize);
-//          if (MESH.packetToConsume.front().chunk==0) AddLogBuffer(LOG_LEVEL_INFO,(uint8_t *)&MESH.packetToConsume.front().payload,MESH.packetToConsume.front().chunkSize);
+//          if (MESH.packetToConsume.front().chunk==0) AddLog(LOG_LEVEL_INFO, PSTR("MSH: %*_H), MESH.packetToConsume.front().chunkSize, (uint8_t *)&MESH.packetToConsume.front().payload);
           char * _data = (char*)MESH.packetToConsume.front().payload + strlen((char*)MESH.packetToConsume.front().payload) +1;
 //          AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: Publish packet"));
           MqttPublishPayload((char*)MESH.packetToConsume.front().payload, _data);
@@ -548,9 +564,14 @@ void MESHevery50MSecond(void) {
             }
             idx++;
           }
-//          AddLogBuffer(LOG_LEVEL_INFO,(uint8_t *)&MESH.packetToConsume.front().payload,MESH.packetToConsume.front().chunkSize);
+//          AddLog(LOG_LEVEL_INFO, PSTR("MSH: %*_H), MESH.packetToConsume.front().chunkSize, (uint8_t *)&MESH.packetToConsume.front().payload);
         }
         break;
+#ifdef USE_TASMESH_HEARTBEAT
+      case PACKET_TYPE_HEARTBEAT:
+        break;
+#endif  // USE_TASMESH_HEARTBEAT
+
       default:
         AddLogBuffer(LOG_LEVEL_DEBUG, (uint8_t *)&MESH.packetToConsume.front(), MESH.packetToConsume.front().chunkSize +5);
       break;
@@ -587,6 +608,17 @@ void MESHEverySecond(void) {
     AddLog(LOG_LEVEL_INFO, PSTR("MSH: Multi packets in buffer %u"), MESH.multiPackets.size());
     MESH.multiPackets.erase(MESH.multiPackets.begin());
   }
+
+#ifdef USE_TASMESH_HEARTBEAT
+  for (auto &_peer : MESH.peers){
+    if (_peer.isAlive && TimePassedSince(_peer.lastHeartbeatFromPeer) > TASMESH_OFFLINE_DELAY * 1000) {
+      _peer.isAlive = false;
+      char stopic[TOPSZ];
+      GetTopic_P(stopic, TELE, _peer.topic, S_LWT);
+      MqttPublishPayload(stopic, PSTR(MQTT_LWT_OFFLINE));
+    }
+  }
+#endif // USE_TASMESH_HEARTBEAT
 }
 
 #else  // ESP8266
@@ -654,6 +686,16 @@ void MESHEverySecond(void) {
       MESHsetWifi(1);
       WifiBegin(3, MESH.channel);
     }
+
+#ifdef USE_TASMESH_HEARTBEAT
+    MESH.sendPacket.counter++;
+    MESH.sendPacket.TTL = 2;
+    MESH.sendPacket.chunks = 0;
+    MESH.sendPacket.chunk = 0;
+    MESH.sendPacket.chunkSize = 0;
+    MESH.sendPacket.type = PACKET_TYPE_HEARTBEAT;
+    MESHsendPacket(&MESH.sendPacket);
+#endif // USE_TASMESH_HEARTBEAT
   }
 }
 
@@ -683,6 +725,7 @@ void MESHshow(bool json) {
     }
   } else {
 #ifdef ESP32 //web UI only on the the broker = ESP32
+#ifdef USE_WEBSERVER
     if (ROLE_BROKER == MESH.role) {
 //      WSContentSend_PD(PSTR("TAS-MESH:<br>"));
       WSContentSend_PD(PSTR("<b>Broker MAC</b> %s<br>"), WiFi.softAPmacAddress().c_str());
@@ -723,6 +766,7 @@ void MESHshow(bool json) {
         idx++;
       }
     }
+#endif  // USE_WEBSERVER
 #endif  // ESP32
   }
 }
@@ -786,7 +830,7 @@ void CmndMeshPeer(void) {
       MESHaddPeer(_MAC);
       MESHcountPeers();
       ResponseCmndChar(_peerMAC);
-    } else if (WiFi.macAddress() == String(_peerMAC) || WiFi.softAPmacAddress() == String(_peerMAC)){
+    } else if (WiFiHelper::macAddress() == String(_peerMAC) || WiFi.softAPmacAddress() == String(_peerMAC)){
       // a device can be added as its own peer, but every send will result in a ESP_NOW_SEND_FAIL
       AddLog(LOG_LEVEL_DEBUG,PSTR("MSH: device %s cannot be a peer of itself"), XdrvMailbox.data, _peerMAC);
     } else {
@@ -814,7 +858,7 @@ void CmndMeshInterval(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv57(uint8_t function) {
+bool Xdrv57(uint32_t function) {
   bool result = false;
 
   switch (function) {
@@ -858,6 +902,9 @@ bool Xdrv57(uint8_t function) {
         MESHdeInit();
         break;
 #endif  // USE_DEEPSLEEP
+      case FUNC_ACTIVE:
+        result = true;
+        break;
     }
   }
   return result;

@@ -91,6 +91,10 @@ struct mesh_peer_t {
   uint32_t lastMessageFromPeer;    // Time of last message from peer
 #ifdef ESP32
   char topic[MESH_TOPICSZ];
+#ifdef USE_TASMESH_HEARTBEAT
+  bool isAlive;                    // True if we have gotten a heartbeat recently
+  uint32_t lastHeartbeatFromPeer;  // Time of last heartbeat from peer
+#endif // USE_TASMESH_HEARTBEAT
 #endif //ESP32
 };
 
@@ -164,7 +168,10 @@ enum MESH_Packet_Type {            // Type of packet
   PACKET_TYPE_REGISTER_NODE,       // register a node with encrypted broker-MAC, announce mqtt topic to ESP32-proxy - broker will send time ASAP
   PACKET_TYPE_REFRESH_NODE,        // refresh node infos with encrypted broker-MAC, announce mqtt topic to ESP32-proxy - broker will send time slightly delayed
   PACKET_TYPE_MQTT,                // send regular mqtt messages, single or multipackets
-  PACKET_TYPE_WANTTOPIC            // the broker has no topic for this peer/node
+  PACKET_TYPE_WANTTOPIC,           // the broker has no topic for this peer/node
+#ifdef USE_TASMESH_HEARTBEAT
+  PACKET_TYPE_HEARTBEAT            // sent periodically from nodes to the broker to signal aliveness
+#endif // USE_TASMESH_HEARTBEAT
 };
 
 /*********************************************************************************************\
@@ -218,7 +225,7 @@ void MESHsendPeerList(void) {      // We send this list only to the peers, that 
   MESH.sendPacket.chunks = 1;
   MESH.sendPacket.chunkSize = _idx;
   MESH.sendPacket.TTL = 1;
-//  AddLogBuffer(LOG_LEVEL_INFO, MESH.sendPacket.payload, MESH.sendPacket.chunkSize);
+//  AddLog(LOG_LEVEL_INFO, PSTR("MSH: %*_H"), MESH.sendPacket.chunkSize, MESH.sendPacket.payload);
   MESHsendPacket(&MESH.sendPacket);
 }
 
@@ -342,8 +349,7 @@ bool MESHencryptPayload(mesh_packet_t *_packet, int _encrypt) {
   size_t _size = _packet->chunkSize;
   char _tag[16];
 
-// AddLog(LOG_LEVEL_DEBUG, PSTR("cc: %u, _size: %u"), _counter,_size);
-// AddLogBuffer(LOG_LEVEL_DEBUG,(uint8_t*)_tag,16);
+// AddLog(LOG_LEVEL_DEBUG, PSTR("MSH: cc %u, _size %u, _tag %16_H"), _counter,_size,(uint8_t*)_tag);
 
   br_chacha20_run bc = br_chacha20_ct_run;
 

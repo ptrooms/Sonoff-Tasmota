@@ -88,6 +88,15 @@ const char berry_prog[] =
   "import debug "
   "import solidify "
 #endif
+
+#ifdef USE_ZIGBEE
+  "import zigbee "
+#endif
+
+#ifdef USE_MATTER_DEVICE
+  "import matter "
+  "global.matter_device = matter.Device() "
+#endif
   ;
 
 #endif  // USE_BERRY

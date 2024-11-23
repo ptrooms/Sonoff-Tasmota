@@ -98,7 +98,7 @@
  * GPIO32 - Blue status led2
  * GPIO33 - Yellow error led3
  * GPIO35 - Button
- * #define ETH_TYPE          ETH_PHY_LAN8720
+ * #define ETH_TYPE          0        // LAN8720
  * #define ETH_CLKMODE       ETH_CLOCK_GPIO17_OUT
  * #define ETH_ADDRESS       0
  *
@@ -128,7 +128,7 @@
 
 // From ESP to ARM
 #define SSPM_FUNC_FIND               0       // 0x00
-#define SSPM_FUNC_SET_OPS            3       // 0x03 - Overload Protection
+#define SSPM_FUNC_SET_OPS            3       // 0x03 - Overload Protection (OPS)
 #define SSPM_FUNC_GET_OPS            4       // 0x04
 #define SSPM_FUNC_SET_RELAY          8       // 0x08
 #define SSPM_FUNC_GET_MODULE_STATE   9       // 0x09 - State of four channels
@@ -138,7 +138,7 @@
 #define SSPM_FUNC_IAMHERE            13      // 0x0D
 #define SSPM_FUNC_INIT_SCAN          16      // 0x10
 #define SSPM_FUNC_UPLOAD_HEADER      20      // 0x14 - SPI Upload header
-#define SSPM_FUNC_UNITS              21      // 0x15
+#define SSPM_FUNC_GET_MAIN_VERSION   21      // 0x15 - Read main ARM firmware version
 #define SSPM_FUNC_GET_ENERGY_TOTAL   22      // 0x16
 #define SSPM_FUNC_GET_ENERGY         24      // 0x18
 #define SSPM_FUNC_GET_LOG            26      // 0x1A
@@ -148,16 +148,17 @@
 #define SSPM_FUNC_UPLOAD_DONE        33      // 0x21 - SPI Finish upload
 #define SSPM_FUNC_34                 34      // 0x22 - v1.2.0
 #define SSPM_FUNC_GET_OPS_DEFAULTS   35      // 0x23 - v1.2.0 - Get Overload protection defaults
-#define SSPM_FUNC_SET_POS            36      // 0x24 - v1.2.0 - Save power on relay state
-#define SSPM_FUNC_GET_POS            37      // 0x25 - v1.2.0 - Read power on relay state
+#define SSPM_FUNC_SET_POS            36      // 0x24 - v1.2.0 - Save power on relay state (POS)
+#define SSPM_FUNC_GET_POS            37      // 0x25 - v1.2.0 - Read power on relay state (POS)
 
 // From ARM to ESP
 #define SSPM_FUNC_ENERGY_RESULT      6       // 0x06
 #define SSPM_FUNC_KEY_PRESS          7       // 0x07
 #define SSPM_FUNC_SCAN_START         15      // 0x0F
-#define SSPM_FUNC_SCAN_RESULT        19      // 0x13
+#define SSPM_FUNC_SCAN_RESULT        19      // 0x13 - Provide 4relay ARM firmware version, module type and OPS limits
 #define SSPM_FUNC_SCAN_DONE          25      // 0x19
 #define SSPM_FUNC_UPLOAD_DONE_ACK    30      // 0x1E - Restart ARM
+#define SSPM_FUNC_38                 38      // 0x26 - v1.3.0 - AA550100000000000000000000000000 26 00 0D 2419474C3831310C45373439 00 04 45CD
 
 // Unknown
 #define SSPM_FUNC_01                 1       // 0x01
@@ -177,26 +178,28 @@
 
 #define SSPM_VERSION_1_0_0           0x00010000
 #define SSPM_VERSION_1_2_0           0x00010200
+#define SSPM_VERSION_1_3_0           0x00010300
+#define SSPM_VERSION_1_4_0           0x00010400
 
 /*********************************************************************************************/
 
-#define SSPM_TOTAL_MODULES           32            // Max number of SPM-4RELAY units for a total of 128 relays
+#define SSPM_TOTAL_MODULES           32                  // Max number of SPM-4RELAY units for a total of 128 relays
 
-enum SspmMachineStates { SPM_NONE,                 // Do nothing
-                         SPM_WAIT,                 // Wait 100ms
-                         SPM_RESET,                // Toggle ARM reset pin
-                         SPM_POLL_ARM,             // Wait for first acknowledge from ARM after reset
+enum SspmMachineStates { SPM_NONE,                       // Do nothing
+                         SPM_WAIT,                       // Wait 100ms
+                         SPM_RESET,                      // Toggle ARM reset pin
+                         SPM_POLL_ARM,                   // Wait for first acknowledge from ARM after reset
 // Removed to accomodate v1.2.0 too
-//                         SPM_POLL_ARM_SPI,         // Wait for first acknowledge from ARM SPI after reset
-//                         SPM_POLL_ARM_2,           // Wait for second acknowledge from ARM after reset
-//                         SPM_POLL_ARM_3,           // Wait for second acknowledge from ARM after reset
-                         SPM_SEND_FUNC_UNITS,      // Get number of units
-                         SPM_START_SCAN,           // Start module scan sequence
-                         SPM_WAIT_FOR_SCAN,        // Wait for scan sequence to complete
-                         SPM_SCAN_COMPLETE,        // Scan complete
-                         SPM_STALL_MIDNIGHT,       // Stall energy totals around midnight
-                         SPM_GET_ENERGY_TOTALS,    // Init available Energy totals registers
-                         SPM_UPDATE_CHANNELS       // Update Energy for powered on channels
+//                         SPM_POLL_ARM_SPI,               // Wait for first acknowledge from ARM SPI after reset
+//                         SPM_POLL_ARM_2,                 // Wait for second acknowledge from ARM after reset
+//                         SPM_POLL_ARM_3,                 // Wait for second acknowledge from ARM after reset
+                         SPM_SEND_FUNC_GET_MAIN_VERSION, // Get main ARM firmware version
+                         SPM_START_SCAN,                 // Start module scan sequence
+                         SPM_WAIT_FOR_SCAN,              // Wait for scan sequence to complete
+                         SPM_SCAN_COMPLETE,              // Scan complete
+                         SPM_STALL_MIDNIGHT,             // Stall energy totals around midnight
+                         SPM_GET_ENERGY_TOTALS,          // Init available Energy totals registers
+                         SPM_UPDATE_CHANNELS             // Update Energy for powered on channels
                          };
 
 enum SspmDisplayModes { SPM_DISPLAY_ROTATE, SPM_DISPLAY_ROTATE_POWERED_ON, SPM_DISPLAY_TABS, SPM_DISPLAY_MAX_OPTION };
@@ -307,9 +310,9 @@ TSspm *Sspm = nullptr;
  * Driver Settings load and save using filesystem
 \*********************************************************************************************/
 
-const uint32_t XDRV_86_VERSION = 0x0104;              // Latest driver version (See settings deltas below)
+const uint16_t XDRV_86_VERSION = 0x0104;              // Latest driver version (See settings deltas below)
 
-void Xdrv86SettingsLoad(void) {
+void Xdrv86SettingsLoad(bool erase) {
   // *** Start init default values in case file is not found ***
   memset(&Sspm->Settings, 0x00, sizeof(tSspmSettings));
   Sspm->Settings.version = XDRV_86_VERSION;
@@ -325,7 +328,10 @@ void Xdrv86SettingsLoad(void) {
   char filename[20];
   // Use for drivers:
   snprintf_P(filename, sizeof(filename), PSTR(TASM_FILE_DRIVER), XDRV_86);
-  if (TfsLoadFile(filename, (uint8_t*)&Sspm->Settings, sizeof(tSspmSettings))) {
+  if (erase) {
+    TfsDeleteFile(filename);  // Use defaults
+  }
+  else if (TfsLoadFile(filename, (uint8_t*)&Sspm->Settings, sizeof(tSspmSettings))) {
     if (Sspm->Settings.version != XDRV_86_VERSION) {      // Fix version dependent changes
 
       // *** Start fix possible setting deltas ***
@@ -340,7 +346,8 @@ void Xdrv86SettingsLoad(void) {
       Xdrv86SettingsSave();
     }
     AddLog(LOG_LEVEL_INFO, PSTR("CFG: XDRV86 loaded from file"));
-  } else {
+  }
+  else {
     // File system not ready: No flash space reserved for file system
     AddLog(LOG_LEVEL_DEBUG, PSTR("CFG: XDRV86 Use defaults as file system not ready or file not found"));
   }
@@ -366,6 +373,12 @@ void Xdrv86SettingsSave(void) {
     }
   }
 #endif  // USE_UFILESYS
+}
+
+bool Xdrv86SettingsRestore(void) {
+  XdrvMailbox.data = (char*)&Sspm->Settings;
+  XdrvMailbox.index = sizeof(tSspmSettings);
+  return true;
 }
 
 /*********************************************************************************************/
@@ -1194,7 +1207,7 @@ void SSPMHandleReceivedData(void) {
           TasmotaGlobal.power |= current_state;
 
           Sspm->old_power = TasmotaGlobal.power;
-          TasmotaGlobal.devices_present += 4;
+          UpdateDevicesPresent(4);
         }
         SSPMSendGetOps(Sspm->module_selected -1);
         break;
@@ -1233,7 +1246,7 @@ void SSPMHandleReceivedData(void) {
         AA 55 01 ff ff ff ff ff ff ff ff ff ff ff ff 80 10 00 01 00 02 e5 03
         */
         break;
-      case SSPM_FUNC_UNITS:
+      case SSPM_FUNC_GET_MAIN_VERSION:
         /* 0x15
          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
         AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 80 15 00 04 00 01 00 00 01 81 b1
@@ -1479,8 +1492,10 @@ void SSPMHandleReceivedData(void) {
         P4 - Relay4 power on state (0 = On, 1 = Off, 2 = Laststate)
         */
         Sspm->module_selected--;
-        for (uint32_t i = 0; i < 4; i++) {
-          Sspm->poweron_state[Sspm->module_selected][i] = (!status && (expected_bytes >= 0x05)) ? SspmBuffer[20 +i] : 1;
+        if (!status && (expected_bytes >= 0x05)) {
+          for (uint32_t i = 0; i < 4; i++) {
+            Sspm->poweron_state[Sspm->module_selected][i] = SspmBuffer[20 +i];
+          }
         }
         if (Sspm->module_selected > 0) {
           SSPMSendGetModuleState(Sspm->module_selected -1);
@@ -1502,28 +1517,61 @@ void SSPMHandleReceivedData(void) {
         AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 1c 8b 34 32 37 39 37 34 13 4b 35 36 37 08 00 44 00 e1 35 00 9a 3e 00 01 45 00 9a 38 00 08 8b ae
         AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 1c 8b 34 32 37 39 37 34 13 4b 35 36 37 08 00 4a 00 e1 22 00 61 4d 00 2c 38 00 a8 28 20 26 21 70
                                                                                                     |Ch|Curre|Voltage |ActivePo|Reactive|Apparent|5m|
+
+        Sspm->main_version = SSPM_VERSION_1_3_0:
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 2A 24 19 47 4C 38 31 31 0C 45 37 34 39 09 01 03 00 EA 1D 00 C3 37 00 8F 38 00 F2 24              - L1 
+                                                                                                        00 49 00 EA 3A 00 7A 3D 00 82 0A 00 AC 40 37 75 FD B1  - L4
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 2A 24 19 47 4C 38 31 31 0C 45 37 34 39 03 01 01 00 EA 04 00 C4 21 00 8F 1F 00 F3 45              - L1
+                                                                                                        00 16 00 EA 1D 00 27 3B 00 1F 59 00 33 23 45 05 39 B4  - L2
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 38 24 19 47 4C 38 31 31 0C 45 37 34 39 07 01 02 00 EA 0F 00 C0 30 00 8E 01 00 EF 51              - L1
+                                                                                                        00 16 00 EA 24 00 27 3E 00 1F 62 00 33 27              - L2
+                                                                                                        00 0A 00 EA 1C 00 04 21 00 18 41 00 19 13 00 06 65 40  - L3
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 46 24 19 47 4C 38 31 31 0C 45 37 34 39 0F 01 02 00 E9 61 00 BF 53 00 8D 0B 00 EE 5F              - L1
+                                                                                                        00 16 00 EA 14 00 27 18 00 20 1D 00 33 1E              - L2
+                                                                                                        00 0A 00 EA 0B 00 04 1B 00 18 3C 00 19 0E              - L3
+                                                                                                        00 55 00 EA 15 00 9F 14 00 7E 3F 00 CD 04 00 07 AB C3  - L4
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 46 24 19 47 4C 38 31 31 0C 45 37 34 39 0F 01 02 00 E9 57 00 C0 3C 00 8D 26 00 EF 29
+                                                                                                        00 16 00 EA 06 00 27 1C 00 20 24 00 32 45
+                                                                                                        00 0A 00 E9 63 00 04 1A 00 18 3D 00 19 0D
+                                                                                                        00 5D 00 EA 0D 00 C2 5D 00 7F 5F 00 DB 3B 00 08 31 6F
+
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 06 00 46 24 19 47 4C 38 31 31 0C 45 37 34 39 0F 01 03 00 EA 15 00 C2 3D 00 8F 1D 00 F1 41
+                                                                                                        00 12 00 EA 2A 00 17 49 00 1F 04 00 2A 47
+                                                                                                        00 0A 00 EA 22 00 04 1D 00 18 46 00 19 17
+                                                                                                        00 5C 00 EA 31 00 AA 62 00 7D 01 00 D9 12 00 36 6F B8
+                                                                                                    |Ch|Curre|Voltage |ActivePo|Reactive|Apparent|5m|
         Values are XX XX    - number
                          XX - decimals
         5m - 5 minutes Power Consumption (Ws)
         */
         {
-          uint32_t channel = 0;
-          for (channel = 0; channel < 4; channel++) {
-            if (SspmBuffer[31] & 1) { break; }
-            SspmBuffer[31] >>= 1;
-          }
           uint32_t module = SSPMGetModuleNumberFromMap(SspmBuffer[19] << 8 | SspmBuffer[20]);
 #ifdef SSPM_SIMULATE
           if (Sspm->Settings.simulate_count) { module = Sspm->simulated_module; }
 #endif  // SSPM_SIMULATE
-          Sspm->current[module][channel] = SspmBuffer[32] + (float)SspmBuffer[33] / 100;                                 // x.xxA
-          Sspm->voltage[module][channel] = SSPMGetValue(&SspmBuffer[34]);         // x.xxV
-          Sspm->active_power[module][channel] = SSPMGetValue(&SspmBuffer[37]);    // x.xxW
-          Sspm->reactive_power[module][channel] = SSPMGetValue(&SspmBuffer[40]);  // x.xxVAr
-          Sspm->apparent_power[module][channel] = SSPMGetValue(&SspmBuffer[43]);  // x.xxVA
-          float power_factor = (Sspm->active_power[module][channel] && Sspm->apparent_power[module][channel]) ? Sspm->active_power[module][channel] / Sspm->apparent_power[module][channel] : 0;
-          if (power_factor > 1) { power_factor = 1; }
-          Sspm->power_factor[module][channel] = power_factor;
+          uint32_t offset = 32;
+          uint32_t offset_max = SspmBuffer[18] +18;
+          for (uint32_t channel = 0; channel < 4; channel++) {
+            uint32_t channel_mask = SspmBuffer[31] >> channel;
+            if (0 == (channel_mask &1)) { continue; }
+
+            uint32_t relay = (module * 4) + channel;
+            if ((TasmotaGlobal.power >> relay) &1) {  // Show only powered ON
+
+              Sspm->current[module][channel] = SspmBuffer[offset] + (float)SspmBuffer[offset +1] / 100;  // x.xxA
+              Sspm->voltage[module][channel] = SSPMGetValue(&SspmBuffer[offset +2]);                     // x.xxV
+              Sspm->active_power[module][channel] = SSPMGetValue(&SspmBuffer[offset +5]);                // x.xxW
+              Sspm->reactive_power[module][channel] = SSPMGetValue(&SspmBuffer[offset +8]);              // x.xxVAr
+              Sspm->apparent_power[module][channel] = SSPMGetValue(&SspmBuffer[offset +11]);             // x.xxVA
+              float power_factor = (Sspm->active_power[module][channel] && Sspm->apparent_power[module][channel]) ? Sspm->active_power[module][channel] / Sspm->apparent_power[module][channel] : 0;
+              if (power_factor > 1) { power_factor = 1; }
+              Sspm->power_factor[module][channel] = power_factor;
+
+            }
+
+            offset += 14;
+            if (offset > offset_max) { break; }
+          }
           SSPMSendAck(command_sequence);
           Sspm->allow_updates = 1;
         }
@@ -1617,10 +1665,14 @@ void SSPMHandleReceivedData(void) {
       case SSPM_FUNC_SCAN_RESULT:
         /* 0x13
          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
-        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 6b 7e 32 37 39 37 34 13 4b 35 36 37 04 00 00 00 82 01 00 00 14 00 00 0a 00 f0 00 00 00 0a 11 30 00 00 00 0a 02 8f cd
-        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 8b 34 32 37 39 37 34 13 4b 35 36 37 04 00 00 00 82 01 00 00 14 00 00 0a 00 f0 00 00 00 0a 11 30 00 00 00 0a 02 a0 6f
         Marker  |                                   |Ac|Cm|Size |Module id                          |Ch|        |Ty|FwVersio|Max I|Min I|Max U   |Min U   |Max P   |Min P   |Ix|Chksm|
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 6b 7e 32 37 39 37 34 13 4b 35 36 37 04 00 00 00 82 01 00 00 14 00 00 0a 00 f0 00 00 00 0a 11 30 00 00 00 0a 02 8f cd - v1.0.0
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 8b 34 32 37 39 37 34 13 4b 35 36 37 04 00 00 00 82 01 00 00 14 00 00 0a 00 f0 00 00 00 0a 11 30 00 00 00 0a 02 a0 6f - v1.0.0
                                                                                                                 |130|  1.0.0|20.0A|0.10A| 240.00V|   0.10V|4400.00W|   0.10W|
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 8B 34 32 37 39 37 34 13 4B 35 36 37 04 00 00 00 82 01 02 00 14 00 00 0A 01 08 00 00 5A 00 12 C0 00 00 00 0A 02 6B 93 - v1.2.0
+                                                                                                                |130|  1.2.0|20.0A|0.10A| 264.00V|     90V|4800.00W|   0.10W|
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 13 00 24 B2 43 47 4C 38 31 30 0E 35 36 37 34 04 00 00 00 82 01 03 00 14 00 00 0A 01 08 00 00 5A 00 12 C0 00 00 00 0A 02 C5 87
+                                                                                                                |130|  1.3.0|20.0A|0.10A| 264.00V|     90V|4800.00W|   0.10W|
         Ty = Type of sub-device. 130: Four-channel sub-device
         */
         if (0x24 == expected_bytes) {
@@ -1698,11 +1750,21 @@ void SSPMHandleReceivedData(void) {
         break;
       case SSPM_FUNC_UPLOAD_DONE_ACK:
         /* 0x1E
-        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22
+         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22
         aa 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 1e 00 01 00 01 fe 05
         Marker  |                                   |  |Cm|Size |  |Ix|Chksm|
         */
         SSPMSendFindAck();
+        break;
+      case SSPM_FUNC_38:
+        /* 0x26 v1.3.0
+         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34
+        AA 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 26 00 0D 24 19 47 4C 38 31 31 0C 45 37 34 39 00 04 45 CD
+        aa 55 01 00 00 00 00 00 00 00 00 00 00 00 00 00 26 00 0d b2 43 47 4c 38 31 30 0e 35 36 37 34 00 02 f0 46
+        Marker  |                                   |  |Cm|Size |Module id                          |  |Ix|Chksm|
+
+        */
+        SSPMSendAck(command_sequence);
         break;
     }
   }
@@ -1902,7 +1964,12 @@ void SSPMInit(void) {
     return;
   }
 
-  Xdrv86SettingsLoad();
+  if (SspmSerial->hardwareSerial()) {
+    ClaimSerial();
+  }
+  AddLog(LOG_LEVEL_DEBUG, PSTR("SPM: Serial UART%d"), SspmSerial->getUart());
+
+  Xdrv86SettingsLoad(0);
 
   pinMode(SSPM_GPIO_ARM_RESET, OUTPUT);
   digitalWrite(SSPM_GPIO_ARM_RESET, 1);
@@ -1926,11 +1993,16 @@ void SSPMInit(void) {
 #if CONFIG_IDF_TARGET_ESP32
 #ifdef USE_ETHERNET
   Settings->eth_address = 0;                      // EthAddress
-  Settings->eth_type = ETH_PHY_LAN8720;           // EthType
+  Settings->eth_type = 0;                         // EthType LAN8720
   Settings->eth_clk_mode = ETH_CLOCK_GPIO17_OUT;  // EthClockMode
 #endif
 #endif
 
+  for (uint32_t module = 0; module < Sspm->module_max; module++) {
+    for (uint32_t relay = 0; relay < 4; relay++) {
+      Sspm->poweron_state[module][relay] = 1;  // Set default power on state to Off ( = Sonoff 1)
+    }
+  }
   Sspm->relay_version = 0xFFFFFFFF;           // Find lowest supported relay version
   Sspm->overload_relay = 255;                 // Disable display overload settings
   Sspm->history_relay = 255;                  // Disable display energy history
@@ -1964,7 +2036,7 @@ void SSPMEvery100ms(void) {
   }
 
   // Fix race condition if the ARM doesn't respond
-  if ((Sspm->mstate > SPM_NONE) && (Sspm->mstate < SPM_SEND_FUNC_UNITS)) {
+  if ((Sspm->mstate > SPM_NONE) && (Sspm->mstate < SPM_SEND_FUNC_GET_MAIN_VERSION)) {
     Sspm->counter++;
     if (Sspm->counter > 30) {
       Sspm->mstate = SPM_NONE;
@@ -2003,9 +2075,9 @@ void SSPMEvery100ms(void) {
       // Wait for second acknowledge from ARM after reset
       break;
 */
-    case SPM_SEND_FUNC_UNITS:
-      // Get number of units
-      SSPMSendCmnd(SSPM_FUNC_UNITS);
+    case SPM_SEND_FUNC_GET_MAIN_VERSION:
+      // Get main version number
+      SSPMSendCmnd(SSPM_FUNC_GET_MAIN_VERSION);
       break;
     case SPM_START_SCAN:
       // Start scan module sequence
@@ -2258,7 +2330,7 @@ void SSPMEnergyShow(bool json) {
       uint32_t offset = (Sspm->rotate >> 2) * 4;
       uint32_t count = relay_show - offset;
       if (count > 4) { count = 4; }
-      WSContentSend_P(PSTR("</table><hr/>"));        // Close current table as we will use different column count
+      WSContentSend_P(PSTR("</table>"));             // Close current table as we will use different column count
       if (SPM_DISPLAY_TABS == Sspm->Settings.flag.display) {
         uint32_t modules = relay_show / 4;
         if (modules > 1) {
@@ -2286,15 +2358,13 @@ void SSPMEnergyShow(bool json) {
       WSContentSend_PD(HTTP_SNS_VOLTAGE, SSPMEnergyFormat(value_chr, Sspm->voltage[0], Settings->flag2.voltage_resolution, indirect, offset, count));
       WSContentSend_PD(HTTP_SNS_CURRENT, SSPMEnergyFormat(value_chr, Sspm->current[0], Settings->flag2.current_resolution, indirect, offset, count));
       WSContentSend_PD(HTTP_SNS_POWER,   SSPMEnergyFormat(value_chr, Sspm->active_power[0], Settings->flag2.wattage_resolution, indirect, offset, count));
-      char valu2_chr[SSPM_SIZE];
-      char valu3_chr[SSPM_SIZE];
-      WSContentSend_PD(HTTP_ENERGY_SNS1, SSPMEnergyFormat(value_chr, Sspm->apparent_power[0], Settings->flag2.wattage_resolution, indirect, offset, count),
-                                         SSPMEnergyFormat(valu2_chr, Sspm->reactive_power[0], Settings->flag2.wattage_resolution, indirect, offset, count),
-                                         SSPMEnergyFormat(valu3_chr, Sspm->power_factor[0], 2, indirect, offset, count));
-      WSContentSend_PD(HTTP_ENERGY_SNS2, SSPMEnergyFormat(value_chr, Sspm->energy_today[0], Settings->flag2.energy_resolution, indirect, offset, count),
-                                         SSPMEnergyFormat(valu2_chr, Sspm->Settings.energy_yesterday[0], Settings->flag2.energy_resolution, indirect, offset, count),
-                                         SSPMEnergyFormat(valu3_chr, Sspm->energy_total[0], Settings->flag2.energy_resolution, indirect, offset, count));
-      WSContentSend_P(PSTR("</table><hr/>{t}"));    // {t} = <table style='width:100%'> - Define for next FUNC_WEB_SENSOR
+      WSContentSend_PD(HTTP_SNS_POWERUSAGE_APPARENT, SSPMEnergyFormat(value_chr, Sspm->apparent_power[0], Settings->flag2.wattage_resolution, indirect, offset, count));
+      WSContentSend_PD(HTTP_SNS_POWERUSAGE_REACTIVE, SSPMEnergyFormat(value_chr, Sspm->reactive_power[0], Settings->flag2.wattage_resolution, indirect, offset, count));
+      WSContentSend_PD(HTTP_SNS_POWER_FACTOR, SSPMEnergyFormat(value_chr, Sspm->power_factor[0], 2, indirect, offset, count));
+      WSContentSend_PD(HTTP_SNS_ENERGY_TODAY, SSPMEnergyFormat(value_chr, Sspm->energy_today[0], Settings->flag2.energy_resolution, indirect, offset, count));
+      WSContentSend_PD(HTTP_SNS_ENERGY_YESTERDAY, SSPMEnergyFormat(value_chr, Sspm->Settings.energy_yesterday[0], Settings->flag2.energy_resolution, indirect, offset, count));
+      WSContentSend_PD(HTTP_SNS_ENERGY_TOTAL, SSPMEnergyFormat(value_chr, Sspm->energy_total[0], Settings->flag2.energy_resolution, indirect, offset, count));
+      WSContentSend_P(PSTR("</table>{t}"));    // {t} = <table style='width:100%'> - Define for next FUNC_WEB_SENSOR
     }
 #endif  // USE_WEBSERVER
   }
@@ -2397,7 +2467,8 @@ void CmndSpmEnergyYesterday(void) {
 void CmndSSPMOverload(void) {
   // Get / Set overload
   // SspmOverload<relay> 0                                  - Reset overload detection parameters
-  // SspmOverload<relay> {"Delay":0,"Set":00000,"MinPower":0.10,"MaxPower":4400.00,"MinVoltage":0.10,"MaxVoltage":240.00,"MaxCurrent":20.00}
+  // SspmOverload<relay> {"Delay":0,"Set":00000,"MinPower":0.10,"MaxPower":4400.00,"MinVoltage":0.10,"MaxVoltage":240.00,"MaxCurrent":20.00} - v1.0.0
+  // SspmOverload<relay> {"Delay":0,"Set":00000,"MinPower":0.10,"MaxPower":4800.00,"MinVoltage":90,"MaxVoltage":264.00,"MaxCurrent":20.00}   - v1.2.0
   // SspmOverload<relay> <delay>,<min_power>,<max_power>,<min_voltage>,<max_voltage,<max_current>
   // SspmOverload<relay> 10,0.10,4400.00,0.10,240.00,20.00
   // SspmOverload<relay> 10 0.10 4400.00 0.10 240.00 20.00
@@ -2590,26 +2661,29 @@ void CmndSSPMSend(void) {
 
 void CmndSSPMPowerOnState(void) {
   // SspmPowerOnState2 0|1|2 - Set relay2 power on state (0 = Off, 1 = On, 2 = Saved)
-  uint32_t max_index = Sspm->module_max *4;
-  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= max_index)) {
-    uint32_t module = (XdrvMailbox.index -1) >>2;
-    uint32_t relay = (XdrvMailbox.index -1) &3;
-    if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 2)) {
-      if (XdrvMailbox.payload < 2) { XdrvMailbox.payload = !XdrvMailbox.payload; }  // Swap Tasmota power off (0) with Sonoff (1)
-      Sspm->poweron_state[module][relay] = XdrvMailbox.payload;
-      SSPMSendSetPowerOnState(module);
-    }
-    Response_P(PSTR("{\"%s\":["), XdrvMailbox.command);
-    bool more = false;
-    for (uint32_t module = 0; module < Sspm->module_max; module++) {
-      for (uint32_t relay = 0; relay < 4; relay++) {
-        uint32_t poweron_state = Sspm->poweron_state[module][relay];
-        if (poweron_state < 2) { poweron_state = !poweron_state; }  // Swap Sonoff power off (1) with Tasmota (0)
-        ResponseAppend_P(PSTR("%s%d"), (more)?",":"", poweron_state);
-        more = true;
+  // Needs both main and 4relay at v1.2.0
+  if (Sspm->main_version > SSPM_VERSION_1_0_0) {
+    uint32_t max_index = Sspm->module_max *4;
+    if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= max_index)) {
+      uint32_t module = (XdrvMailbox.index -1) >>2;
+      uint32_t relay = (XdrvMailbox.index -1) &3;
+      if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 2)) {
+        if (XdrvMailbox.payload < 2) { XdrvMailbox.payload = !XdrvMailbox.payload; }  // Swap Tasmota power off (0) with Sonoff (1)
+        Sspm->poweron_state[module][relay] = XdrvMailbox.payload;
+        SSPMSendSetPowerOnState(module);
       }
+      Response_P(PSTR("{\"%s\":["), XdrvMailbox.command);
+      bool more = false;
+      for (uint32_t module = 0; module < Sspm->module_max; module++) {
+        for (uint32_t relay = 0; relay < 4; relay++) {
+          uint32_t poweron_state = Sspm->poweron_state[module][relay];
+          if (poweron_state < 2) { poweron_state = !poweron_state; }  // Swap Sonoff power off (1) with Tasmota (0)
+          ResponseAppend_P(PSTR("%s%d"), (more)?",":"", poweron_state);
+          more = true;
+        }
+      }
+      ResponseAppend_P(PSTR("]}"));
     }
-    ResponseAppend_P(PSTR("]}"));
   }
 }
 
@@ -2617,7 +2691,7 @@ void CmndSSPMPowerOnState(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv86(uint8_t function) {
+bool Xdrv86(uint32_t function) {
   bool result = false;
 
   if (FUNC_INIT == function) {
@@ -2630,6 +2704,12 @@ bool Xdrv86(uint8_t function) {
         break;
       case FUNC_EVERY_100_MSECOND:
         SSPMEvery100ms();
+        break;
+      case FUNC_RESET_SETTINGS:
+        Xdrv86SettingsLoad(1);
+        break;
+      case FUNC_RESTORE_SETTINGS:
+        result = Xdrv86SettingsRestore();
         break;
       case FUNC_SAVE_SETTINGS:
         Xdrv86SettingsSave();
@@ -2653,6 +2733,9 @@ bool Xdrv86(uint8_t function) {
         break;
       case FUNC_BUTTON_PRESSED:
         result = SSPMButton();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

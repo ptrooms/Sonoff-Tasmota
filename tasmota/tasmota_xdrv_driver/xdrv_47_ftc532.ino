@@ -215,7 +215,7 @@ void ftc532_publish(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv47(uint8_t function) {
+bool Xdrv47(uint32_t function) {
   bool result = false;
 
   if (FUNC_INIT == function) {
@@ -230,6 +230,9 @@ bool Xdrv47(uint8_t function) {
       // Generate JSON telemetry string
       case FUNC_JSON_APPEND:
         ftc532_show();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
       }
   }

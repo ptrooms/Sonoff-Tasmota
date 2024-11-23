@@ -1,7 +1,7 @@
 /*
   xsns_38_az7798.ino - AZ_Instrument 7798 CO2/temperature/humidity meter support for Tasmota
 
-  Copyright (C) 2021  Theo Arends
+  Copyright (C) 2021  adebeun
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -271,6 +271,9 @@ void AzInit(void)
     AzSerial = new TasmotaSerial(Pin(GPIO_AZ_RXD), Pin(GPIO_AZ_TXD), 1);
     if (AzSerial->begin(9600)) {
       if (AzSerial->hardwareSerial()) { ClaimSerial(); }
+#ifdef ESP32
+      AddLog(LOG_LEVEL_DEBUG, PSTR("AZ7: Serial UART%d"), AzSerial->getUart());
+#endif
       az_type = 1;
     }
   }
@@ -297,7 +300,7 @@ void AzShow(bool json)
  * Interface
 \*********************************************************************************************/
 
-bool Xsns38(uint8_t function)
+bool Xsns38(uint32_t function)
 {
   bool result = false;
 
