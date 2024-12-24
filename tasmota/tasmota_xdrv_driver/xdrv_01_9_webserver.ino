@@ -1142,7 +1142,7 @@ uint32_t WebUseManagementSubmenu(void) {
 }
 
 uint32_t WebDeviceColumns(void) {
-  const uint32_t max_columns = 8;
+  const uint32_t max_columns = 10;    // define number of  button on a line
 
   uint32_t rows = TasmotaGlobal.devices_present / max_columns;
   if (TasmotaGlobal.devices_present % max_columns) { rows++; }
