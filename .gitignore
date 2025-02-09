@@ -33,6 +33,7 @@ tasmota/tasmota.ino.cpp
 platformio_override.ini
 platformio_tasmota_cenv.ini
 
+save.bin/
 *.txt
 *.bin
 *.gz
