@@ -1288,11 +1288,8 @@ void WebGetDeviceCounts(void) {
     }
   }
 #endif  // USE_SHUTTER
-uint32_t WebDeviceColumns(void) {
-  const uint32_t max_columns = 10;    // define number of  button on a line
-
-//  AddLog(LOG_LEVEL_DEBUG, PSTR("HTP: DP %d, BNLNS %d, SB %08X"), TasmotaGlobal.devices_present, Web.buttons_non_light_non_shutter, Web.light_shutter_button_mask);
 }
+
 
 #ifdef USE_LIGHT
 /*-------------------------------------------------------------------------------------------*/
