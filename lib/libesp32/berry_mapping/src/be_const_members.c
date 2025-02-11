@@ -23,6 +23,7 @@
 #include "be_mapping.h"
 #include "be_exec.h"
 #include "be_string.h"
+#include "be_module.h"
 #include <string.h>
 /*********************************************************************************************\
  * Takes a pointer to be_const_member_t array and size
@@ -38,6 +39,7 @@
  * - `@func` Berry native function
  * - `*my_func` native function - the function is called and return value passed back.
  *              This allows to create dynamic virtual members that are the result of a call.
+ * - `/my_class` a Berry class
  * 
  * The array must be lexically sorted, but the sort function must ignore the prefix `$`, `&`, `*`
 \*********************************************************************************************/
@@ -62,6 +64,9 @@ static bbool be_const_member_dual(bvm *vm, const be_const_member_t * definitions
           break;
         case '&': // pointer
           be_pushcomptr(vm, (void*) definitions[idx].value);
+          break;
+        case '/':
+          be_pushntvclass(vm, (const struct bclass*) definitions[idx].value);
           break;
         case '*': // call to a native function
         {

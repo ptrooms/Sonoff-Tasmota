@@ -326,6 +326,9 @@ void IBEACON_Init() {
       if (IBEACON_Serial->hardwareSerial()) {
         ClaimSerial();
       }
+#ifdef ESP32
+      AddLog(LOG_LEVEL_DEBUG, PSTR("BLE: Serial UART%d"), IBEACON_Serial->getUart());
+#endif
       hm17_sendcmd(HM17_TEST);
       hm17_lastms=millis();
       // in case of using Settings this has to be moved
@@ -969,7 +972,7 @@ void ibeacon_mqtt(const char *mac,const char *rssi,const char *uid,const char *m
  * Interface
 \*********************************************************************************************/
 
-bool Xsns52(byte function)
+bool Xsns52(uint32_t function)
 {
   bool result = false;
 

@@ -73,7 +73,7 @@ void CmndWiper(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv61(uint8_t function) {
+bool Xdrv61(uint32_t function) {
   if (!I2cEnabled(XI2C_67)) { return false; }
 
   bool result = false;
@@ -85,6 +85,9 @@ bool Xdrv61(uint8_t function) {
     switch (function) {
       case FUNC_COMMAND:
         result = DecodeCommand(kDS3502Commands, DS3502Command);
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

@@ -207,7 +207,7 @@ void PCA9685_OutputTelemetry(bool telemetry)
   }
 }
 
-bool Xdrv15(uint8_t function)
+bool Xdrv15(uint32_t function)
 {
   if (!I2cEnabled(XI2C_01)) { return false; }
 
@@ -227,6 +227,9 @@ bool Xdrv15(uint8_t function)
         if (XDRV_15 == XdrvMailbox.index) {
           result = PCA9685_Command();
         }
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

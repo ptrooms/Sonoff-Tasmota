@@ -40,6 +40,8 @@
  * IfxPeriod   - Set Influxdb period. If not set (or 0), use Teleperiod
  * IfxSensor   - Set Influxdb sensor logging off (0) or on (1)
  * IfxRP       - Set Influxdb retention policy
+ * IfxLog      - Set Influxdb logging level (4 = default)
+ * IfxFeed     - Feed Influxdb with JSON data
  *
  * The following triggers result in automatic influxdb numeric feeds without appended time:
  * - this driver initiated state message
@@ -73,7 +75,7 @@
 #define INFLUXDB_BUCKET    "db"          // [IfxDatabase, IfxBucket] Influxdb v1 database or v2 bucket
 #endif
 #ifndef INFLUXDB_RP
-#define INFLUXDB_RP        ""          // [IfxRP] Influxdb v1 retention policy (blank is default, usually autogen infinite)
+#define INFLUXDB_RP        ""            // [IfxRP] Influxdb v1 retention policy (blank is default, usually autogen infinite)
 #endif
 
 static const char UninitializedMessage[] PROGMEM = "Unconfigured instance";
@@ -81,8 +83,12 @@ static const char UninitializedMessage[] PROGMEM = "Unconfigured instance";
 static const char RetryAfter[] = "Retry-After";
 static const char TransferEncoding[] = "Transfer-Encoding";
 
-WiFiClient *IFDBwifiClient = nullptr;
-HTTPClient *IFDBhttpClient = nullptr;
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+  HTTPClientLight *IFDBhttpClient = nullptr;
+#else
+  WiFiClient *IFDBwifiClient = nullptr;
+  HTTPClient *IFDBhttpClient = nullptr;
+#endif
 
 struct {
   String _serverUrl;                     // Connection info
@@ -112,6 +118,19 @@ String InfluxDbAuth(void) {
   return auth;
 }
 
+bool InfluxDbHostByName(void) {
+  String host = SettingsText(SET_INFLUXDB_HOST);
+  IFDB._serverUrl = "";
+  if (strncmp(host.c_str(),"http",4))
+    IFDB._serverUrl += "http://";
+  IFDB._serverUrl += host;
+  if (Settings->influxdb_port) {
+    IFDB._serverUrl += ":";
+    IFDB._serverUrl += Settings->influxdb_port;
+  }
+  return true;
+}
+
 bool InfluxDbParameterInit(void) {
   if (strlen(SettingsText(SET_INFLUXDB_BUCKET)) == 0 ||
       (2 == Settings->influxdb_version && (strlen(SettingsText(SET_INFLUXDB_ORG)) == 0 ||
@@ -119,10 +138,7 @@ bool InfluxDbParameterInit(void) {
     AddLog(LOG_LEVEL_DEBUG, PSTR("IFX: Invalid parameters"));
     return false;
   }
-  IFDB._serverUrl = "http://";
-  IFDB._serverUrl += SettingsText(SET_INFLUXDB_HOST);
-  IFDB._serverUrl += ":";
-  IFDB._serverUrl += Settings->influxdb_port;
+  if (!InfluxDbHostByName()) { return false; }
 
   IFDB._writeUrl = IFDB._serverUrl;
   if (2 == Settings->influxdb_version) {
@@ -145,10 +161,16 @@ bool InfluxDbParameterInit(void) {
 }
 
 bool InfluxDbInit(void) {
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+  if (!IFDBhttpClient) {
+    IFDBhttpClient = new HTTPClientLight;
+  }
+#else
   IFDBwifiClient = new WiFiClient;
   if (!IFDBhttpClient) {
     IFDBhttpClient = new HTTPClient;
   }
+#endif
   IFDBhttpClient->setReuse(IFDB._connectionReuse);
   char server[32];
   snprintf_P(server, sizeof(server), PSTR("Tasmota/%s (%s)"), TasmotaGlobal.version, GetDeviceHardware().c_str());
@@ -185,24 +207,36 @@ void InfluxDbAfterRequest(int expectedStatusCode, bool modifyLastConnStatus) {
       IFDB._lastErrorResponse = IFDBhttpClient->errorToString(IFDB._lastStatusCode);
     }
     IFDB._lastErrorResponse.trim();  // Remove trailing \n
-    AddLog(LOG_LEVEL_INFO, PSTR("IFX: Error %s"), IFDB._lastErrorResponse.c_str());
+    AddLog(LOG_LEVEL_INFO, PSTR("IFX: Error '%s'"), IFDB._lastErrorResponse.c_str());
+  } else {
+    AddLog(IFDB.log_level, PSTR("IFX: Done"));
   }
 }
 
 bool InfluxDbValidateConnection(void) {
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+  if (!InfluxDbInit()) {
+#else
   if (!IFDBwifiClient && !InfluxDbInit()) {
+#endif
     IFDB._lastStatusCode = 0;
     IFDB._lastErrorResponse = FPSTR(UninitializedMessage);
     return false;
   }
   // on version 1.x /ping will by default return status code 204, without verbose
+  if (!InfluxDbHostByName()) { return false; }
+
   String url = IFDB._serverUrl + (2 == Settings->influxdb_version ? "/health" : "/ping?verbose=true");
   if (1 == Settings->influxdb_version) {
     url += InfluxDbAuth();
   }
   AddLog(LOG_LEVEL_INFO, PSTR("IFX: Validating connection to %s"), url.c_str());
 
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+  if (!IFDBhttpClient->begin(url)) {
+#else // HTTP only
   if (!IFDBhttpClient->begin(*IFDBwifiClient, url)) {
+#endif
     AddLog(LOG_LEVEL_DEBUG, PSTR("IFX: Begin failed"));
     return false;
   }
@@ -217,13 +251,21 @@ bool InfluxDbValidateConnection(void) {
 }
 
 int InfluxDbPostData(const char *data) {
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+  if (!InfluxDbInit()) {
+#else
   if (!IFDBwifiClient && !InfluxDbInit()) {
+#endif
     IFDB._lastStatusCode = 0;
     IFDB._lastErrorResponse = FPSTR(UninitializedMessage);
     return 0;
   }
   if (data) {
+#if defined(ESP32) && defined(USE_WEBCLIENT_HTTPS)
+    if (!IFDBhttpClient->begin(IFDB._writeUrl)) {
+#else
     if (!IFDBhttpClient->begin(*IFDBwifiClient, IFDB._writeUrl)) {
+#endif
       AddLog(LOG_LEVEL_DEBUG, PSTR("IFX: Begin failed"));
       return false;
     }
@@ -233,6 +275,7 @@ int InfluxDbPostData(const char *data) {
     IFDBhttpClient->addHeader(F("Content-Type"), F("text/plain"));
     InfluxDbBeforeRequest();
     IFDB._lastStatusCode = IFDBhttpClient->POST((uint8_t*)data, strlen(data));
+    AddLog(IFDB.log_level, PSTR("IFX: POST statusCode %d"), IFDB._lastStatusCode);
     InfluxDbAfterRequest(204, true);
     IFDBhttpClient->end();
   }
@@ -373,7 +416,7 @@ void InfluxDbProcessJson(bool use_copy = false) {
 }
 
 void InfluxDbProcess(bool use_copy) {
-  if (Settings->sbflag1.influxdb_sensor) {
+  if (Settings->sbflag1.influxdb_sensor) {  // IfxSensor
     InfluxDbProcessJson(use_copy);
   }
 }
@@ -433,7 +476,8 @@ void InfluxDbLoop(void) {
 #define D_CMND_INFLUXDBBUCKET   "Bucket"
 #define D_CMND_INFLUXDBPERIOD   "Period"
 #define D_CMND_INFLUXDBSENSOR   "Sensor"
-#define D_CMND_INFLUXDBRP "RP"
+#define D_CMND_INFLUXDBRP       "RP"
+#define D_CMND_INFLUXDBFEED     "Feed"
 
 const char kInfluxDbCommands[] PROGMEM = D_PRFX_INFLUXDB "|"  // Prefix
   "|" D_CMND_INFLUXDBLOG "|"
@@ -441,7 +485,8 @@ const char kInfluxDbCommands[] PROGMEM = D_PRFX_INFLUXDB "|"  // Prefix
   D_CMND_INFLUXDBUSER "|" D_CMND_INFLUXDBORG "|"
   D_CMND_INFLUXDBPASSWORD "|" D_CMND_INFLUXDBTOKEN "|"
   D_CMND_INFLUXDBDATABASE "|" D_CMND_INFLUXDBBUCKET "|"
-  D_CMND_INFLUXDBPERIOD "|" D_CMND_INFLUXDBSENSOR "|" D_CMND_INFLUXDBRP;
+  D_CMND_INFLUXDBPERIOD "|" D_CMND_INFLUXDBSENSOR "|"
+  D_CMND_INFLUXDBRP "|" D_CMND_INFLUXDBFEED;
 
 void (* const InfluxCommand[])(void) PROGMEM = {
   &CmndInfluxDbState, &CmndInfluxDbLog,
@@ -449,7 +494,8 @@ void (* const InfluxCommand[])(void) PROGMEM = {
   &CmndInfluxDbUser, &CmndInfluxDbUser,
   &CmndInfluxDbPassword, &CmndInfluxDbPassword,
   &CmndInfluxDbDatabase, &CmndInfluxDbDatabase,
-  &CmndInfluxDbPeriod, &CmndInfluxDbSensor, &CmndInfluxDbRP };
+  &CmndInfluxDbPeriod, &CmndInfluxDbSensor,
+  &CmndInfluxDbRP, &CmndInfluxDbFeed };
 
 void InfluxDbReinit(void) {
   IFDB.init = false;
@@ -476,9 +522,9 @@ void CmndInfluxDbState(void) {
 
 void CmndInfluxDbSensor(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
-    Settings->sbflag1.influxdb_sensor = XdrvMailbox.payload;
+    Settings->sbflag1.influxdb_sensor = XdrvMailbox.payload;  // IfxSensor
   }
-  ResponseCmndStateText(Settings->sbflag1.influxdb_sensor);
+  ResponseCmndStateText(Settings->sbflag1.influxdb_sensor);  // IfxSensor
 }
 
 void CmndInfluxDbLog(void) {
@@ -557,11 +603,20 @@ void CmndInfluxDbPeriod(void) {
   ResponseCmndNumber(Settings->influxdb_period);
 }
 
+void CmndInfluxDbFeed(void) {
+  // IfxFeed {"Data":10}
+  if ((XdrvMailbox.data_len > 0) && ('{' == XdrvMailbox.data[0])) {
+    Response_P(XdrvMailbox.data);
+    InfluxDbProcessJson();
+    ResponseCmndDone();
+  }
+}
+
 /*********************************************************************************************\
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv59(uint8_t function) {
+bool Xdrv59(uint32_t function) {
   bool result = false;
 
   if (FUNC_PRE_INIT == function) {
@@ -583,6 +638,9 @@ bool Xdrv59(uint8_t function) {
     switch (function) {
       case FUNC_EVERY_SECOND:
         InfluxDbLoop();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

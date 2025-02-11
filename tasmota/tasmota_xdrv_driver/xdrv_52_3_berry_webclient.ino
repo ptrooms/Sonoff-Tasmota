@@ -76,9 +76,9 @@ String wc_UrlEncode(const String& text) {
 
 /*********************************************************************************************\
  * Native functions mapped to Berry functions
- * 
+ *
  * import webclient
- * 
+ *
 \*********************************************************************************************/
 extern "C" {
   // Berry: ``
@@ -98,9 +98,15 @@ extern "C" {
 
   int32_t wc_tcp_init(struct bvm *vm);
   int32_t wc_tcp_init(struct bvm *vm) {
-    WiFiClient * wcl = new WiFiClient();
+    int32_t argc = be_top(vm);
+    WiFiClient * wcl;
+    if (argc >= 2 && be_iscomptr(vm, 2)) {
+      wcl = (WiFiClient*) be_tocomptr(vm, 2);
+    } else {
+      wcl = new WiFiClient();
+    }
     be_pushcomptr(vm, (void*) wcl);
-    be_setmember(vm, 1, ".w");
+    be_setmember(vm, 1, ".p");
     be_return_nil(vm);
   }
 
@@ -113,6 +119,14 @@ extern "C" {
 
   WiFiClient * wc_getwificlient(struct bvm *vm) {
     be_getmember(vm, 1, ".w");
+    void *p = be_tocomptr(vm, -1);
+    be_pop(vm, 1);
+    return (WiFiClient*) p;
+  }
+
+  // same but using `.p` argument
+  WiFiClient * wc_getwificlient_p(struct bvm *vm) {
+    be_getmember(vm, 1, ".p");
     void *p = be_tocomptr(vm, -1);
     be_pop(vm, 1);
     return (WiFiClient*) p;
@@ -133,18 +147,18 @@ extern "C" {
 
   int32_t wc_tcp_deinit(struct bvm *vm);
   int32_t wc_tcp_deinit(struct bvm *vm) {
-    WiFiClient * wcl = wc_getwificlient(vm);
+    WiFiClient * wcl = wc_getwificlient_p(vm);
     if (wcl != nullptr) { delete wcl; }
-    be_setmember(vm, 1, ".w");
+    be_setmember(vm, 1, ".p");
     be_return_nil(vm);
   }
 
-  // wc.url_encode(string) -> string
+  // wc.url_encode(string) -> string  (static method)
   int32_t wc_urlencode(struct bvm *vm);
   int32_t wc_urlencode(struct bvm *vm) {
     int32_t argc = be_top(vm);
-    if (argc >= 2 && be_isstring(vm, 2)) {
-      const char * s = be_tostring(vm, 2);
+    if (argc >= 1 && be_isstring(vm, 1)) {
+      const char * s = be_tostring(vm, 1);
       String url = wc_UrlEncode(String(s));
       be_pushstring(vm, url.c_str());
       be_return(vm);  /* return self */
@@ -172,7 +186,7 @@ extern "C" {
   int32_t wc_tcp_connect(struct bvm *vm) {
     int32_t argc = be_top(vm);
     if (argc >= 3 && be_isstring(vm, 2) && be_isint(vm, 3)) {
-      WiFiClient * tcp = wc_getwificlient(vm);
+      WiFiClient * tcp = wc_getwificlient_p(vm);
       const char * address = be_tostring(vm, 2);
       int32_t port = be_toint(vm, 3);
       int32_t timeout = USE_BERRY_WEBCLIENT_TIMEOUT;   // default timeout of 2 seconds
@@ -180,7 +194,11 @@ extern "C" {
         timeout = be_toint(vm, 4);
       }
       // open connection
-      bool success = tcp->connect(address, port, timeout);
+      IPAddress ipaddr;
+      bool success = WifiHostByName(address, ipaddr);
+      if (success) {
+        success = tcp->connect(ipaddr, port, timeout);
+      }
       be_pushbool(vm, success);
       be_return(vm);  /* return self */
     }
@@ -198,7 +216,7 @@ extern "C" {
   // tcp.close(void) -> nil
   int32_t wc_tcp_close(struct bvm *vm);
   int32_t wc_tcp_close(struct bvm *vm) {
-    WiFiClient * tcp = wc_getwificlient(vm);
+    WiFiClient * tcp = wc_getwificlient_p(vm);
     tcp->stop();
     be_return_nil(vm);
   }
@@ -206,7 +224,7 @@ extern "C" {
   // tcp.available(void) -> int
   int32_t wc_tcp_available(struct bvm *vm);
   int32_t wc_tcp_available(struct bvm *vm) {
-    WiFiClient * tcp = wc_getwificlient(vm);
+    WiFiClient * tcp = wc_getwificlient_p(vm);
     int32_t available = tcp->available();
     be_pushint(vm, available);
     be_return(vm);
@@ -236,6 +254,55 @@ extern "C" {
       const char * useragent = be_tostring(vm, 2);
       cl->setUserAgent(String(useragent));
       be_pushvalue(vm, 1);
+      be_return(vm);  /* return self */
+    }
+    be_raise(vm, kTypeError, nullptr);
+  }
+
+  // wc.set_follow_redirects(bool) -> self
+  int32_t wc_set_follow_redirects(struct bvm *vm);
+  int32_t wc_set_follow_redirects(struct bvm *vm) {
+    int32_t argc = be_top(vm);
+    if (argc >= 2 && be_isbool(vm, 2)) {
+      HTTPClientLight * cl = wc_getclient(vm);
+      bbool follow = be_tobool(vm, 2);
+      cl->setFollowRedirects(follow ? HTTPC_STRICT_FOLLOW_REDIRECTS : HTTPC_DISABLE_FOLLOW_REDIRECTS);
+      be_pushvalue(vm, 1);
+      be_return(vm);  /* return self */
+    }
+    be_raise(vm, kTypeError, nullptr);
+  }
+
+  // wc.collect_headers( [header:string]+ ) -> self
+  int32_t wc_collect_headers(struct bvm *vm);
+  int32_t wc_collect_headers(struct bvm *vm) {
+    int32_t argc = be_top(vm);
+    if (argc >= 2) {
+      size_t header_len = argc-1;
+      const char** header_array = (const char**) be_os_malloc((header_len) * sizeof(const char*));
+      if (!header_array) { be_throw(vm, BE_MALLOC_FAIL); }
+
+      for (int32_t i = 0; i < header_len; i++) {
+        header_array[i] = be_tostring(vm, i + 2);
+      }
+      HTTPClientLight * cl = wc_getclient(vm);
+      cl->collectHeaders(header_array, header_len);
+
+      be_os_free(header_array);
+    }
+    be_pushvalue(vm, 1);
+    be_return(vm);  /* return self */
+  }
+
+  // wc.get_header(header_name:string) -> string
+  int32_t wc_get_header(struct bvm *vm);
+  int32_t wc_get_header(struct bvm *vm) {
+    int32_t argc = be_top(vm);
+    if (argc >= 2 && be_isstring(vm, 2)) {
+      HTTPClientLight * cl = wc_getclient(vm);
+      const char * header_name = be_tostring(vm, 2);
+      String ret = cl->header(header_name);
+      be_pushstring(vm, ret.c_str());
       be_return(vm);  /* return self */
     }
     be_raise(vm, kTypeError, nullptr);
@@ -295,7 +362,7 @@ extern "C" {
   // tcp.connected(void) -> bool
   int32_t wc_tcp_connected(struct bvm *vm);
   int32_t wc_tcp_connected(struct bvm *vm) {
-    WiFiClient * tcp = wc_getwificlient(vm);
+    WiFiClient * tcp = wc_getwificlient_p(vm);
     be_pushbool(vm, tcp->connected());
     be_return(vm);  /* return code */
   }
@@ -305,7 +372,7 @@ extern "C" {
   int32_t wc_tcp_write(struct bvm *vm) {
     int32_t argc = be_top(vm);
     if (argc >= 2 && (be_isstring(vm, 2) || be_isbytes(vm, 2))) {
-      WiFiClient * tcp = wc_getwificlient(vm);
+      WiFiClient * tcp = wc_getwificlient_p(vm);
       const char * buf = nullptr;
       size_t buf_len = 0;
       if (be_isstring(vm, 2)) {  // string
@@ -324,7 +391,7 @@ extern "C" {
   // tcp.read() -> string
   int32_t wc_tcp_read(struct bvm *vm);
   int32_t wc_tcp_read(struct bvm *vm) {
-    WiFiClient * tcp = wc_getwificlient(vm);
+    WiFiClient * tcp = wc_getwificlient_p(vm);
     int32_t max_read = -1;      // by default read as much as we can
     if (be_top(vm) >= 2 && be_isint(vm, 2)) {
       max_read = be_toint(vm, 2);
@@ -346,7 +413,7 @@ extern "C" {
   // tcp.readbytes() -> bytes
   int32_t wc_tcp_readbytes(struct bvm *vm);
   int32_t wc_tcp_readbytes(struct bvm *vm) {
-    WiFiClient * tcp = wc_getwificlient(vm);
+    WiFiClient * tcp = wc_getwificlient_p(vm);
     int32_t max_read = -1;      // by default read as much as we can
     if (be_top(vm) >= 2 && be_isint(vm, 2)) {
       max_read = be_toint(vm, 2);
@@ -391,9 +458,15 @@ extern "C" {
     be_return(vm);  /* return code */
   }
 
-  // wc.POST(string | bytes) -> httpCode:int
-  int32_t wc_POST(struct bvm *vm);
-  int32_t wc_POST(struct bvm *vm) {
+  // Combined function for POST/PUT/PATCH/DELETE
+  enum {
+    wc_POST_op,
+    wc_PUT_op,
+    wc_PATCH_op,
+    wc_DELETE_op
+  };
+  int32_t wc_PostPutPatchDelete(struct bvm *vm, int32_t op);
+  int32_t wc_PostPutPatchDelete(struct bvm *vm, int32_t op) {
     int32_t argc = be_top(vm);
     if (argc >= 2 && (be_isstring(vm, 2) || be_isbytes(vm, 2))) {
       HTTPClientLight * cl = wc_getclient(vm);
@@ -406,12 +479,52 @@ extern "C" {
         buf = (const char*) be_tobytes(vm, 2, &buf_len);
       }
       uint32_t http_connect_time = millis();
-      int32_t httpCode = cl->POST((uint8_t*)buf, buf_len);
+      int32_t httpCode;
+      switch (op) {
+        case wc_PUT_op:
+          httpCode = cl->PUT((uint8_t*)buf, buf_len);
+          break;
+        case wc_PATCH_op:
+          httpCode = cl->PATCH((uint8_t*)buf, buf_len);
+          break;
+        case wc_DELETE_op:
+          httpCode = cl->DELETE((uint8_t*)buf, buf_len);
+          break;
+        case wc_POST_op:
+        default:
+          httpCode = cl->POST((uint8_t*)buf, buf_len);
+          break;
+      }
       wc_errorCodeMessage(httpCode, http_connect_time);
       be_pushint(vm, httpCode);
       be_return(vm);  /* return code */
     }
     be_raise(vm, kTypeError, nullptr);
+  }
+
+
+  // wc.POST(string | bytes) -> httpCode:int
+  int32_t wc_POST(struct bvm *vm);
+  int32_t wc_POST(struct bvm *vm) {
+    return wc_PostPutPatchDelete(vm, wc_POST_op);
+  }
+
+  // wc.PUT(string | bytes) -> httpCode:int
+  int32_t wc_PUT(struct bvm *vm);
+  int32_t wc_PUT(struct bvm *vm) {
+    return wc_PostPutPatchDelete(vm, wc_PUT_op);
+  }
+
+  // wc.PATCH(string | bytes) -> httpCode:int
+  int32_t wc_PATCH(struct bvm *vm);
+  int32_t wc_PATCH(struct bvm *vm) {
+    return wc_PostPutPatchDelete(vm, wc_PATCH_op);
+  }
+
+  // wc.DELETE(string | bytes) -> httpCode:int
+  int32_t wc_DELETE(struct bvm *vm);
+  int32_t wc_DELETE(struct bvm *vm) {
+    return wc_PostPutPatchDelete(vm, wc_DELETE_op);
   }
 
   int32_t wc_getstring(struct bvm *vm);
@@ -469,6 +582,7 @@ public:
   size_t write(const uint8_t *buffer, size_t size) override {
     // AddLog(LOG_LEVEL_INFO, "FLASH: addr=%p  hex=%*_H  size=%i", addr_start + offset, 32, buffer, size);
     if (size > 0) {
+#if ESP_IDF_VERSION_MAJOR < 5     // TODO later
       esp_err_t ret = spi_flash_write(addr_start + offset, buffer, size);
       if (ret != ESP_OK)  { return 0; }  // error
       offset += size;
@@ -477,6 +591,7 @@ public:
       if (((offset - size) / STREAM_FLASH_PROGRESS_THRESHOLD) != (offset / STREAM_FLASH_PROGRESS_THRESHOLD)) {
         AddLog(LOG_LEVEL_DEBUG, D_LOG_UPLOAD "Progress %d kB", offset / 1024);
       }
+#endif
     }
     return size;
   }
@@ -498,6 +613,7 @@ protected:
 extern "C" {
   int32_t wc_writeflash(struct bvm *vm);
   int32_t wc_writeflash(struct bvm *vm) {
+#if ESP_IDF_VERSION_MAJOR < 5
     int32_t argc = be_top(vm);
     if (argc >= 2 && be_isint(vm, 2)) {
       HTTPClientLight * cl = wc_getclient(vm);
@@ -533,11 +649,104 @@ extern "C" {
         be_raisef(vm, "internal_error", "failed, written %i bytes vs %i", written, size);
       }
       AddLog(LOG_LEVEL_DEBUG, D_LOG_UPLOAD "flash writing succesful");
-      
+
       be_pushint(vm, written);
       be_return(vm);  /* return code */
     }
+#endif
     be_raise(vm, kTypeError, nullptr);
+  }
+}
+
+
+// a stream which writes to the Bytes object on the top of the stack
+class StreamBeBytesWriter: public Stream
+{
+public:
+  StreamBeBytesWriter(bvm *vm_in, int increment = 1024) : vm(vm_in), offset(0), incr(increment) {};
+
+  size_t write(const uint8_t *buffer, size_t size) override {
+    // we need size, not len, so can;t just get len with be_tobytes
+    be_getmember(vm, -1, ".size");
+    int32_t signed_size = be_toint(vm, -1);
+    be_pop(vm, 1);  /* bytes() instance is at top */
+
+    // if it won't fit, make the bytes object bigger
+    if (offset + size > signed_size){
+      int newsize = offset + size + incr;
+      AddLog(LOG_LEVEL_INFO, "BE: realloc bytes in StreamBeBytesWriter newsize=%i", newsize);
+      be_getmember(vm, -1, "resize");
+      be_pushvalue(vm, -2);
+      be_pushint(vm, size);
+      be_call(vm, 2); /* call b.resize(size) */
+      be_pop(vm, 3);  /* bytes() instance is at top */      
+
+      // checkw e got it, because Berry just maxes out?
+      be_getmember(vm, -1, ".size");
+      signed_size = be_toint(vm, -1);
+      be_pop(vm, 1);  /* bytes() instance is at top */
+      if (offset + size > signed_size){
+        // what should we raise here???
+        be_raise(vm, "alloc_error", "did not get enough extra bytes");
+      }
+    }
+
+    // AddLog(LOG_LEVEL_INFO, "FLASH: addr=%p  hex=%*_H  size=%i", addr_start + offset, 32, buffer, size);
+    if (offset + size > signed_size){
+      AddLog(LOG_LEVEL_ERROR, "BERRYWC: buffer overrun");
+      return size;
+    }
+
+    char *bytebuf = (char*) be_tobytes(vm, -1, NULL); /* we get the address of the internam buffer of size 'size' */
+    if (!bytebuf){
+      AddLog(LOG_LEVEL_ERROR, "BERRYWC: buffer null??");
+      return size;
+    }
+
+    // stream in our chunk
+    memcpy(bytebuf + offset, buffer, size);
+    offset += size;
+
+    // set the len
+    be_pushint(vm, offset);
+    be_setmember(vm, -2, ".len");
+    be_pop(vm, 1);
+    return size;
+  }
+  size_t write(uint8_t data) override {
+    write(&data, 1);
+    return 1;
+  }
+
+  int available() override { return 0; }
+  int read() override { return -1; }
+  int peek() override { return -1; }
+  void flush() override { }
+
+protected:
+  bvm *vm;                // the berry VM
+  uint32_t offset;       // how many bytes have already been written
+  size_t incr;           // amount to add to size if it does not fit.
+};
+
+extern "C" {
+  int32_t wc_getbytes(struct bvm *vm);
+  int32_t wc_getbytes(struct bvm *vm) {
+    HTTPClientLight * cl = wc_getclient(vm);
+    int32_t sz = cl->getSize();
+    // abort if we exceed 32KB size, things will not go well otherwise
+    if (sz >= 32767) {
+      be_raise(vm, "value_error", "response size too big (>32KB)");
+    }
+    // default to 1K starter if contetn-length not present
+    if (sz < 0) sz = 1024;
+    // create a bytes object at top of stack.
+    // the streamwriter knows how to get it. 
+    uint8_t * buf = (uint8_t*) be_pushbytes(vm, nullptr, sz);
+    StreamBeBytesWriter memory_writer(vm);
+    int32_t written = cl->writeToStream(&memory_writer);
+    cl->end();  // free allocated memory ~16KB
+    be_return(vm);  /* return code */
   }
 }
 

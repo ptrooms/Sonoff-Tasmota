@@ -124,7 +124,7 @@ bool Sm16716SetChannels(void)
   for (uint32_t i = 3; i < Light.subtype; i++) {
     if (PinUsed(GPIO_PWM1, i-3)) {
       //AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "Cur_Col%d 10 bits %d, Pwm%d %d"), i, cur_col[i], i+1, curcol);
-      analogWrite(Pin(GPIO_PWM1, i-3), bitRead(TasmotaGlobal.pwm_inverted, i-3) ? Settings->pwm_range - cur_col_10bits[i] : cur_col_10bits[i]);
+      AnalogWrite(Pin(GPIO_PWM1, i-3), bitRead(TasmotaGlobal.pwm_inverted, i-3) ? Settings->pwm_range - cur_col_10bits[i] : cur_col_10bits[i]);
     }
   }
 */
@@ -170,7 +170,7 @@ void Sm16716ModuleSelected(void)
  * Interface
 \*********************************************************************************************/
 
-bool Xlgt03(uint8_t function)
+bool Xlgt03(uint32_t function)
 {
   bool result = false;
 

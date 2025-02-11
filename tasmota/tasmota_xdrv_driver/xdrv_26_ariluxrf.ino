@@ -170,7 +170,7 @@ void AriluxRfDisable(void)
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv26(uint8_t function)
+bool Xdrv26(uint32_t function)
 {
   bool result = false;
 
@@ -180,6 +180,15 @@ bool Xdrv26(uint8_t function)
       break;
     case FUNC_EVERY_SECOND:
       if (10 == TasmotaGlobal.uptime) { AriluxRfInit(); }  // Needs rest before enabling RF interrupts
+      break;
+    case FUNC_INTERRUPT_STOP:
+      AriluxRfDisable();
+      break;
+    case FUNC_INTERRUPT_START:
+      AriluxRfInit();
+      break;
+    case FUNC_ACTIVE:
+      result = true;
       break;
   }
   return result;

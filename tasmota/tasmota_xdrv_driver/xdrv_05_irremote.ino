@@ -296,7 +296,11 @@ void IrReceiveCheck(void)
       }
 
       ResponseJsonEndEnd();
-      MqttPublishPrefixTopicRulesProcess_P(RESULT_OR_TELE, PSTR(D_JSON_IRRECEIVED));
+      if (Settings->flag6.mqtt_disable_publish ) {  // SetOption147 - If it is activated, Tasmota will not publish IRReceived MQTT messages, but it will proccess event trigger rules
+        XdrvRulesProcess(0);
+      } else {
+        MqttPublishPrefixTopicRulesProcess_P(RESULT_OR_TELE, PSTR(D_JSON_IRRECEIVED));
+      }
 
 #ifdef USE_DOMOTICZ
       if (iridx) {
@@ -349,7 +353,7 @@ uint32_t IrRemoteCmndIrSendJson(void)
   //   protocol_text, protocol, bits, ulltoa(data, dvalue, 10), Uint64toHex(data, hvalue, bits), repeat, protocol_code);
 
 #ifdef USE_IR_RECEIVE
-  if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->disableIRIn(); }
+  if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->pause(); }
 #endif  // USE_IR_RECEIVE
 
   switch (protocol_code) {  // Equals IRremoteESP8266.h enum decode_type_t
@@ -367,12 +371,12 @@ uint32_t IrRemoteCmndIrSendJson(void)
 #endif
     default:
 #ifdef USE_IR_RECEIVE
-      if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->enableIRIn(); }
+      if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->resume(); }
 #endif  // USE_IR_RECEIVE
       return IE_PROTO_UNSUPPORTED;
   }
 #ifdef USE_IR_RECEIVE
-  if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->enableIRIn(); }
+  if (!IR_RCV_WHILE_SENDING && (irrecv != nullptr)) { irrecv->resume(); }
 #endif  // USE_IR_RECEIVE
 
   return IE_NO_ERROR;
@@ -416,7 +420,7 @@ void IrRemoteCmndResponse(uint32_t error)
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv05(uint8_t function)
+bool Xdrv05(uint32_t function)
 {
   bool result = false;
 
@@ -443,6 +447,9 @@ bool Xdrv05(uint8_t function)
         if (PinUsed(GPIO_IRSEND)) {
           result = DecodeCommand(kIrRemoteCommands, IrRemoteCommand);
         }
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

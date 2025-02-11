@@ -340,7 +340,7 @@ void ImprovInit(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv62(uint8_t function) {
+bool Xdrv62(uint32_t function) {
   bool result = false;
 
   switch (function) {
@@ -352,6 +352,9 @@ bool Xdrv62(uint8_t function) {
       break;
     case FUNC_PRE_INIT:
       ImprovInit();
+      break;
+    case FUNC_ACTIVE:
+      result = true;
       break;
   }
   return result;

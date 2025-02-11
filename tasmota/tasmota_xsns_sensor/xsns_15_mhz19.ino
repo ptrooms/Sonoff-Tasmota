@@ -329,9 +329,11 @@ void MhzInit(void)
     MhzSerial = new TasmotaSerial(Pin(GPIO_MHZ_RXD), Pin(GPIO_MHZ_TXD), 1);
     if (MhzSerial->begin(9600)) {
       if (MhzSerial->hardwareSerial()) { ClaimSerial(); }
+#ifdef ESP32
+      AddLog(LOG_LEVEL_DEBUG, PSTR("MHZ: Serial UART%d"), MhzSerial->getUart());
+#endif
       mhz_type = 1;
     }
-
   }
 }
 
@@ -362,7 +364,7 @@ void MhzShow(bool json)
  * Interface
 \*********************************************************************************************/
 
-bool Xsns15(uint8_t function)
+bool Xsns15(uint32_t function)
 {
   bool result = false;
 

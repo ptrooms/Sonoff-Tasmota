@@ -152,7 +152,9 @@ void ChirpResetAll(void) {
 /********************************************************************************************/
 
 void ChirpClockSet() { // set I2C for this slow sensor
+#ifdef ESP8266
     Wire.setClockStretchLimit(4000);
+#endif  // ESP8266
     Wire.setClock(50000);
 }
 
@@ -509,6 +511,8 @@ bool ChirpCmd(void) {
         serviced = false;
       break;
     }
+  } else {
+    serviced = false;
   }
   return serviced;
 }
@@ -517,7 +521,7 @@ bool ChirpCmd(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xsns48(uint8_t function)
+bool Xsns48(uint32_t function)
 {
   if (!I2cEnabled(XI2C_33)) { return false; }
 

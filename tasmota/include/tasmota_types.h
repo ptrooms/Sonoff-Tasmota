@@ -39,7 +39,7 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t stop_flash_rotate : 1;        // bit 12 (v5.2.0)    - SetOption12  - (Settings) Switch between dynamic (0) or fixed (1) slot flash save location
     uint32_t button_single : 1;            // bit 13 (v5.4.0)    - SetOption13  - (Button) Support only single press (1) to speed up button press recognition
     uint32_t interlock : 1;                // bit 14 (v5.6.0)    - CMND_INTERLOCK - Enable (1) /disable (0) interlock
-    uint32_t pwm_control : 1;              // bit 15 (v5.8.1)    - SetOption15  - (Light) Switch between commands PWM (1) or COLOR/DIMMER/CT/CHANNEL (0)
+    uint32_t pwm_control : 1;              // bit 15 (v5.8.1)    - SetOption15  - (Light) Switch between commands PWM (0) or COLOR/DIMMER/CT/CHANNEL (1)
     uint32_t ws_clock_reverse : 1;         // bit 16 (v5.8.1)    - SetOption16  - (WS2812) Switch between clockwise (0) or counter-clockwise (1)
     uint32_t decimal_text : 1;             // bit 17 (v5.8.1)    - SetOption17  - (Light) Switch between decimal (1) or hexadecimal (0) output
     uint32_t light_signal : 1;             // bit 18 (v5.10.0c)  - SetOption18  - (Light) Pair light signal (1) with CO2 sensor
@@ -82,7 +82,8 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t tuya_serial_mqtt_publish : 1; // bit 16 (v6.6.0.21) - SetOption66  - (Tuya) Enable (1) TuyaMcuReceived messages over Mqtt
     uint32_t buzzer_enable : 1;            // bit 17 (v6.6.0.1)  - SetOption67  - (Buzzer) Enable (1) buzzer when available
     uint32_t pwm_multi_channels : 1;       // bit 18 (v6.6.0.3)  - SetOption68  - (Light) Enable multi-channels PWM (1) instead of Color PWM (0)
-    uint32_t ex_tuya_dimmer_min_limit : 1; // bit 19 (v6.6.0.5)  - SetOption69  - (not used) Limits Tuya dimmers to minimum of 10% (25) when enabled
+//    uint32_t ex_tuya_dimmer_min_limit : 1; // bit 19 (v6.6.0.5)  - SetOption69  - (not used) Limits Tuya dimmers to minimum of 10% (25) when enabled
+    uint32_t sb_receive_invert : 1;        // bit 19 (v14.2.0.3) - SetOption69  - (Serial) Invert Serial receive on SerialBridge (1)
     uint32_t energy_weekend : 1;           // bit 20 (v6.6.0.8)  - CMND_TARIFF
     uint32_t dds2382_model : 1;            // bit 21 (v6.6.0.14) - SetOption71  - (DDS2382) Select different Modbus registers (1) for Active Energy (#6531)
     uint32_t hardware_energy_total : 1;    // bit 22 (v6.6.0.15) - SetOption72  - (Energy) Enable (1) hardware energy total counter as reference (#6561)
@@ -162,7 +163,7 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t tls_use_fingerprint : 1;      // bit 18 (v10.0.0.4) - SetOption132 - (TLS) Use fingerprint validation instead of CA based
     uint32_t shift595_invert_outputs : 1;  // bit 19 (v10.0.0.4) - SetOption133 - (Shift595) Invert outputs of 74x595 shift registers
     uint32_t pwm_force_same_phase : 1;     // bit 20 (v10.1.0.6) - SetOption134 - (PWM) force PWM lights to start at same phase, default is to spread phases to minimze overlap (also needed for H-bridge)
-    uint32_t display_no_splash : 1;        // bit 21 (v11.0.0.2) - SetOption135 - (Display & LVGL) forece disbabling default splash screen
+    uint32_t display_no_splash : 1;        // bit 21 (v11.0.0.2) - SetOption135 - (Display & LVGL) force disabling default splash screen
     uint32_t tuyasns_no_immediate : 1;     // bit 22 (v11.0.0.4) - SetOption136 - (TuyaSNS) When ON disable publish single SNS value on Tuya Receive (keep Teleperiod)
     uint32_t tuya_exclude_from_mqtt : 1;   // bit 23 (v11.0.0.5) - SetOption137 - (Tuya) When Set, avoid the (MQTT-) publish of defined Tuya CMDs (see xdrv_16_tuyamcu.ino) if SetOption66 is active
     uint32_t gui_table_align : 1;          // bit 24 (v11.0.0.7) - SetOption138 - (GUI) Align (energy) table values left (0) or right (1)
@@ -170,32 +171,32 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t mqtt_persistent : 1;          // bit 26 (v11.1.0.1) - SetOption140 - (MQTT) MQTT clean session (0 = default) or persistent session (1)
     uint32_t gui_module_name : 1;          // bit 27 (v11.1.0.3) - SetOption141 - (GUI) Disable display of GUI module name (1)
     uint32_t wait_for_wifi_result : 1;     // bit 28 (v11.1.0.4) - SetOption142 - (Wifi) Wait 1 second for wifi connection solving some FRITZ!Box modem issues (1)
-    uint32_t spare29 : 1;                  // bit 29
-    uint32_t spare30 : 1;                  // bit 30
-    uint32_t spare31 : 1;                  // bit 31
+    uint32_t zigbee_no_batt_autoprobe : 1; // bit 29 (v12.0.2.4) - SetOption143 - (Zigbee) Disable Battery auto-probe and using auto-binding
+    uint32_t zigbee_include_time : 1;      // bit 30 (v12.0.2.4) - SetOption144 - (Zigbee) Include time in `ZbReceived` messages like other sensors
+    uint32_t mqtt_status_retain : 1;       // bit 31 (v12.1.0.1) - CMND_STATUSRETAIN
   };
 } SOBitfield5;
 
 typedef union {                            // Restricted by MISRA-C Rule 18.4 but so useful...
   uint32_t data;                           // Allow bit manipulation using SetOption
   struct {                                 // SetOption146 .. SetOption177
-    uint32_t spare00 : 1;                  // bit 0
-    uint32_t spare01 : 1;                  // bit 1
-    uint32_t spare02 : 1;                  // bit 2
-    uint32_t spare03 : 1;                  // bit 3
-    uint32_t spare04 : 1;                  // bit 4
-    uint32_t spare05 : 1;                  // bit 5
-    uint32_t spare06 : 1;                  // bit 6
-    uint32_t spare07 : 1;                  // bit 7
-    uint32_t spare08 : 1;                  // bit 8
-    uint32_t spare09 : 1;                  // bit 9
-    uint32_t spare10 : 1;                  // bit 10
-    uint32_t spare11 : 1;                  // bit 11
-    uint32_t spare12 : 1;                  // bit 12
-    uint32_t spare13 : 1;                  // bit 13
-    uint32_t spare14 : 1;                  // bit 14
-    uint32_t spare15 : 1;                  // bit 15
-    uint32_t spare16 : 1;                  // bit 16
+    uint32_t use_esp32_temperature : 1;    // bit 0  (v12.1.1.1) - SetOption146 - (ESP32) Show ESP32 internal temperature sensor
+    uint32_t mqtt_disable_publish : 1;     // bit 1  (v12.1.1.2) - SetOption147 - (MQTT) Disable publish SSerialReceived/IRReceived MQTT messages, you must use event trigger rules instead.
+    uint32_t artnet_autorun : 1;           // bit 2  (v12.2.0.4) - SetOption148 - (Light) start DMX ArtNet at boot, listen to UDP port as soon as network is up
+    uint32_t dns_ipv6_priority : 1;        // bit 3  (v12.2.0.6) - SetOption149 - (Wifi) prefer IPv6 DNS resolution to IPv4 address when available. Requires `#define USE_IPV6`
+    uint32_t no_voltage_common : 1;        // bit 4  (v12.3.1.5) - SetOption150 - (Energy) Force no voltage/frequency common
+    uint32_t matter_enabled : 1;           // bit 5  (v12.3.1.5) - SetOption151 - (Matter) Enable Matter protocol over Wifi
+    uint32_t bistable_single_pin : 1;      // bit 6  (v12.5.0.1) - SetOption152 - (Power) Switch between two (0) or one (1) pin bistable relay control
+    uint32_t berry_no_autoexec : 1;        // bit 7  (v12.5.0.3) - SetOption153 - (Berry) Disable autoexec.be on restart (1)
+    uint32_t berry_light_scheme : 1;       // bit 8  (v12.5.0.3) - SetOption154 - (Berry) Handle berry led using RMT0 as additional WS2812 scheme
+    uint32_t zcfallingedge : 1;            // bit 9  (v13.0.0.1) - SetOption155 - (ZCDimmer) Enable rare falling Edge dimmer instead of leading edge
+    uint32_t sen5x_passive_mode : 1;       // bit 10 (v13.1.0.1) - SetOption156 - (Sen5x) Run in passive mode when there is another I2C master (e.g. Ikea Vindstyrka), i.e. do not set up Sen5x sensor, higher polling interval
+    uint32_t neopool_outputsensitive : 1;  // bit 11 (v13.2.0.1) - SetOption157 - (NeoPool) Output sensitive data (1)
+    uint32_t mqtt_disable_modbus : 1;      // bit 12 (v13.3.0.5) - SetOption158 - (MQTT) Disable publish ModbusReceived MQTT messages (1), you must use event trigger rules instead
+    uint32_t counter_both_edges : 1;       // bit 13 (v13.3.0.5) - SetOption159 - (Counter) Enable counting on both rising and falling edge (1)
+    uint32_t ld2410_use_pin : 1;           // bit 14 (v14.3.0.2) - SetOption160 - (LD2410) Disable generate moving event by sensor report - use LD2410 out pin for events (1)
+    uint32_t gui_no_state_text : 1;        // bit 15 (v14.3.0.7) - SetOption161 - (GUI) Disable display of state text (1)
+    uint32_t no_export_energy_today : 1;   // bit 16 (v14.3.0.7) - SetOption162 - (Energy) Do not add export energy to energy today (1)
     uint32_t spare17 : 1;                  // bit 17
     uint32_t spare18 : 1;                  // bit 18
     uint32_t spare19 : 1;                  // bit 19
@@ -259,18 +260,11 @@ typedef union {
     uint32_t spare16 : 1;                  // bit 16
     uint32_t spare17 : 1;                  // bit 17
     uint32_t spare18 : 1;                  // bit 18
-    uint32_t spare19 : 1;                  // bit 19
-    uint32_t spare20 : 1;                  // bit 20
-    uint32_t spare21 : 1;                  // bit 21
-    uint32_t spare22 : 1;                  // bit 22
-    uint32_t spare23 : 1;                  // bit 23
-    uint32_t spare24 : 1;                  // bit 24
-    uint32_t spare25 : 1;                  // bit 25
-    uint32_t spare26 : 1;                  // bit 26
-    uint32_t spare27 : 1;                  // bit 27
-    uint32_t spare28 : 1;                  // bit 28
-    uint32_t spare29 : 1;                  // bit 29
-    uint32_t temperature_set_res : 2;      // bits 30/31 (v9.3.1.4) - (Tuya)
+    uint32_t dali_group_sliders : 5;       // bit 19.23 (v14.3.0.3) - (DALI) Number of group sliders 0 to 16
+    uint32_t FTP_Mode : 2;                 // bit 24/25
+    uint32_t tariff_forced : 2;            // bit 26/27 (v12.4.0.2) - Energy forced tariff : 0=tariff change on time, 1|2=tariff forced
+    uint32_t sunrise_dawn_angle : 2;       // bit 28/29 (v12.1.1.4) -
+    uint32_t temperature_set_res : 2;      // bit 30/31 (v9.3.1.4) - (Tuya)
   };
 } SysMBitfield2;
 
@@ -289,9 +283,9 @@ typedef union {
     uint32_t sspm_display : 1;             // bit 8  (v10.0.0.4) - CMND_SSPMDISPLAY - Enable gui display of powered on relays only
     uint32_t local_ntp_server : 1;         // bit 9  (v11.0.0.4) - CMND_RTCNTPSERVER - Enable local NTP server
     uint32_t influxdb_sensor : 1;          // bit 10 (v11.0.0.5) - CMND_IFXSENSOR - Enable sensor support in addition to teleperiod support
-    uint32_t serbridge_console : 1;        // bit 11 (v11.1.0.4) - CMND_SSERIALSEND9 - Enable logging tee to serialbridge
-    uint32_t spare12 : 1;                  // bit 12
-    uint32_t spare13 : 1;                  // bit 13
+    uint32_t ex_serbridge_console : 1;     // bit 11 (v11.1.0.4) - (v14.1.0.2) Replaced by CMND_SSERIALMODE
+    uint32_t telegram_disable_af : 1;      // bit 12 (v14.0.0.2) - CMND_TMSTATE 6/7 - Disable Telegram auto-fingerprint fix
+    uint32_t dali_light : 1;               // bit 13 (v14.2.0.6) - CMND_DALILIGHT - Enable Tasmota light controls for DALI
     uint32_t spare14 : 1;                  // bit 14
     uint32_t spare15 : 1;                  // bit 15
     uint32_t spare16 : 1;                  // bit 16
@@ -454,7 +448,10 @@ typedef union {
   uint32_t raw_send : 1;               // Enable sending also real time raw data over MQTT
   uint32_t raw_limit : 1;              // Limit raw data to minimal relevant fields (the ones moving quickly)
   uint32_t mode_standard : 1;          // Set Linky Standard Mode (9600 bps stream) else legacy (1200 bps)
-  uint32_t spare4_1 : 4;               // Keep some spares for future uses
+  uint32_t show_stats : 1;             // Display frames stats informations on WEB interface
+  uint32_t spare1_1 : 1;               // Keep some spares for future uses
+  uint32_t spare1_2 : 1;               // Keep some spares for future uses
+  uint32_t spare1_3 : 1;               // Keep some spares for future uses
   uint32_t spare8_1 : 8;               // Keep some spares for future uses
   uint32_t spare8_2 : 8;               // Keep some spares for future uses
   };
@@ -515,6 +512,7 @@ typedef struct {
   uint8_t       text_pool_290[66];         // 290
 
   // End of single char array of 698 chars max ****************
+
   uint8_t       display_model;             // 2D2
   uint8_t       display_mode;              // 2D3
   uint8_t       display_refresh;           // 2D4
@@ -550,10 +548,9 @@ typedef struct {
   uint32_t      energy_power_calibration;    // 364
   uint32_t      energy_voltage_calibration;  // 368
   uint32_t      energy_current_calibration;  // 36C
-  uint32_t      energy_kWhtoday;           // 370
-  uint32_t      energy_kWhyesterday;       // 374
-  uint16_t      energy_kWhdoy;             // 378
-  uint16_t      energy_min_power;          // 37A
+  uint32_t      energy_power_calibration2;   // 370 - ex_energy_kWhtoday
+  uint32_t      energy_voltage_calibration2; // 374 - ex_energy_kWhyesterday
+  uint32_t      energy_current_calibration2; // 378 - ex_energy_kWhdoy, ex_energy_min_power
   uint16_t      energy_max_power;          // 37C
   uint16_t      energy_min_voltage;        // 37E
   uint16_t      energy_max_voltage;        // 380
@@ -562,9 +559,9 @@ typedef struct {
   uint16_t      energy_max_power_limit;              // 386  MaxPowerLimit
   uint16_t      energy_max_power_limit_hold;         // 388  MaxPowerLimitHold
   uint16_t      energy_max_power_limit_window;       // 38A  MaxPowerLimitWindow
-  uint16_t      energy_max_power_safe_limit;         // 38C  MaxSafePowerLimit
-  uint16_t      energy_max_power_safe_limit_hold;    // 38E  MaxSafePowerLimitHold
-  uint16_t      energy_max_power_safe_limit_window;  // 390  MaxSafePowerLimitWindow
+  uint16_t      ex_energy_max_power_safe_limit;         // 38C  MaxSafePowerLimit - Free since 14.1.0.3
+  uint16_t      ex_energy_max_power_safe_limit_hold;    // 38E  MaxSafePowerLimitHold - Free since 14.1.0.3
+  uint16_t      ex_energy_max_power_safe_limit_window;  // 390  MaxSafePowerLimitWindow - Free since 14.1.0.3
   uint16_t      energy_max_energy;         // 392  MaxEnergy
   uint16_t      energy_max_energy_start;   // 394  MaxEnergyStart
   uint16_t      mqtt_retry;                // 396
@@ -574,8 +571,9 @@ typedef struct {
   uint16_t      blinkcount;                // 39C
   uint16_t      light_rotation;            // 39E
   SOBitfield3   flag3;                     // 3A0
-
-  uint8_t       ex_switchmode[8];          // 3A4 - Free since 9.2.0.6
+  uint16_t      energy_kWhdoy;             // 3A4
+  uint16_t      energy_min_power;          // 3A6
+  uint32_t      pn532_password;            // 3A8 - ex_switchmode4-7, Free since 9.2.0.6
 
 #ifdef CONFIG_IDF_TARGET_ESP32S3
   // ------------------------------------
@@ -588,7 +586,6 @@ typedef struct {
   uint8_t       eth_address;               // 45E
   uint8_t       module;                    // 45F
   WebCamCfg     webcam_config;             // 460
-
   uint8_t       ws_width[3];               // 464
   char          serial_delimiter;          // 467
   uint8_t       seriallog_level;           // 468
@@ -602,32 +599,40 @@ typedef struct {
   // End of remapping, next is all other CPUs
   // ----------------------------------------
 #else
-  myio          my_gp;                     // 3AC  2x18 bytes (ESP8266) / 2x40 bytes (ESP32) / 2x22 bytes (ESP32-C3) / 2x47 bytes (ESP32-S2)
+  myio          my_gp;                     // 3AC  2x18 bytes (ESP8266) / 2x40 bytes (ESP32) / 2x21 bytes (ESP32-C2) / 2x22 bytes (ESP32-C3) / 2x31 bytes (ESP32-C6) / 2x47 bytes (ESP32-S2)
 #ifdef ESP8266
   uint16_t      gpio16_converted;          // 3D0
   uint8_t       free_esp8266_3D2[42];      // 3D2
 #endif  // ESP8266
 #ifdef ESP32
-#ifdef CONFIG_IDF_TARGET_ESP32C3
+  #if CONFIG_IDF_TARGET_ESP32C2
+  uint8_t       free_esp32c2_3D6[38];      // 3D6  - Due to smaller myio
+  #elif CONFIG_IDF_TARGET_ESP32C3
   uint8_t       free_esp32c3_3D8[36];      // 3D8  - Due to smaller myio
-#endif  // CONFIG_IDF_TARGET_ESP32C3
+  #elif CONFIG_IDF_TARGET_ESP32C6
+  uint8_t       free_esp32c6_3EA[18];      // 3EA  - Due to smaller myio
+  #endif  // CONFIG_IDF_TARGET_ESP32C2/3/6
 #endif  // ESP32
-  mytmplt       user_template;             // 3FC  2x15 bytes (ESP8266) / 2x37 bytes (ESP32) / 2x23 bytes (ESP32-C3) / 2x37 bytes (ESP32-S2)
+  mytmplt       user_template;             // 3FC  2x15 bytes (ESP8266) / 2x37 bytes (ESP32) / 2x22 bytes (ESP32-C2) / 2x23 bytes (ESP32-C3) / 2x32 bytes (ESP32-C6) / 2x37 bytes (ESP32-S2)
 #ifdef ESP8266
   uint8_t       free_esp8266_41A[55];      // 41A
 #endif  // ESP8266
 #ifdef ESP32
-#ifdef CONFIG_IDF_TARGET_ESP32C3
+  #if CONFIG_IDF_TARGET_ESP32C2
+  uint8_t       free_esp32c2_428[30];      // 428  - Due to smaller mytmplt
+  #elif CONFIG_IDF_TARGET_ESP32C3
   uint8_t       free_esp32c3_42A[28];      // 42A  - Due to smaller mytmplt
-#endif  // CONFIG_IDF_TARGET_ESP32C3
+  #elif CONFIG_IDF_TARGET_ESP32C6
+  uint8_t       free_esp32c3_43C[10];      // 43C  - Due to smaller mytmplt
+  #endif  // CONFIG_IDF_TARGET_ESP32C2/3/6
 
   uint8_t       eth_type;                  // 446
   uint8_t       eth_clk_mode;              // 447
 
   uint8_t       free_esp32_448[4];         // 448
-#ifdef CONFIG_IDF_TARGET_ESP32S2
+  #ifdef CONFIG_IDF_TARGET_ESP32S2
   uint8_t       free_esp32s2_456[2];       // 456 - fix 32-bit offset for WebCamCfg
-#endif
+  #endif
 
   WebCamCfg     webcam_config;             // 44C
   uint8_t       eth_address;               // 450
@@ -672,33 +677,34 @@ typedef struct {
   uint8_t       light_width;               // 4A4
   uint8_t       knx_GA_registered;         // 4A5  Number of Group Address to read
   uint16_t      light_wakeup;              // 4A6
-  uint8_t       knx_CB_registered;         // 4A8  Number of Group Address to write
-  uint8_t       switchmode[MAX_SWITCHES_SET];  // 4A9
-
-  uint8_t       free_4c5[5];               // 4C5
-
+  uint8_t       switchmode[MAX_SWITCHES_SET];  // 4A8 4A9 - Moved dn by 1 byte in v14.3.0.7
+  uint16_t      dns_timeout;               // 4C8
   uint8_t       ds3502_state[MAX_DS3502];  // 4CA
   uint16_t      influxdb_port;             // 4CE
   power_t       interlock[MAX_INTERLOCKS_SET];  // 4D0 MAX_INTERLOCKS = MAX_RELAYS / 2
-  int8_t        shutter_tilt_config[5][MAX_SHUTTERS];  //508
-  int8_t        shutter_tilt_pos[MAX_SHUTTERS];        //51C
-  uint16_t      influxdb_period;           // 520
-  uint16_t      rf_duplicate_time;         // 522
+  int8_t        shutter_tilt_config[5][MAX_SHUTTERS];  // 510 508 - - Moved up by 8 bytes in v14.3.0.7
   int32_t       weight_absconv_a;          // 524
   int32_t       weight_absconv_b;          // 528
   uint16_t      mqtt_keepalive;            // 52C
   uint16_t      mqtt_socket_timeout;       // 52E
   uint8_t       mqtt_wifi_timeout;         // 530
   uint8_t       ina219_mode;               // 531
-  uint16_t      ex_pulse_timer[8];         // 532  Free since 11.0.0.3
+  uint8_t       weight_precision;          // 532  ex_pulse_timer free since 11.0.0.3
+  uint8_t       knx_CB_registered;         // 533 4A8  Number of Group Address to write
+  int8_t        shutter_tilt_pos[MAX_SHUTTERS];  // 534 51C
+  uint16_t      influxdb_period;           // 538 520
+  uint16_t      rf_duplicate_time;         // 53A 522
+  uint8_t       global_sensor_index[3];    // 53C 4C5
+
+  uint8_t       free_53F[1];               // 53F
+
+  uint16_t      tcp_baudrate;              // 540 
   uint16_t      button_debounce;           // 542
   uint32_t      ipv4_address[5];           // 544
   uint32_t      ipv4_rgx_address;          // 558
   uint32_t      ipv4_rgx_subnetmask;       // 55C
   uint16_t      pwm_value_ext[16-5];       // 560  Extension to pwm_value to store up to 16 PWM for ESP32. This array stores values 5..15
-
-  uint8_t       free_576[2];               // 576
-
+  uint16_t      pn532_pack;                // 576
   int32_t       weight_offset;             // 578
   uint16_t      pulse_timer[MAX_PULSETIMERS];  // 57C
   SysMBitfield1 flag2;                     // 5BC
@@ -725,16 +731,17 @@ typedef struct {
   char          user_template_name[15];    // 720  15 bytes - Backward compatibility since v8.2.0.3
 
 #ifdef ESP8266
-  mytmplt8285   ex_user_template8;         // 72F  14 bytes (ESP8266) - Free since 9.0.0.1
+  uint8_t       ex_user_template8[5];      // 72F  14 bytes (ESP8266) - Free since 9.0.0.1 - only 5 bytes referenced now
 #endif  // ESP8266
 #ifdef ESP32
-  uint8_t       free_esp32_72f[1];         // 72F
-
+  uint8_t       webcam_clk;                // 72F
   WebCamCfg2    webcam_config2;            // 730
-
-  uint8_t       free_esp32_734[9];         // 734
 #endif  // ESP32
-
+  uint16_t      artnet_universe;           // 734
+  uint16_t      modbus_sbaudrate;          // 736
+  uint16_t      shutter_motorstop;         // 738
+  uint8_t       battery_level_percent;     // 73A
+  uint8_t       hdmi_addr[2];              // 73B  HDMI CEC physical address - warning this is a non-aligned uint16
   uint8_t       novasds_startingoffset;    // 73D
   uint8_t       web_color[18][3];          // 73E
   uint16_t      display_width;             // 774
@@ -777,8 +784,9 @@ typedef struct {
   int8_t        temp_comp;                 // E9E
   uint8_t       weight_change;             // E9F
   uint8_t       web_color2[2][3];          // EA0  Needs to be on integer / 3 distance from web_color
+  uint16_t      zcdimmerset[5];            // EA6
 
-  uint8_t       free_ea6[32];              // EA6
+  uint8_t       free_eb0[22];              // EB0  22 bytes
 
   uint8_t       shift595_device_count;     // EC6
   uint8_t       sta_config;                // EC7
@@ -823,7 +831,7 @@ typedef struct {
   uint8_t       windmeter_tele_pchange;    // F3E
   uint8_t       ledpwm_on;                 // F3F
   uint8_t       ledpwm_off;                // F40
-  uint8_t       tcp_baudrate;              // F41
+  uint8_t       sserial_mode;              // F41
   uint8_t       fallback_module;           // F42
   uint8_t       shutter_mode;              // F43
   uint16_t      energy_power_delta[3];     // F44
@@ -834,15 +842,20 @@ typedef struct {
   uint8_t       shd_warmup_time;           // F5E
   uint8_t       tcp_config;                // F5F
   uint8_t       light_step_pixels;				 // F60
+  uint8_t       hdmi_cec_device_type;      // F61  - v13.1.0.1 (was ex_modbus_sbaudrate v12.2.0.5)
+  uint8_t       modbus_sconfig;            // F62
+  uint8_t       windmeter_measure_intvl;   // F63
 
-  uint8_t       free_f61[19];              // F61 - Decrement if adding new Setting variables just above and below
+  uint8_t       free_f64[8];               // F64 - Decrement if adding new Setting variables just above and below
 
   // Only 32 bit boundary variables below
+  float         ms5837_pressure_offset;    // F6C
+  uint32_t      touch_threshold;           // F70
   SOBitfield6   flag6;                     // F74
   uint16_t      flowratemeter_calibration[2];// F78
   int32_t       energy_kWhexport_ph[3];    // F7C
   uint32_t      eth_ipv4_address[5];       // F88
-  uint32_t      energy_kWhtotal;           // F9C
+  uint32_t      power_lock;                // F9C
   SBitfield1    sbflag1;                   // FA0
   TeleinfoCfg   teleinfo;                  // FA4
   uint64_t      rf_protocol_mask;          // FA8

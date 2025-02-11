@@ -415,12 +415,31 @@ const char HueConfigResponse_JSON[] PROGMEM = "\x3D\xA7\xB3\xAC\x6B\x3D\x87\x99\
 
 /********************************************************************************************/
 
-String GetHueDeviceId(uint16_t id)
+// Since Oct 2024, Alexa does not distinguish anymore if the only the last 2 digits differ after '-'
+// Ex: 78:e3:6d:09:1d:a4:00:11-01
+//     78:e3:6d:09:1d:a4:00:11-02
+//     78:e3:6d:09:1d:a4:00:11-03
+// are mixed up in the Alexa app
+//
+// We now change the encoding like this:
+//     78:e3:6d:09:1d:a4:XX:YY-01
+// where XX is the high 8 bits of id (unchanged) and YY is the low 8 bits xor 0x10 (so default `1` becomes `0x11`)
+// if the endpoint is not zero, XOR the second byte (rare case)
+String GetHueDeviceId(uint16_t id, uint8_t ep = 0)
 {
   char s[32];
-  String deviceid = WiFi.macAddress();
+  String deviceid = WiFiHelper::macAddress();
   deviceid.toLowerCase();
-  snprintf(s, sizeof(s), "%s:%02x:11-%02x", deviceid.c_str(), (id >> 8) & 0xFF, id & 0xFF);
+  snprintf(s, sizeof(s), "%s:%02x:%02X-01", deviceid.c_str(), (id >> 8) & 0xFF, (id & 0xFF) ^ 0x10);
+
+  if (ep != 0 && ep != 1) {
+    uint32_t mac2 = strtol(&s[3], NULL, 16);
+    mac2 ^= ep;
+    char mac2_s[4];
+    snprintf(mac2_s, sizeof(mac2_s), "%02x", mac2);
+    s[3] = mac2_s[0];
+    s[4] = mac2_s[1];
+  }
   return String(s);  // 5c:cf:7f:13:9f:3d:00:11-01
 }
 
@@ -452,7 +471,7 @@ void HueNotImplemented(String *path)
 void HueConfigResponse(String *response)
 {
   *response += Decompress(HueConfigResponse_JSON, HueConfigResponse_JSON_SIZE);
-  response->replace(F("{ma"), WiFi.macAddress());
+  response->replace(F("{ma"), WiFiHelper::macAddress());
   response->replace(F("{ip"), WiFi.localIP().toString());
   response->replace(F("{ms"), WiFi.subnetMask().toString());
   response->replace(F("{gw"), WiFi.gatewayIP().toString());
@@ -619,10 +638,26 @@ void HueLightStatus2(uint8_t device, String *response)
 }
 #endif // USE_LIGHT
 
-// generate a unique lightId mixing local IP address and device number
-// it is limited to 32 devices.
-// last 24 bits of Mac address + 4 bits of local light + high bit for relays 16-31, relay 32 is mapped to 0
-// Zigbee extension: bit 29 = 1, and last 16 bits = short address of Zigbee device
+// generate a unique lightId mixing local mac address and device number
+//
+// Bits:
+//   0.. 3: low 4 bits of lightId - starting at 1 (encodes for 32+1..15 if bit 28 is 0, or 16..31 if bit 28 is 1)
+//   4..27: low 24 bits of mac address
+//      28: used to encode lightId 16..32
+//      29: zigbee device (1=zigbee, short address is encoded bit 15..0)
+//  31..32: unused, must be set to 0
+//
+// When in Zigbee mode (bit 29 == 1)
+//   0..15: short address of zigbee device
+//  16..23: endpoint on zigbee device (0..249), 0 means default endpoint (usually 1)
+//  24..28: unused, must be 0
+//      29: 1 (zigbee mode)
+//  31..32: unused, must be set to 0
+//
+// Parameters:
+//  - relay_id: contains the lightId (1..32) or the Zigbee endpoint (0..250, 0 means default endpoint)
+//  - z_shortaddr: Zigbee short addresses. Non-zero means Zigbee, zero means local (non-zigbee)
+//
 uint32_t EncodeLightIdZigbee(uint8_t relay_id, uint16_t z_shortaddr)
 {
   uint8_t mac[6];
@@ -637,9 +672,9 @@ uint32_t EncodeLightIdZigbee(uint8_t relay_id, uint16_t z_shortaddr)
   }
   id |= (relay_id & 0xF);
 #ifdef USE_ZIGBEE
-  if ((z_shortaddr) && (!relay_id)) {
+  if (z_shortaddr) {
     // fror Zigbee devices, we have relay_id == 0 and shortaddr != 0
-    id = (1 << 29) | z_shortaddr;
+    id = (1 << 29) | (relay_id << 16) | z_shortaddr;
   }
 #endif
 
@@ -651,11 +686,8 @@ uint32_t EncodeLightId(uint8_t relay_id)
   return EncodeLightIdZigbee(relay_id, 0);
 }
 
-// get hue_id and decode the relay_id
-// 4 LSB decode to 1-15, if bit 28 is set, it encodes 16-31, if 0 then 32
-// Zigbee:
-// If the Id encodes a Zigbee device (meaning bit 29 is set)
-// it returns 0 and sets the 'shortaddr' to the device short address
+// See above for encoding
+// 
 uint32_t DecodeLightIdZigbee(uint32_t hue_id, uint16_t * shortaddr)
 {
   uint8_t relay_id = hue_id & 0xF;
@@ -670,7 +702,7 @@ uint32_t DecodeLightIdZigbee(uint32_t hue_id, uint16_t * shortaddr)
   if (hue_id & (1 << 29)) {
     // this is actually a Zigbee ID
     if (shortaddr) { *shortaddr = hue_id & 0xFFFF; }
-    relay_id = 0;
+    relay_id = (hue_id >> 16) & 0xFF;
   }
 #endif // USE_ZIGBEE
   return relay_id;
@@ -748,7 +780,7 @@ void HueLightsCommand(uint8_t device, uint32_t device_id, String &response) {
   if (Webserver->args()) {
     response = "[";
 
-#ifdef ESP82666   // ESP8266 memory is limited, avoid copying and modify in place
+#ifdef ESP8266   // ESP8266 memory is limited, avoid copying and modify in place
     JsonParser parser((char*) Webserver->arg((Webserver->args())-1).c_str());
 #else             // does not work on ESP32, we need to get a fresh copy of the string
     String request_arg = Webserver->arg((Webserver->args())-1);
@@ -974,9 +1006,9 @@ void HueLights(String *path_req)
     device = DecodeLightId(device_id);
 #ifdef USE_ZIGBEE
     uint16_t shortaddr;
-    device = DecodeLightIdZigbee(device_id, &shortaddr);
+    device = DecodeLightIdZigbee(device_id, &shortaddr);  // device is endpoint when in Zigbee mode
     if (shortaddr) {
-      code = ZigbeeHandleHue(shortaddr, device_id, response);
+      code = ZigbeeHandleHue(shortaddr, device, device_id, device, response);
       goto exit;
     }
 #endif // USE_ZIGBEE
@@ -1009,7 +1041,7 @@ void HueLights(String *path_req)
     uint16_t shortaddr;
     device = DecodeLightIdZigbee(device_id, &shortaddr);
     if (shortaddr) {
-      code = ZigbeeHueStatus(&response, shortaddr);
+      code = ZigbeeHueStatus(&response, shortaddr, device);
       goto exit;
     }
 #endif // USE_ZIGBEE
@@ -1134,7 +1166,7 @@ void HandleHueApi(String *path)
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv20(uint8_t function)
+bool Xdrv20(uint32_t function)
 {
   bool result = false;
 
@@ -1146,6 +1178,15 @@ bool Xdrv20(uint8_t function)
     switch (function) {
       case FUNC_WEB_ADD_HANDLER:
         WebServer_on(PSTR("/description.xml"), HandleUpnpSetupHue);
+        break;
+      case FUNC_NETWORK_UP:
+        UdpConnect();
+        break;
+      case FUNC_NETWORK_DOWN:
+        UdpDisconnect();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

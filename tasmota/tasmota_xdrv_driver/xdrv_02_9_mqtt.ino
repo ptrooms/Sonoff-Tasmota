@@ -45,7 +45,7 @@ WiFiClient EspClient;                     // Wifi Client - non-TLS
 #endif  // USE_MQTT_AZURE_IOT
 
 const char kMqttCommands[] PROGMEM = "|"  // No prefix
-#ifndef FIRMWARE_MINIMAL_ONLY
+#ifndef FIRMWARE_MINIMAL
   // SetOption synonyms
   D_SO_MQTTJSONONLY "|"
 #ifdef USE_MQTT_TLS
@@ -63,11 +63,11 @@ const char kMqttCommands[] PROGMEM = "|"  // No prefix
 #ifdef USE_MQTT_FILE
   D_CMND_FILEUPLOAD "|" D_CMND_FILEDOWNLOAD "|"
 #endif  // USE_MQTT_FILE
-  D_CMND_MQTTHOST "|" D_CMND_MQTTPORT "|" D_CMND_MQTTRETRY "|" D_CMND_STATETEXT "|" D_CMND_MQTTCLIENT "|"
+  D_CMND_MQTTHOST "|" D_CMND_MQTTPORT "|" D_CMND_MQTTRETRY "|" D_CMND_MQTTCLIENT "|"
   D_CMND_FULLTOPIC "|" D_CMND_PREFIX "|" D_CMND_GROUPTOPIC "|" D_CMND_TOPIC "|" D_CMND_PUBLISH "|" D_CMND_MQTTLOG "|"
   D_CMND_BUTTONTOPIC "|" D_CMND_SWITCHTOPIC "|" D_CMND_BUTTONRETAIN "|" D_CMND_SWITCHRETAIN "|" D_CMND_POWERRETAIN "|"
-  D_CMND_SENSORRETAIN "|" D_CMND_INFORETAIN "|" D_CMND_STATERETAIN
-#endif  // FIRMWARE_MINIMAL_ONLY
+  D_CMND_SENSORRETAIN "|" D_CMND_INFORETAIN "|" D_CMND_STATERETAIN "|" D_CMND_STATUSRETAIN
+#endif  // FIRMWARE_MINIMAL
   ;
 
 SO_SYNONYMS(kMqttSynonyms,
@@ -79,7 +79,7 @@ SO_SYNONYMS(kMqttSynonyms,
 );
 
 void (* const MqttCommand[])(void) PROGMEM = {
-#ifndef FIRMWARE_MINIMAL_ONLY
+#ifndef FIRMWARE_MINIMAL
 #if defined(USE_MQTT_TLS)
   &CmndMqttFingerprint,
 #endif
@@ -90,11 +90,11 @@ void (* const MqttCommand[])(void) PROGMEM = {
 #ifdef USE_MQTT_FILE
   &CmndFileUpload, &CmndFileDownload,
 #endif  // USE_MQTT_FILE
-  &CmndMqttHost, &CmndMqttPort, &CmndMqttRetry, &CmndStateText, &CmndMqttClient,
+  &CmndMqttHost, &CmndMqttPort, &CmndMqttRetry, &CmndMqttClient,
   &CmndFullTopic, &CmndPrefix, &CmndGroupTopic, &CmndTopic, &CmndPublish, &CmndMqttlog,
-  &CmndButtonTopic, &CmndSwitchTopic, &CmndButtonRetain, &CmndSwitchRetain, &CmndPowerRetain, &CmndSensorRetain,
-  &CmndInfoRetain, &CmndStateRetain
-#endif  // FIRMWARE_MINIMAL_ONLY
+  &CmndButtonTopic, &CmndSwitchTopic, &CmndButtonRetain, &CmndSwitchRetain, &CmndPowerRetain,
+  &CmndSensorRetain, &CmndInfoRetain, &CmndStateRetain, &CmndStatusRetain
+#endif  // FIRMWARE_MINIMAL
   };
 
 struct MQTT {
@@ -177,6 +177,19 @@ void MqttDisableLogging(bool state) {
   TasmotaGlobal.masterlog_level = (Mqtt.disable_logging) ? LOG_LEVEL_DEBUG_MORE : LOG_LEVEL_NONE;
 }
 
+// The following emits a warning if the connection is non-TLS on a TLS port
+// this makes troubleshooting easier
+// This function is called only when a non-TLS connection is detected
+void MqttNonTLSWarning(void) {
+#ifndef FIRMWARE_MINIMAL    // not needed in MINIMAL firmware
+  if ((443  == Settings->mqtt_port) ||
+      (8883 == Settings->mqtt_port ) ||
+      (8443 == Settings->mqtt_port)) {
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "Warning non-TLS connection on TLS port %d"), Settings->mqtt_port);
+  }
+#endif // FIRMWARE_MINIMAL
+}
+
 /*********************************************************************************************\
  * MQTT driver specific code need to provide the following functions:
  *
@@ -253,9 +266,11 @@ void MqttInit(void) {
     MqttClient.setClient(*tlsClient);
   } else {
     MqttClient.setClient(EspClient);    // non-TLS
+    MqttNonTLSWarning();
   }
 #else // USE_MQTT_TLS
   MqttClient.setClient(EspClient);
+  MqttNonTLSWarning();
 #endif // USE_MQTT_TLS
 
   MqttClient.setKeepAlive(Settings->mqtt_keepalive);
@@ -342,7 +357,7 @@ void MqttInit(void) {
       String endpoint="https://global.azure-devices-provisioning.net/";
     #endif //USE_MQTT_AZURE_DPS_SCOPE_ENDPOINT
 
-    String MACAddress = WiFi.macAddress();
+    String MACAddress = WiFiHelper::macAddress();
     MACAddress.replace(":", "");
 
     AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "DPS register for %s, scope %s to %s."), MACAddress.c_str(), dPSScopeId.c_str(), endpoint.c_str());
@@ -465,7 +480,9 @@ bool MqttIsConnected(void) {
 }
 
 void MqttDisconnect(void) {
-  MqttClient.disconnect();
+  if (MqttClient.connected()) {
+    MqttClient.disconnect();
+  }
 }
 
 void MqttSubscribeLib(const char *topic) {
@@ -474,6 +491,7 @@ void MqttSubscribeLib(const char *topic) {
   String realTopicString = "devices/" + String(SettingsText(SET_MQTT_CLIENT));
   realTopicString += "/messages/devicebound/#";
   MqttClient.subscribe(realTopicString.c_str());
+  MqttClient.subscribe("$iothub/methods/POST/#");
   SettingsUpdateText(SET_MQTT_FULLTOPIC, SettingsText(SET_MQTT_CLIENT));
   SettingsUpdateText(SET_MQTT_TOPIC, SettingsText(SET_MQTT_CLIENT));
 #else
@@ -522,14 +540,34 @@ bool MqttPublishLib(const char* topic, const uint8_t* payload, unsigned int plen
 //    AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "Connection lost or message too large"));
     return false;
   }
+
   uint32_t written = MqttClient.write(payload, plength);
   if (written != plength) {
     AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "Message too large"));
     return false;
   }
+/*
+  // Solves #6525??
+  const uint8_t* write_buf = payload;
+  uint32_t bytes_remaining = plength;
+  uint32_t bytes_to_write;
+  uint32_t written;
+  while (bytes_remaining > 0) {
+    bytes_to_write = (bytes_remaining > 256) ? 256 : bytes_remaining;
+    written = MqttClient.write(write_buf, bytes_to_write);
+    if (written != bytes_to_write) {
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "Message too large"));
+      return false;
+    }
+    write_buf += written;
+    bytes_remaining -= written;
+  }
+*/
+
   MqttClient.endPublish();
 
-  yield();  // #3313
+//  yield();  // #3313
+  delay(0);
   return true;
 }
 
@@ -556,6 +594,25 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
 
   char topic[TOPSZ];
 #ifdef USE_MQTT_AZURE_IOT
+  #ifdef USE_AZURE_DIRECT_METHOD 
+      String fullTopicString = String(mqtt_topic);
+      int startOfMethod = fullTopicString.indexOf("methods/POST");
+      int endofMethod = fullTopicString.indexOf("/?$rid");
+      String req_id = fullTopicString.substring(endofMethod + 7);
+      if (startOfMethod == -1){
+        AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_MQTT "Azure IoT Hub message without a method."));
+        return;
+      }
+      String newMethod = fullTopicString.substring(startOfMethod + 12,endofMethod);
+      strlcpy(topic, newMethod.c_str(), sizeof(topic));
+      mqtt_data[data_len] = 0;
+      JsonParser mqtt_json_data((char*) mqtt_data);
+      JsonParserObject message_object = mqtt_json_data.getRootObject();
+      String mqtt_data_str= message_object.getStr("payload","");
+      strncpy(reinterpret_cast<char*>(mqtt_data),mqtt_data_str.c_str(),data_len);
+      mqtt_data[data_len] = 0;
+
+  #else
   // for Azure, we read the topic from the property of the message
   String fullTopicString = String(mqtt_topic);
   String toppicUpper = fullTopicString;
@@ -572,6 +629,7 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
     return;
   }
   strlcpy(topic, newTopic.c_str(), sizeof(topic));
+  #endif
 #else
   strlcpy(topic, mqtt_topic, sizeof(topic));
 #endif  // USE_MQTT_AZURE_IOT
@@ -597,12 +655,18 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
   if (XdrvCall(FUNC_MQTT_DATA)) { return; }
 
   ShowSource(SRC_MQTT);
-
+  TasmotaGlobal.last_source = SRC_MQTT;
+	
   CommandHandler(topic, (char*)mqtt_data, data_len);
 
   if (Mqtt.disable_logging) {
     TasmotaGlobal.masterlog_level = LOG_LEVEL_NONE;  // Enable logging
   }
+  #ifdef USE_AZURE_DIRECT_METHOD // Send response for the direct method
+  String response_topic = "$iothub/methods/res/200/?$rid=" + req_id;
+  String payload = "{\"status\": \"success\"}";
+  MqttClient.publish(response_topic.c_str(),payload.c_str());
+  #endif
 }
 
 /*********************************************************************************************/
@@ -638,15 +702,14 @@ void MqttPublishLoggingAsync(bool refresh) {
 
 void MqttPublishPayload(const char* topic, const char* payload, uint32_t binary_length, bool retained) {
   // Publish <topic> payload string or binary when binary_length set with optional retained
-
-  SHOW_FREE_MEM(PSTR("MqttPublish"));
+  SHOW_FREE_MEM(PSTR("MqttPublishPayload"));
 
   bool binary_data = (binary_length > 0);
   if (!binary_data) {
     binary_length = strlen(payload);
   }
 
-  if (Settings->flag4.mqtt_no_retain) {                   // SetOption104 - Disable all MQTT retained messages, some brokers don't support it: AWS IoT, Losant
+  if (Settings->flag4.mqtt_no_retain) {                  // SetOption104 - Disable all MQTT retained messages, some brokers don't support it: AWS IoT, Losant
     retained = false;                                    // Some brokers don't support retained, they will disconnect if received
   }
 
@@ -695,6 +758,25 @@ void MqttPublish(const char* topic, bool retained) {
   MqttPublishPayload(topic, ResponseData(), 0, retained);
 }
 
+void MqttPublishBinary(const char* topic, bool retained, bool binary) {
+  int32_t binary_length = 0;
+  char *response_data = ResponseData();
+  if (binary) {
+    // Binary data will be half of the size of a text packet
+    uint8_t binary_payload[MQTT_MAX_PACKET_SIZE / 2];
+    binary_length = HexToBytes(response_data, binary_payload, MQTT_MAX_PACKET_SIZE / 2);
+    if (binary_length == -1) {
+      AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "Invalid hex: %s"), response_data);
+    } else {
+      // Conversion was successful
+      MqttPublishPayload(topic, (const char *)binary_payload, binary_length, retained);
+    }
+  } else {
+    // Publish <topic> default ResponseData string with optional retained
+    MqttPublishPayload(topic, response_data, 0, retained);
+  }
+}
+
 void MqttPublish(const char* topic) {
   // Publish <topic> default ResponseData string no retained
   MqttPublish(topic, false);
@@ -711,13 +793,29 @@ void MqttPublishPayloadPrefixTopic_P(uint32_t prefix, const char* subtopic, cons
   prefix 5 = stat using subtopic or RESULT
   prefix 6 = tele using subtopic or RESULT
 */
-  char romram[64];
+  SHOW_FREE_MEM(PSTR("MqttPublishPayloadPrefixTopic_P"));
+/*
+  char romram[64];                      // Claim 64 bytes from 4k stack
   snprintf_P(romram, sizeof(romram), ((prefix > 3) && !Settings->flag.mqtt_response) ? S_RSLT_RESULT : subtopic);  // SetOption4 - Switch between MQTT RESULT or COMMAND
   UpperCase(romram, romram);
 
   prefix &= 3;
-  char stopic[TOPSZ];
+  char stopic[TOPSZ];                   // Claim TOPSZ bytes from 4k stack
   GetTopic_P(stopic, prefix, TasmotaGlobal.mqtt_topic, romram);
+  MqttPublishPayload(stopic, payload, binary_length, retained);
+*/
+  // Reduce important stack usage by 200 bytes but adding 52 bytes code
+  char *romram = (char*)malloc(64);     // Claim 64 bytes from 20k heap
+  strcpy_P(romram, ((prefix > 3) && !Settings->flag.mqtt_response) ? S_RSLT_RESULT : subtopic);
+  UpperCase(romram, romram);
+
+  prefix &= 3;
+  char *htopic = (char*)malloc(TOPSZ);  // Claim TOPSZ bytes from 16k heap
+  GetTopic_P(htopic, prefix, TasmotaGlobal.mqtt_topic, romram);
+  char stopic[strlen_P(htopic) +1];     // Claim only strlen_P bytes from 4k stack
+  strcpy_P(stopic, htopic);
+  free(htopic);                         // Free 16k heap from TOPSZ bytes
+  free(romram);                         // Free 16k heap from 64 bytes
   MqttPublishPayload(stopic, payload, binary_length, retained);
 
 #if defined(USE_MQTT_AWS_IOT) || defined(USE_MQTT_AWS_IOT_LIGHT)
@@ -774,6 +872,8 @@ void MqttPublishPayloadPrefixTopicRulesProcess_P(uint32_t prefix, const char* su
 
 void MqttPublishPrefixTopic_P(uint32_t prefix, const char* subtopic, bool retained) {
   // Publish <prefix>/<device>/<RESULT or <subtopic>> default ResponseData string with optional retained
+  SHOW_FREE_MEM(PSTR("MqttPublishPrefixTopic_P"));
+
   MqttPublishPayloadPrefixTopic_P(prefix, subtopic, ResponseData(), 0, retained);
 }
 
@@ -785,6 +885,8 @@ void MqttPublishPrefixTopic_P(uint32_t prefix, const char* subtopic) {
 void MqttPublishPrefixTopicRulesProcess_P(uint32_t prefix, const char* subtopic, bool retained) {
   // Publish <prefix>/<device>/<RESULT or <subtopic>> default ResponseData string with optional retained
   //   then process rules
+  SHOW_FREE_MEM(PSTR("MqttPublishPrefixTopicRulesProcess_P"));
+
   MqttPublishPrefixTopic_P(prefix, subtopic, retained);
   XdrvRulesProcess(0);
 }
@@ -795,13 +897,19 @@ void MqttPublishPrefixTopicRulesProcess_P(uint32_t prefix, const char* subtopic)
   MqttPublishPrefixTopicRulesProcess_P(prefix, subtopic, false);
 }
 
-void MqttPublishTeleSensor(void) {
-  // Publish tele/<device>/SENSOR default ResponseData string with optional retained
+void MqttPublishTele(const char* subtopic) {
+  // Publish tele/<device>/<subtopic> default ResponseData string with optional retained
   //   then process rules
 #ifdef USE_INFLUXDB
   InfluxDbProcess(1);        // Use a copy of ResponseData
 #endif
-  MqttPublishPrefixTopicRulesProcess_P(TELE, PSTR(D_RSLT_SENSOR), Settings->flag.mqtt_sensor_retain);  // CMND_SENSORRETAIN
+  MqttPublishPrefixTopicRulesProcess_P(TELE, subtopic, Settings->flag.mqtt_sensor_retain);  // CMND_SENSORRETAIN
+}
+
+void MqttPublishTeleSensor(void) {
+  // Publish tele/<device>/SENSOR default ResponseData string with optional retained
+  //   then process rules
+  MqttPublishTele(PSTR(D_RSLT_SENSOR));
 }
 
 void MqttPublishPowerState(uint32_t device) {
@@ -892,9 +1000,11 @@ void MqttDisconnected(int state) {
     Mqtt.retry_counter_delay++;
   }
 
-  MqttClient.disconnect();
-  // Check if this solves intermittent MQTT re-connection failures when broker is restarted
-  EspClient.stop();
+  if (MqttClient.connected()) {
+    MqttClient.disconnect();
+    // Check if this solves intermittent MQTT re-connection failures when broker is restarted
+    EspClient.stop();
+  }
 
   AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT D_CONNECT_FAILED_TO " %s:%d, rc %d. " D_RETRY_IN " %d " D_UNIT_SECOND),
     SettingsText(SET_MQTT_HOST), Settings->mqtt_port, state, Mqtt.retry_counter);
@@ -942,8 +1052,8 @@ void MqttConnected(void) {
   if (Mqtt.initial_connection_state) {
     if (ResetReason() != REASON_DEEP_SLEEP_AWAKE) {
       char stopic2[TOPSZ];
-      Response_P(PSTR("{\"Info1\":{\"" D_CMND_MODULE "\":\"%s\",\"" D_JSON_VERSION "\":\"%s%s\",\"" D_JSON_FALLBACKTOPIC "\":\"%s\",\"" D_CMND_GROUPTOPIC "\":\"%s\"}}"),
-        ModuleName().c_str(), TasmotaGlobal.version, TasmotaGlobal.image_name, GetFallbackTopic_P(stopic, ""), GetGroupTopic_P(stopic2, "", SET_MQTT_GRP_TOPIC));
+      Response_P(PSTR("{\"Info1\":{\"" D_CMND_MODULE "\":\"%s\",\"" D_JSON_VERSION "\":\"%s%s%s\",\"" D_JSON_FALLBACKTOPIC "\":\"%s\",\"" D_CMND_GROUPTOPIC "\":\"%s\"}}"),
+        ModuleName().c_str(), TasmotaGlobal.version, TasmotaGlobal.image_name, GetCodeCores().c_str(), GetFallbackTopic_P(stopic, ""), GetGroupTopic_P(stopic2, "", SET_MQTT_GRP_TOPIC));
       MqttPublishPrefixTopicRulesProcess_P(TELE, PSTR(D_RSLT_INFO "1"), Settings->flag5.mqtt_info_retain);
 #ifdef USE_WEBSERVER
       if (Settings->webserver) {
@@ -952,11 +1062,13 @@ void MqttConnected(void) {
         if (static_cast<uint32_t>(WiFi.localIP()) != 0) {
           ResponseAppend_P(PSTR(",\"" D_CMND_HOSTNAME "\":\"%s\",\"" D_CMND_IPADDRESS "\":\"%_I\""),
             TasmotaGlobal.hostname, (uint32_t)WiFi.localIP());
-#if LWIP_IPV6
-          ResponseAppend_P(PSTR(",\"IPv6Address\":\"%s\""), WifiGetIPv6().c_str());
-#endif  // LWIP_IPV6 = 1
+#ifdef USE_IPV6
+          ResponseAppend_P(PSTR(",\"" D_JSON_IP6_GLOBAL "\":\"%s\""), WifiGetIPv6Str().c_str());
+          ResponseAppend_P(PSTR(",\"" D_JSON_IP6_LOCAL "\":\"%s\""), WifiGetIPv6LinkLocalStr().c_str());
+#endif  // USE_IPV6
         }
-#if defined(ESP32) && CONFIG_IDF_TARGET_ESP32 && defined(USE_ETHERNET)
+//#if defined(ESP32) && CONFIG_IDF_TARGET_ESP32 && defined(USE_ETHERNET)
+#if defined(ESP32) && defined(USE_ETHERNET)
         if (static_cast<uint32_t>(EthernetLocalIP()) != 0) {
           ResponseAppend_P(PSTR(",\"Ethernet\":{\"" D_CMND_HOSTNAME "\":\"%s\",\"" D_CMND_IPADDRESS "\":\"%_I\"}"),
             EthernetHostname(), (uint32_t)EthernetLocalIP());
@@ -967,9 +1079,12 @@ void MqttConnected(void) {
       }
 #endif  // USE_WEBSERVER
       Response_P(PSTR("{\"Info3\":{\"" D_JSON_RESTARTREASON "\":"));
+#ifndef FIRMWARE_MINIMAL
       if (CrashFlag()) {
         CrashDump();
-      } else {
+      } else
+#endif // FIRMWARE_MINIMAL
+      {
         ResponseAppend_P(PSTR("\"%s\""), GetResetReason().c_str());
       }
       ResponseAppend_P(PSTR(",\"" D_JSON_BOOTCOUNT "\":%d}}"), Settings->bootcount +1);
@@ -992,8 +1107,6 @@ void MqttConnected(void) {
 }
 
 void MqttReconnect(void) {
-  char stopic[TOPSZ];
-
   Mqtt.allowed = Settings->flag.mqtt_enabled && (TasmotaGlobal.restart_flag == 0);  // SetOption3 - Enable MQTT, and don't connect if restart in process
   if (Mqtt.allowed) {
 #if defined(USE_MQTT_AZURE_DPS_SCOPEID) && defined(USE_MQTT_AZURE_DPS_PRESHAREDKEY)
@@ -1040,6 +1153,23 @@ void MqttReconnect(void) {
 
   AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT D_ATTEMPTING_CONNECTION));
 
+  MqttDisconnect();
+  MqttSetClientTimeout();
+
+  MqttClient.setCallback(MqttDataHandler);
+
+  // Keep using hostname to solve rc -4 issues
+  IPAddress ip;
+  if (!WifiHostByName(SettingsText(SET_MQTT_HOST), ip)) {
+    MqttDisconnected(-5);  // MQTT_DNS_DISCONNECTED
+    return;
+  }
+  MqttClient.setServer(ip, Settings->mqtt_port);
+
+  if (2 == Mqtt.initial_connection_state) {  // Executed once just after power on and wifi is connected
+    Mqtt.initial_connection_state = 1;
+  }
+
   char *mqtt_user = nullptr;
   char *mqtt_pwd = nullptr;
   if (strlen(SettingsText(SET_MQTT_USER))) {
@@ -1049,49 +1179,40 @@ void MqttReconnect(void) {
     mqtt_pwd = SettingsText(SET_MQTT_PWD);
   }
 
-  GetTopic_P(stopic, TELE, TasmotaGlobal.mqtt_topic, S_LWT);
-  Response_P(S_LWT_OFFLINE);
-
-  if (MqttClient.connected()) { MqttClient.disconnect(); }
-
-  MqttSetClientTimeout();
-
 #ifdef USE_MQTT_TLS
+
+  uint32_t mqtt_connect_time = millis();
   if (Mqtt.mqtt_tls) {
     tlsClient->stop();
+    tlsClient->setDomainName(SettingsText(SET_MQTT_HOST));   // set domain name for TLS SNI (selection of certificate based on domain name)
   } else {
-//    EspClient = WiFiClient();                // Wifi Client reconnect issue 4497 (https://github.com/esp8266/Arduino/issues/4497)
     MqttClient.setClient(EspClient);
+    MqttNonTLSWarning();
   }
-#else
-//  EspClient = WiFiClient();                  // Wifi Client reconnect issue 4497 (https://github.com/esp8266/Arduino/issues/4497)
-  MqttClient.setClient(EspClient);
-#endif
-
-  if (2 == Mqtt.initial_connection_state) {  // Executed once just after power on and wifi is connected
-    Mqtt.initial_connection_state = 1;
-  }
-
-  MqttClient.setCallback(MqttDataHandler);
-#if defined(USE_MQTT_TLS) && defined(USE_MQTT_AWS_IOT)
+#ifdef USE_MQTT_AWS_IOT
   // re-assign private keys in case it was updated in between
   if (Mqtt.mqtt_tls) {
     if ((nullptr != AWS_IoT_Private_Key) && (nullptr != AWS_IoT_Client_Certificate)) {
+      // if private key is there, we remove user/pwd
+      mqtt_user = nullptr;
+      mqtt_pwd  = nullptr;
       tlsClient->setClientECCert(AWS_IoT_Client_Certificate,
                                 AWS_IoT_Private_Key,
                                 0xFFFF /* all usages, don't care */, 0);
     }
   }
-#endif
-  IPAddress mqtt_host_ip;
-  if (!WifiHostByName(SettingsText(SET_MQTT_HOST), mqtt_host_ip)) {
-    MqttDisconnected(-5);  // MQTT_DNS_DISCONNECTED
-    return;
+#endif  // USE_MQTT_AWS_IOT
+#ifdef USE_MQTT_AZURE_IOT
+  String azureMqtt_password = SettingsText(SET_MQTT_PWD);
+  if (azureMqtt_password.indexOf("SharedAccessSignature") == -1) {
+    // assuming a PreSharedKey was provided, calculating a SAS Token into azureMqtt_password
+    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "Authenticating with an Azure IoT Hub Token"));
+    azureMqtt_password = AzurePSKtoToken(SettingsText(SET_MQTT_HOST), SettingsText(SET_MQTT_CLIENT), SettingsText(SET_MQTT_PWD));
   }
-  MqttClient.setServer(mqtt_host_ip, Settings->mqtt_port);
-
-  uint32_t mqtt_connect_time = millis();
-#if defined(USE_MQTT_TLS)
+  String azureMqtt_userString = String(SettingsText(SET_MQTT_HOST)) + "/" + String(SettingsText(SET_MQTT_CLIENT)); + "/?api-version=2018-06-30";
+  mqtt_user = (char*)azureMqtt_userString.c_str();
+  mqtt_pwd  = (char*)azureMqtt_password.c_str();
+#endif  // USE_MQTT_AZURE_IOT
   bool allow_all_fingerprints = false;
   bool learn_fingerprint1 = false;
   bool learn_fingerprint2 = false;
@@ -1105,31 +1226,22 @@ void MqttReconnect(void) {
     allow_all_fingerprints |= learn_fingerprint2;
     tlsClient->setPubKeyFingerprint(Settings->mqtt_fingerprint[0], Settings->mqtt_fingerprint[1], allow_all_fingerprints);
   }
-#endif
-  bool lwt_retain = Settings->flag4.mqtt_no_retain ? false : true;   // no retained last will if "no_retain"
-#if defined(USE_MQTT_TLS) && defined(USE_MQTT_AWS_IOT)
-  if (Mqtt.mqtt_tls) {
-    if ((nullptr != AWS_IoT_Private_Key) && (nullptr != AWS_IoT_Client_Certificate)) {
-      // if private key is there, we remove user/pwd
-      mqtt_user = nullptr;
-      mqtt_pwd  = nullptr;
-    }
-  }
-#endif
+#else   // No USE_MQTT_TLS
+  MqttClient.setClient(EspClient);
+  MqttNonTLSWarning();
+#endif  // USE_MQTT_TLS
 
-#ifdef USE_MQTT_AZURE_IOT
-  String azureMqtt_password = SettingsText(SET_MQTT_PWD);
-  if (azureMqtt_password.indexOf("SharedAccessSignature") == -1) {
-    // assuming a PreSharedKey was provided, calculating a SAS Token into azureMqtt_password
-    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "Authenticating with an Azure IoT Hub Token"));
-    azureMqtt_password = AzurePSKtoToken(SettingsText(SET_MQTT_HOST), SettingsText(SET_MQTT_CLIENT), SettingsText(SET_MQTT_PWD));
-  }
-
-  String azureMqtt_userString = String(SettingsText(SET_MQTT_HOST)) + "/" + String(SettingsText(SET_MQTT_CLIENT)); + "/?api-version=2018-06-30";
-  if (MqttClient.connect(TasmotaGlobal.mqtt_client, azureMqtt_userString.c_str(), azureMqtt_password.c_str(), stopic, 1, lwt_retain, ResponseData(), Settings->flag5.mqtt_persistent ? 0:1)) {
-#else
-  if (MqttClient.connect(TasmotaGlobal.mqtt_client, mqtt_user, mqtt_pwd, stopic, 1, lwt_retain, ResponseData(), Settings->flag5.mqtt_persistent ? 0:1)) {
-#endif  // USE_MQTT_AZURE_IOT
+  char stopic[TOPSZ];
+  GetTopic_P(stopic, TELE, TasmotaGlobal.mqtt_topic, S_LWT);
+  Response_P(S_LWT_OFFLINE);
+  if (MqttClient.connect(TasmotaGlobal.mqtt_client,
+                         mqtt_user,
+                         mqtt_pwd,
+                         stopic,                                         // Will topic
+                         1,                                              // Will QoS
+                         Settings->flag4.mqtt_no_retain ? false : true,  // No retained last will if "no_retain",
+                         ResponseData(),                                 // Will message
+                         Settings->flag5.mqtt_persistent ? 0 : 1)) {     // Clean Session
 #ifdef USE_MQTT_TLS
     if (Mqtt.mqtt_tls) {
 #ifdef ESP8266
@@ -1431,22 +1543,6 @@ void CmndMqttRetry(void) {
   ResponseCmndNumber(Settings->mqtt_retry);
 }
 
-void CmndStateText(void) {
-  if ((XdrvMailbox.index > 0) && (XdrvMailbox.index <= MAX_STATE_TEXT)) {
-    if (!XdrvMailbox.usridx) {
-      ResponseCmndAll(SET_STATE_TXT1, MAX_STATE_TEXT);
-    } else {
-      if (XdrvMailbox.data_len > 0) {
-        for (uint32_t i = 0; i <= XdrvMailbox.data_len; i++) {
-          if (XdrvMailbox.data[i] == ' ') XdrvMailbox.data[i] = '_';
-        }
-        SettingsUpdateText(SET_STATE_TXT1 + XdrvMailbox.index -1, XdrvMailbox.data);
-      }
-      ResponseCmndIdxChar(GetStateText(XdrvMailbox.index -1));
-    }
-  }
-}
-
 void CmndMqttClient(void) {
   if (!XdrvMailbox.grpflg && (XdrvMailbox.data_len > 0)) {
     SettingsUpdateText(SET_MQTT_CLIENT, (SC_DEFAULT == Shortcut()) ? PSTR(MQTT_CLIENT_ID) : XdrvMailbox.data);
@@ -1501,7 +1597,12 @@ void CmndPublish(void) {
       } else {
         ResponseClear();
       }
+#ifndef FIRMWARE_MINIMAL
+      // Publish3 binary is not enabled in MINIMAL
+      MqttPublishBinary(stemp1, (XdrvMailbox.index == 2), (XdrvMailbox.index == 3));
+#else
       MqttPublish(stemp1, (XdrvMailbox.index == 2));
+#endif
       ResponseClear();
     }
   }
@@ -1604,24 +1705,24 @@ void CmndButtonRetain(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
     if (!XdrvMailbox.payload) {
       for (uint32_t i = 1; i <= MAX_KEYS; i++) {
-        SendKey(KEY_BUTTON, i, CLEAR_RETAIN);  // Clear MQTT retain in broker
+        SendKey(KEY_BUTTON, i, CLEAR_RETAIN);                      // Clear MQTT retain in broker
       }
     }
-    Settings->flag.mqtt_button_retain = XdrvMailbox.payload;  // CMND_BUTTONRETAIN
+    Settings->flag.mqtt_button_retain = XdrvMailbox.payload;       // CMND_BUTTONRETAIN
   }
-  ResponseCmndStateText(Settings->flag.mqtt_button_retain);   // CMND_BUTTONRETAIN
+  ResponseCmndStateText(Settings->flag.mqtt_button_retain);        // CMND_BUTTONRETAIN
 }
 
 void CmndSwitchRetain(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
     if (!XdrvMailbox.payload) {
       for (uint32_t i = 1; i <= MAX_SWITCHES; i++) {
-        SendKey(KEY_SWITCH, i, CLEAR_RETAIN);  // Clear MQTT retain in broker
+        SendKey(KEY_SWITCH, i, CLEAR_RETAIN);                      // Clear MQTT retain in broker
       }
     }
-    Settings->flag.mqtt_switch_retain = XdrvMailbox.payload;  // CMND_SWITCHRETAIN
+    Settings->flag.mqtt_switch_retain = XdrvMailbox.payload;       // CMND_SWITCHRETAIN
   }
-  ResponseCmndStateText(Settings->flag.mqtt_switch_retain);   // CMND_SWITCHRETAIN
+  ResponseCmndStateText(Settings->flag.mqtt_switch_retain);        // CMND_SWITCHRETAIN
 }
 
 void CmndPowerRetain(void) {
@@ -1632,49 +1733,69 @@ void CmndPowerRetain(void) {
       for (uint32_t i = 1; i <= TasmotaGlobal.devices_present; i++) {  // Clear MQTT retain in broker
         GetTopic_P(stemp1, STAT, TasmotaGlobal.mqtt_topic, GetPowerDevice(scommand, i, sizeof(scommand), Settings->flag.device_index_enable));  // SetOption26 - Switch between POWER or POWER1
         ResponseClear();
-        MqttPublish(stemp1, Settings->flag.mqtt_power_retain);  // CMND_POWERRETAIN
+        MqttPublish(stemp1, true);
       }
     }
-    Settings->flag.mqtt_power_retain = XdrvMailbox.payload;     // CMND_POWERRETAIN
+    Settings->flag.mqtt_power_retain = XdrvMailbox.payload;        // CMND_POWERRETAIN
     if (Settings->flag.mqtt_power_retain) {
-      Settings->flag4.only_json_message = 0;                    // SetOption90 - Disable non-json MQTT response
+      Settings->flag4.only_json_message = 0;                       // SetOption90 - Disable non-json MQTT response
     }
   }
-  ResponseCmndStateText(Settings->flag.mqtt_power_retain);      // CMND_POWERRETAIN
+  ResponseCmndStateText(Settings->flag.mqtt_power_retain);         // CMND_POWERRETAIN
 }
 
 void CmndSensorRetain(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
     if (!XdrvMailbox.payload) {
       ResponseClear();
-      MqttPublishPrefixTopic_P(TELE, PSTR(D_RSLT_SENSOR), Settings->flag.mqtt_sensor_retain);  // CMND_SENSORRETAIN
-      MqttPublishPrefixTopic_P(TELE, PSTR(D_RSLT_ENERGY), Settings->flag.mqtt_sensor_retain);  // CMND_SENSORRETAIN
+      MqttPublishPrefixTopic_P(TELE, PSTR(D_RSLT_SENSOR), true);   // Remove retained SENSOR
+      MqttPublishPrefixTopic_P(TELE, PSTR(D_RSLT_ENERGY), true);   // Remove retained ENERGY
     }
-    Settings->flag.mqtt_sensor_retain = XdrvMailbox.payload;                                   // CMND_SENSORRETAIN
+    Settings->flag.mqtt_sensor_retain = XdrvMailbox.payload;       // CMND_SENSORRETAIN
   }
-  ResponseCmndStateText(Settings->flag.mqtt_sensor_retain);                                    // CMND_SENSORRETAIN
+  ResponseCmndStateText(Settings->flag.mqtt_sensor_retain);        // CMND_SENSORRETAIN
 }
 
 void CmndInfoRetain(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
     if (!XdrvMailbox.payload) {
       ResponseClear();
-      MqttPublishPrefixTopic_P(TELE, PSTR(D_RSLT_INFO), Settings->flag5.mqtt_info_retain);  // CMND_INFORETAIN
+      char stemp1[10];
+      for (uint32_t i = 1; i <= 3; i++) {                          // Remove retained INFO1, INFO2 and INFO3
+        snprintf_P(stemp1, sizeof(stemp1), PSTR(D_RSLT_INFO "%d"), i);
+        MqttPublishPrefixTopic_P(TELE, stemp1, true);
+      }
     }
-    Settings->flag5.mqtt_info_retain = XdrvMailbox.payload;                                   // CMND_INFORETAIN
+    Settings->flag5.mqtt_info_retain = XdrvMailbox.payload;        // CMND_INFORETAIN
   }
-  ResponseCmndStateText(Settings->flag5.mqtt_info_retain);                                    // CMND_INFORETAIN
+  ResponseCmndStateText(Settings->flag5.mqtt_info_retain);         // CMND_INFORETAIN
 }
 
 void CmndStateRetain(void) {
   if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
     if (!XdrvMailbox.payload) {
       ResponseClear();
-      MqttPublishPrefixTopic_P(STAT, PSTR(D_RSLT_STATE), Settings->flag5.mqtt_state_retain);  // CMND_STATERETAIN
+      MqttPublishPrefixTopic_P(STAT, PSTR(D_RSLT_STATE), true);    // Remove retained STATE
     }
-    Settings->flag5.mqtt_state_retain = XdrvMailbox.payload;                                   // CMND_STATERETAIN
+    Settings->flag5.mqtt_state_retain = XdrvMailbox.payload;       // CMND_STATERETAIN
   }
-  ResponseCmndStateText(Settings->flag5.mqtt_state_retain);                                    // CMND_STATERETAIN
+  ResponseCmndStateText(Settings->flag5.mqtt_state_retain);        // CMND_STATERETAIN
+}
+
+void CmndStatusRetain(void) {
+  if ((XdrvMailbox.payload >= 0) && (XdrvMailbox.payload <= 1)) {
+    if (!XdrvMailbox.payload) {
+      ResponseClear();
+      MqttPublishPrefixTopic_P(STAT, PSTR(D_CMND_STATUS), true);   // Remove retained STATUS
+      char stemp1[10];
+      for (uint32_t i = 0; i <= MAX_STATUS; i++) {                 // Remove retained STATUS0, STATUS1 .. STATUS13
+        snprintf_P(stemp1, sizeof(stemp1), PSTR(D_CMND_STATUS "%d"), i);
+        MqttPublishPrefixTopic_P(STAT, stemp1, true);
+      }
+    }
+    Settings->flag5.mqtt_status_retain = XdrvMailbox.payload;      // CMND_STATUSRETAIN
+  }
+  ResponseCmndStateText(Settings->flag5.mqtt_status_retain);       // CMND_STATUSRETAIN
 }
 
 /*********************************************************************************************\
@@ -1935,16 +2056,16 @@ void HandleMqttConfiguration(void)
   WSContentStart_P(PSTR(D_CONFIGURE_MQTT));
   WSContentSendStyle();
   WSContentSend_P(HTTP_FORM_MQTT1,
-    SettingsText(SET_MQTT_HOST),
+    SettingsTextEscaped(SET_MQTT_HOST).c_str(),
     Settings->mqtt_port,
 #ifdef USE_MQTT_TLS
     Mqtt.mqtt_tls ? PSTR(" checked") : "",      // SetOption103 - Enable MQTT TLS
 #endif // USE_MQTT_TLS
-    Format(str, PSTR(MQTT_CLIENT_ID), sizeof(str)), PSTR(MQTT_CLIENT_ID), SettingsText(SET_MQTT_CLIENT));
+    Format(str, PSTR(MQTT_CLIENT_ID), sizeof(str)), PSTR(MQTT_CLIENT_ID), SettingsTextEscaped(SET_MQTT_CLIENT).c_str());
   WSContentSend_P(HTTP_FORM_MQTT2,
-    (!strlen(SettingsText(SET_MQTT_USER))) ? "0" : SettingsText(SET_MQTT_USER),
-    Format(str, PSTR(MQTT_TOPIC), sizeof(str)), PSTR(MQTT_TOPIC), SettingsText(SET_MQTT_TOPIC),
-    PSTR(MQTT_FULLTOPIC), PSTR(MQTT_FULLTOPIC), SettingsText(SET_MQTT_FULLTOPIC));
+    (!strlen(SettingsText(SET_MQTT_USER))) ? "0" : SettingsTextEscaped(SET_MQTT_USER).c_str(),
+    Format(str, PSTR(MQTT_TOPIC), sizeof(str)), PSTR(MQTT_TOPIC), SettingsTextEscaped(SET_MQTT_TOPIC).c_str(),
+    PSTR(MQTT_FULLTOPIC), PSTR(MQTT_FULLTOPIC), SettingsTextEscaped(SET_MQTT_FULLTOPIC).c_str());
   WSContentSend_P(HTTP_FORM_END);
   WSContentSpaceButton(BUTTON_CONFIGURATION);
   WSContentStop();
@@ -1965,13 +2086,14 @@ void MqttSaveSettings(void) {
 #endif
   ExecuteWebCommand((char*)cmnd.c_str());
 }
+
 #endif  // USE_WEBSERVER
 
 /*********************************************************************************************\
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv02(uint8_t function)
+bool Xdrv02(uint32_t function)
 {
   bool result = false;
 
@@ -1981,18 +2103,23 @@ bool Xdrv02(uint8_t function)
         MqttClient.loop();
         break;
 #ifdef USE_WEBSERVER
+#ifndef FIRMWARE_MINIMAL    // not needed in minimal/safeboot because of disabled feature and Settings are not saved anyways
       case FUNC_WEB_ADD_BUTTON:
         WSContentSend_P(HTTP_BTN_MENU_MQTT);
         break;
       case FUNC_WEB_ADD_HANDLER:
         WebServer_on(PSTR("/" WEB_HANDLE_MQTT), HandleMqttConfiguration);
         break;
+#endif  // not FIRMWARE_MINIMAL
 #endif  // USE_WEBSERVER
       case FUNC_COMMAND:
         result = DecodeCommand(kMqttCommands, MqttCommand, kMqttSynonyms);
         break;
       case FUNC_PRE_INIT:
         MqttInit();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

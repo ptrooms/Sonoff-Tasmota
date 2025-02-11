@@ -83,14 +83,14 @@
 
 
 
-  DisplayFloat          num [,position {0-(Settings->display_width-1)} [,precision {0-Settings->display_width} [,length {1 to Settings->display_width}]]]
+  DisplayFloat          num [,position {0-(Settings->display_width-1)} [,precision {0-Settings->display_width} [,length {1 to Settings->display_width} [,alignment {0=left 1=right}]]]]
 
                                Clears and then displays float (with decimal point)  command e.g., "DisplayFloat 12.34"
                                See function description below for more details.
 
 
 
-  DisplayFloatNC        num [,position {0-(Settings->display_width-1)} [,precision {0-Settings->display_width} [,length {1 to Settings->display_width}]]]
+  DisplayFloatNC        num [,position {0-(Settings->display_width-1)} [,precision {0-Settings->display_width} [,length {1 to Settings->display_width} [,alignment {0=left 1=right}]]]]
 
                                Displays float (with decimal point) as above, but without clearing first. command e.g., "DisplayFloatNC 12.34"
                                See function description below for more details.
@@ -351,7 +351,7 @@ bool CmndTM1637Number(bool clear)
     position = atoi(sPosition);
   case 1:
     subStr(sNum, XdrvMailbox.data, ",", 1);
-    num = atof(sNum);
+    num = CharToFloat(sNum);
   }
 
   if ((position < 0) || (position > (Settings->display_width - 1)))
@@ -431,14 +431,18 @@ bool CmndTM1637Float(bool clear)
   char sPrecision[CMD_MAX_LEN];
   char sPosition[CMD_MAX_LEN];
   char sLength[CMD_MAX_LEN];
+  char sAlignment[CMD_MAX_LEN];
   uint8_t length = 0;
   uint8_t precision = Settings->display_width;
   uint8_t position = 0;
-
+  uint8_t alignment = 0;
   float fnum = 0.0f;
 
   switch (ArgC())
   {
+  case 5:
+    subStr(sAlignment, XdrvMailbox.data, ",", 5);
+    alignment = atoi(sAlignment);
   case 4:
     subStr(sLength, XdrvMailbox.data, ",", 4);
     length = atoi(sLength);
@@ -450,7 +454,7 @@ bool CmndTM1637Float(bool clear)
     position = atoi(sPosition);
   case 1:
     subStr(sNum, XdrvMailbox.data, ",", 1);
-    fnum = atof(sNum);
+    fnum = CharToFloat(sNum);
   }
 
   if ((position < 0) || (position > (Settings->display_width - 1)))
@@ -468,6 +472,14 @@ bool CmndTM1637Float(bool clear)
     length = strlen(txt);
   if ((length <= 0) || (length > Settings->display_width))
     length = Settings->display_width;
+
+  // Add leading spaces before value if txt is shorter than length
+  if ((alignment == 1) && (strlen(txt) < length + 1))
+  {
+    char tmptxt[30];
+    ext_snprintf_P(tmptxt, sizeof(tmptxt), "%*s%s", strlen(txt)-(length+1), "", txt);
+    strcpy (txt, tmptxt);
+  }
 
   AddLog(LOG_LEVEL_DEBUG, PSTR("TM7: num %4_f, prec %d, len %d"), &fnum, precision, length);
 
@@ -987,9 +999,12 @@ bool CmndTM1637Clock(void)
 \*********************************************************************************************/
 void TM1637ShowTime()
 {
-  uint8_t hr = RtcTime.hour;
-  uint8_t mn = RtcTime.minute;
-  uint8_t sc = RtcTime.second;
+  struct TIME_T t = RtcTime;
+  BreakNanoTime(Rtc.local_time, Rtc.nanos + (millis() - Rtc.millis) * 1000000, t);
+  uint8_t hr = t.hour;
+  uint8_t mn = t.minute;
+  uint8_t sc = t.second;
+  uint16_t ms = t.nanos / 1000000;
   
   if (!TM1637Data.clock_24)
   {
@@ -1009,12 +1024,14 @@ void TM1637ShowTime()
   
   if (TM1637 == TM1637Data.display_type)
   {
+    uint8_t colon = ms > 500? 0: 128;
     uint8_t rawBytes[1];
-    for (uint32_t i = 0; i < 4; i++)
+    uint8_t width = Settings->display_width >= 6? 6: 4;
+    for (uint32_t i = 0; i < width; i++)
     {
       rawBytes[0] = tm1637display->encode(tm[i]);
-      if ((millis() % 1000) > 500 && (i == 1))
-        rawBytes[0] = rawBytes[0] | 128;
+      if (i == 1 || (i == 3 && width > 4))
+        rawBytes[0] = rawBytes[0] | colon;
       tm1637display->printRaw(rawBytes, 1, TM1637Data.digit_order[i]);
     }
   }
@@ -1114,7 +1131,7 @@ void TM1637Dim(void)
   {
     for (uint8_t dev_addr = 0; dev_addr < Settings->display_width / 8; dev_addr++)
     {
-      max7219display->setIntensity(MAX7219_ADDR, brightness); // 0 - 7
+      max7219display->setIntensity(MAX7219_ADDR  + dev_addr, brightness); // 0 - 7
     }
   }
 }
@@ -1186,9 +1203,6 @@ bool TM1637PrintLog(void) {
 
       strlcpy(disp_screen_buffer[last_row], txt, disp_screen_buffer_cols);
       DisplayFillScreen(last_row);
-
-      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_DEBUG "[%s]"), disp_screen_buffer[last_row]);
-
       TM1637Print(disp_screen_buffer[last_row]);
 
       result = true;
@@ -1279,7 +1293,7 @@ void TM1637Refresh(void)
  * Interface
 \*********************************************************************************************/
 
-bool Xdsp15(uint8_t function)
+bool Xdsp15(uint32_t function)
 {
   bool result = false;
 

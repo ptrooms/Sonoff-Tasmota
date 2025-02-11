@@ -1,5 +1,5 @@
 # OpenHASP demo
-# rm haspmota_demo.tapp ; zip -j -0 haspmota_demo.tapp haspmota_demo/* haspmota_core/haspmota.be
+# rm haspmota_demo.tapp ; zip -j -0 haspmota_demo.tapp ../haspmota_src/haspmota_demo/*
 
 if !tasmota.memory().contains("psram")
     print("HSP: Error: OpenHASP demo requires PSRAM")
@@ -11,7 +11,7 @@ import lv_tasmota_info
 import lv_wifi_graph
 
 import haspmota
-haspmota.start(false, "haspmota_demo.tapp#pages.jsonl")
+haspmota.start(false, tasmota.wd + "pages.jsonl")
 
 var prev_day = -1
 def set_watch()
@@ -54,5 +54,5 @@ def p5_out()
 	global.p0b11.bg_opa = 255
 end
 
-tasmota.add_rule("hasp#p5==in", p5_in)
-tasmota.add_rule("hasp#p5==out", p5_out)
+tasmota.add_rule("hasp#p5=in", p5_in)
+tasmota.add_rule("hasp#p5=out", p5_out)

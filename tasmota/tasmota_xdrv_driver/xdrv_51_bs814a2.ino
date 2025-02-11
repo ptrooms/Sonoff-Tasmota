@@ -166,7 +166,7 @@ void bs814_publish(void) {
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv51(uint8_t function) {
+bool Xdrv51(uint32_t function) {
   bool result = false;
 
   if (FUNC_INIT == function) {
@@ -181,6 +181,9 @@ bool Xdrv51(uint8_t function) {
       // Generate JSON telemetry string
       case FUNC_JSON_APPEND:
         bs814_show();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
       }
   }

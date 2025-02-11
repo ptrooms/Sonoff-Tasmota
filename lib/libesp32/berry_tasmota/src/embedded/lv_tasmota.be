@@ -4,9 +4,11 @@
 lv_tasmota = module("lv_tasmota")
 
 # rename `lv` to `lv_ntv` and replace `lv` with `lv_tasmota`
+#@ solidify:lv_tasmota.init,weak
 def init(lv_tasmota)
   import lv
   lv.start = lv_tasmota.start
+  lv._constants = lv_tasmota._constants
   lv.splash_init = lv_tasmota.splash_init
   lv.splash_remove = lv_tasmota.splash_remove
   lv.splash = lv_tasmota.splash
@@ -23,6 +25,18 @@ def init(lv_tasmota)
 
   lv.register_button_encoder = lv_tasmota.register_button_encoder
   lv.screenshot = lv_tasmota.screenshot
+
+  # add version information
+  lv.version = lv.version_major()
+  # use the following to retrofit the version:
+  #-
+    def fix_lv_version()
+      import introspect
+      var v = introspect.get(lv, "version")
+      # if `lv.version` does not exist, v is `module('undefined')`
+      if type(v) != 'int'  lv.version = 8 end
+    end
+  -#
 
   # add widgets
   lv.clock = lv_clock
@@ -44,6 +58,7 @@ end
 lv_tasmota.init = init
 
 # run splash now or schedlue later
+#@ solidify:lv_tasmota.splash_init,weak
 def splash_init()
   import display
   if display.started()
@@ -72,6 +87,7 @@ end
 lv_tasmota.splash_init = splash_init
 
 # remove splash
+#@ solidify:lv_tasmota.splash_remove,weak
 def splash_remove()
   var _splash = lv._splash
   if _splash
@@ -81,6 +97,7 @@ def splash_remove()
 end
 lv_tasmota.splash_remove = splash_remove
 
+#@ solidify:lv_tasmota.splash,weak
 def splash()
   import display
 
@@ -108,8 +125,7 @@ def splash()
   tas_logo.set_zoom(150)
   tas_logo.set_style_img_recolor_opa(255, 0)  # lv.PART_MAIN | lv.STATE_DEFAULT
   tas_logo.set_style_img_recolor(white, 0)    # lv.PART_MAIN | lv.STATE_DEFAULT
-  tas_logo.set_align(lv.ALIGN_LEFT_MID)
-  tas_logo.set_x(-12)
+  tas_logo.align(lv.ALIGN_LEFT_MID, -12, 0)
 
   var tas = lv.label(bg)
   # tas.set_style_bg_opa(lv.OPA_TRANSP, lv.PART_MAIN | lv.STATE_DEFAULT)

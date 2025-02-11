@@ -268,7 +268,7 @@ void WMotorV2command(uint8_t *data, uint8_t len)    // process V2 request
  * Interface
 \*********************************************************************************************/
 
-bool Xdrv34(uint8_t function)
+bool Xdrv34(uint32_t function)
 {
   if (!I2cEnabled(XI2C_44)) { return false; }
 
@@ -283,6 +283,9 @@ bool Xdrv34(uint8_t function)
         if (XI2C_44 == XdrvMailbox.index) {
           result = WMotorV1Command();
         }
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

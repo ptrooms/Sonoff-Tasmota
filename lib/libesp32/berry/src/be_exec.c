@@ -61,6 +61,7 @@ struct pcall {
 
 struct vmstate {
     int top, reg, depth;
+    int refcount;
 };
 
 struct strbuf {
@@ -78,6 +79,10 @@ void be_throw(bvm *vm, int errorcode)
 #if BE_USE_PERF_COUNTERS
     vm->counter_exc++;
 #endif
+    /* if BE_MALLOC_FAIL then call */
+    if (errorcode == BE_MALLOC_FAIL) {
+        if (vm->obshook != NULL) (*vm->obshook)(vm, BE_OBS_MALLOC_FAIL, vm->gc.usage);
+    }
     if (vm->errjmp) {
         vm->errjmp->status = errorcode;
         exec_throw(vm->errjmp);
@@ -125,6 +130,7 @@ static void vm_state_save(bvm *vm, struct vmstate *state)
     state->depth = be_stack_count(&vm->callstack);
     state->top = cast_int(vm->top - vm->stack);
     state->reg = cast_int(vm->reg - vm->stack);
+    state->refcount = vm->refstack.count;
 }
 
 static void copy_exception(bvm *vm, int res, int dstindex)
@@ -143,6 +149,7 @@ static void copy_exception(bvm *vm, int res, int dstindex)
 static void vm_state_restore(bvm *vm, const struct vmstate *state, int res)
 {
     vm->reg = vm->stack + state->reg;
+    be_vector_resize(vm, &vm->refstack, state->refcount);
     /* copy exception information to top */
     copy_exception(vm, res, state->top);
     be_assert(be_stack_count(&vm->callstack) >= state->depth);
@@ -180,8 +187,9 @@ int be_protectedparser(bvm *vm,
     return res;
 }
 
-static const char* _sgets(void *data, size_t *size)
+static const char* _sgets(struct blexer* lexer, void *data, size_t *size)
 {
+    (void)lexer;
     struct strbuf *sb = data;
     *size = sb->len;
     if (sb->len) {
@@ -191,8 +199,9 @@ static const char* _sgets(void *data, size_t *size)
     return NULL;
 }
 
-static const char* _fgets(void *data, size_t *size)
+static const char* _fgets(struct blexer* lexer, void *data, size_t *size)
 {
+    (void)lexer;
     struct filebuf *fb = data;
     *size = be_fread(fb->fp, fb->buf, sizeof(fb->buf));
     if (*size) {
@@ -444,6 +453,7 @@ void be_except_block_setup(bvm *vm)
     /* set longjmp() jump point */
     frame->errjmp.status = 0;
     frame->errjmp.prev = vm->errjmp; /* save long jump list */
+    frame->refcount = vm->refstack.count; /* save reference pointer */
     vm->errjmp = &frame->errjmp;
     fixup_exceptstack(vm, lbase);
 }
@@ -455,6 +465,7 @@ void be_except_block_resume(bvm *vm)
     struct bexecptframe *frame = be_stack_top(&vm->exceptstack);
     if (errorcode == BE_EXCEPTION) {
         vm->errjmp = vm->errjmp->prev;
+        be_vector_resize(vm, &vm->refstack, frame->refcount);
         /* jump to except instruction */
         vm->ip = frame->ip + IGET_sBx(frame->ip[-1]);
         if (be_stack_count(&vm->callstack) > frame->depth) {

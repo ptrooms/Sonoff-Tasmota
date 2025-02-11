@@ -1,6 +1,8 @@
 # class containing all registered Alexa/Hue lights
 #
 # simulates a Hue bridge containing multiple lights
+
+#@ solidify:hue_bridge
 var hue_bridge = module("hue_bridge")
 
 hue_bridge.init = def (m)
@@ -21,7 +23,7 @@ hue_bridge.init = def (m)
       if !manuf     manuf = "Tasmota" end
 
       self.lights[id] = { 'light': light, 'name':name, 'model': str(model), 'manuf':str(manuf) }
-      light
+      return light
     end
 
     def remove_light(id)
@@ -58,7 +60,6 @@ hue_bridge.init = def (m)
     def discover()
       import hue_ntv
       import json
-      import string
 
       var fragments = []          # store json elements
       for id: self.lights.keys()

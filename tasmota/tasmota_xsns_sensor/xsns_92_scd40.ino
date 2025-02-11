@@ -77,7 +77,7 @@ const char S_JSON_SCD40_COMMAND_NVALUE[] PROGMEM = "{\"" D_CMND_SCD40 "%s\":%d}"
 const char kSCD40_Commands[] PROGMEM             = "Alt|Auto|Toff|Pres|Cal|Test|StLP|Strt|Stop|Pers|Rein|Fact|Sing|SRHT";
 
 /*********************************************************************************************\
- * enumerations    
+ * enumerations
 \*********************************************************************************************/
 
 enum SCD40_Commands {         // commands useable in console or rules
@@ -117,7 +117,7 @@ void Scd40Detect(void)
 {
   if (!I2cSetDevice(SCD40_ADDRESS)) { return; }
 
-  scd40.begin();
+  scd40.begin(&I2cGetWire());
 
   // don't stop in case of error, try to continue
   delay(10); // not sure whether this is needed
@@ -135,7 +135,7 @@ void Scd40Detect(void)
 
   uint16_t sn[3];
   error = scd40.getSerialNumber(sn);
-  AddLog(LOG_LEVEL_NONE, PSTR("SCD40 serial nr 0x%X 0x%X 0x%X") ,sn[0], sn[1], sn[2]);
+  AddLog(LOG_LEVEL_INFO, PSTR("SCD40 serial nr 0x%X 0x%X 0x%X") ,sn[0], sn[1], sn[2]);
 
   //  by default, start measurements, only register device if this succeeds
 #ifdef USE_SCD40_LOWPOWER
@@ -166,17 +166,20 @@ void Scd40Update(void)
           scd40Loop_count = 0;
           scd40IsDataValid = true;
           scd40GoodMeas_count++;
+#ifdef USE_LIGHT
+          LightSetSignal(CO2_LOW, CO2_HIGH, scd40_CO2);
+#endif  // USE_LIGHT
           break;
 
         case ERROR_SCD40_NO_DATA:
           scd40DataNotAvailable_count++;
-          AddLog(LOG_LEVEL_DEBUG, PSTR("SCD40: no data available."));
+          AddLog(LOG_LEVEL_DEBUG_MORE, PSTR("SCD40: no data available."));
           break;
 
         case ERROR_SCD40_CRC_ERROR:
           scd40CrcError_count++;
 #ifdef SCD40_DEBUG
-          AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: CRC error, CRC error: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld"),
+          AddLog(LOG_LEVEL_INFO, PSTR("SCD40: CRC error, CRC error: %ld, good: %ld, no data: %ld, sc30_reset: %ld, i2c_reset: %ld"),
             scd40CrcError_count, scd40GoodMeas_count, scd40DataNotAvailable_count, scd40Reset_count, scd40i2cReset_count);
 #endif
           break;
@@ -184,7 +187,7 @@ void Scd40Update(void)
         default: {
           scd40ErrorState = SCD40_STATE_ERROR_READ_MEAS;
 #ifdef SCD40_DEBUG
-          AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: Update: ReadMeasurement error: 0x%lX, counter: %ld"), error, scd40Loop_count);
+          AddLog(LOG_LEVEL_INFO, PSTR("SCD40: Update: ReadMeasurement error: 0x%lX, counter: %ld"), error, scd40Loop_count);
 #endif
           return;
         }
@@ -195,22 +198,22 @@ void Scd40Update(void)
 
     case SCD40_STATE_ERROR_READ_MEAS: {
 #ifdef SCD40_DEBUG
-      AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: (rd) in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
+      AddLog(LOG_LEVEL_INFO, PSTR("SCD40: (rd) in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
         scd40ErrorState, scd40GoodMeas_count, scd40DataNotAvailable_count, scd40Reset_count, scd40i2cReset_count);
-      AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: not answering, sending soft reset, counter: %ld"), scd40Loop_count);
+      AddLog(LOG_LEVEL_INFO, PSTR("SCD40: not answering, sending soft reset, counter: %ld"), scd40Loop_count);
 #endif
       scd40Reset_count++;
       error = scd40.stopPeriodicMeasurement();
       if (error) {
         scd40ErrorState = SCD40_STATE_ERROR_SOFT_RESET;
 #ifdef SCD40_DEBUG
-        AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: stopPeriodicMeasurement got error: 0x%lX"), error);
+        AddLog(LOG_LEVEL_INFO, PSTR("SCD40: stopPeriodicMeasurement got error: 0x%lX"), error);
 #endif
       } else {
         error = scd40.reinit();
         if (error) {
 #ifdef SCD40_DEBUG
-          AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: resetting got error: 0x%lX"), error);
+          AddLog(LOG_LEVEL_INFO, PSTR("SCD40: resetting got error: 0x%lX"), error);
 #endif
           scd40ErrorState = SCD40_STATE_ERROR_SOFT_RESET;
         } else {
@@ -222,16 +225,16 @@ void Scd40Update(void)
 
     case SCD40_STATE_ERROR_SOFT_RESET: {
 #ifdef SCD40_DEBUG
-      AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: (rst) in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
+      AddLog(LOG_LEVEL_INFO, PSTR("SCD40: (rst) in error state: %d, good: %ld, no data: %ld, sc30 reset: %ld, i2c reset: %ld"),
         scd40ErrorState, scd40GoodMeas_count, scd40DataNotAvailable_count, scd40Reset_count, scd40i2cReset_count);
-      AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: clearing i2c bus"));
+      AddLog(LOG_LEVEL_INFO, PSTR("SCD40: clearing i2c bus"));
 #endif
       scd40i2cReset_count++;
       error = scd40.clearI2CBus();
       if (error) {
         scd40ErrorState = SCD40_STATE_ERROR_I2C_RESET;
 #ifdef SCD40_DEBUG
-        AddLog(LOG_LEVEL_ERROR, PSTR("SCD40: error clearing i2c bus: 0x%lX"), error);
+        AddLog(LOG_LEVEL_INFO, PSTR("SCD40: error clearing i2c bus: 0x%lX"), error);
 #endif
       } else {
         scd40ErrorState = ERROR_SCD40_NO_ERROR;
@@ -358,56 +361,56 @@ bool Scd40CommandSensor()
       }
       break;
 
-      case CMND_SCD40_START_MEASUREMENT_LOW_POWER: 
+      case CMND_SCD40_START_MEASUREMENT_LOW_POWER:
       {
-        error = scd40.startLowPowerPeriodicMeasurement(); 
+        error = scd40.startLowPowerPeriodicMeasurement();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_START_MEASUREMENT:           
+      case CMND_SCD40_START_MEASUREMENT:
       {
-        error = scd40.startPeriodicMeasurement();          
+        error = scd40.startPeriodicMeasurement();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_STOP_MEASUREMENT:            
+      case CMND_SCD40_STOP_MEASUREMENT:
       {
-        error = scd40.stopPeriodicMeasurement();          
+        error = scd40.stopPeriodicMeasurement();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_PERSIST:                     
+      case CMND_SCD40_PERSIST:
       {
-        error = scd40.persistSettings();                  
+        error = scd40.persistSettings();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_REINIT:                      
+      case CMND_SCD40_REINIT:
       {
-        error = scd40.reinit();                           
+        error = scd40.reinit();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_FACTORYRESET:                
+      case CMND_SCD40_FACTORYRESET:
       {
-        error = scd40.performFactoryReset();              
+        error = scd40.performFactoryReset();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_SINGLESHOT:                
+      case CMND_SCD40_SINGLESHOT:
       {
         error = scd40.measureSingleShot();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
       }
       break;
 
-      case CMND_SCD40_SINGLESHOT_RHT_ONLY:                
+      case CMND_SCD40_SINGLESHOT_RHT_ONLY:
       {
         error = scd40.measureSingleShotRhtOnly();
         Response_P(S_JSON_SCD40_COMMAND_NVALUE, command, error?-1:0);
@@ -419,6 +422,8 @@ bool Scd40CommandSensor()
         serviced = false;
       break;
     }
+  } else {
+    serviced = false;
   }
   return serviced;
 }
@@ -454,7 +459,7 @@ void Scd40Show(bool json)
  * Interface
 \*********************************************************************************************/
 
-bool Xsns92(byte function)
+bool Xsns92(uint32_t function)
 {
   if (!I2cEnabled(XI2C_62)) { return false; }
 

@@ -1,7 +1,7 @@
 /*
   xnrg_16_iem3000.ino - Schneider Electric iEM3000 series Modbus energy meter support for Tasmota
 
-  Copyright (C) 2021  Marius Bezuidenhout
+  Copyright (C) 2022  Marius Bezuidenhout
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -47,22 +47,17 @@ const uint16_t Iem3000_start_addresses[] {
   0x0bd3,   //  3 . IEM3000_L1_VOLTAGE    (2/Float32)             [V]    Voltage L1–N
   0x0bd5,   //  4 . IEM3000_L2_VOLTAGE    (2/Float32)             [V]    Voltage L2–N
   0x0bd7,   //  5 . IEM3000_L3_VOLTAGE    (2/Float32)             [V]    Voltage L3–N
-  0x0bed,   //  6 . IEM3000_P1_POWER      (2/Float32)             [KW]   Active Power Phase 1
-  0x0bef,   //  7 . IEM3000_P2_POWER      (2/Float32)             [KW]   Active Power Phase 2
-  0x0bf1,   //  8 . IEM3000_P3_POWER      (2/Float32)             [KW]   Active Power Phase 3
+  0x0bed,   //  6 . IEM3000_P1_POWER      (2/Float32)             [kW]   Active Power Phase 1
+  0x0bef,   //  7 . IEM3000_P2_POWER      (2/Float32)             [kW]   Active Power Phase 2
+  0x0bf1,   //  8 . IEM3000_P3_POWER      (2/Float32)             [kW]   Active Power Phase 3
   0x0c25,   //  9 . IEM3000_FREQUENCY     (2/Float32)             [Hz]   Frequency
-#ifdef IEM3000_IEM3155
-  0xb02b,   // 10 . IEM3000_TOTAL_ACTIVE  (2/Float32)             [Wh]   Total Active Energy Import
-#else
-  0xb02b,   // 10 . IEM3000_TOTAL_ACTIVE  (4/Int64)               [Wh]   Total Active Energy Import
-#endif 
+  0x0dbd,   //  10 . IEM3000_L1_IMPORT    (4/Int64)               [Wh]   Active Energy Import Phase 1
+  0x0dc1,   //  11 . IEM3000_L1_IMPORT    (4/Int64)               [Wh]   Active Energy Import Phase 1
+  0x0dc5,   //  12 . IEM3000_L1_IMPORT    (4/Int64)               [Wh]   Active Energy Import Phase 1
+  0x0c83,   //  13 . IEM3000_IMPORT       (4/Int64)               [Wh]   Total Active Energy Import
 };
 
-#ifdef IEM3000_IEM3155
-  #define FLOAT_ParamLimit 11
-#else
-  #define FLOAT_ParamLimit 10
-#endif 
+#define FLOAT_ParamLimit 10
 
 struct IEM3000 {
   uint8_t read_state = 0;
@@ -88,7 +83,7 @@ void IEM3000Every250ms(void)
     if (error) {
       AddLog(LOG_LEVEL_DEBUG, PSTR("SDM: Iem3000 error %d"), error);
     } else {
-      Energy.data_valid[0] = 0;
+      Energy->data_valid[0] = 0;
 
       //  0  1  2  3  4  5  6  7  8
       // SA FC BC Fh Fl Sh Sl Cl Ch
@@ -113,63 +108,58 @@ void IEM3000Every250ms(void)
 
       switch(Iem3000.read_state) {
         case 0:
-          Energy.current[0] = value;
+          Energy->current[0] = value;
           break;
 
         case 1:
-          Energy.current[1] = value;
+          Energy->current[1] = value;
           break;
 
         case 2:
-          Energy.current[2] = value;
+          Energy->current[2] = value;
           break;
 
         case 3:
-          Energy.voltage[0]  = value;
+          Energy->voltage[0]  = value;
           break;
 
         case 4:
-          Energy.voltage[1]  = value;
+          Energy->voltage[1]  = value;
           break;
 
         case 5:
-          Energy.voltage[2]  = value;
+          Energy->voltage[2]  = value;
           break;
 
         case 6:
-#ifdef IEM3000_IEM3155
-          Energy.active_power[0] = value*1000;
-#else
-          Energy.active_power[0] = value;
-#endif 
+          Energy->active_power[0] = value*1000;
           break;
 
         case 7:
-#ifdef IEM3000_IEM3155
-          Energy.active_power[1] = value*1000;
-#else
-          Energy.active_power[1] = value;
-#endif 
+          Energy->active_power[1] = value*1000;
           break;
 
         case 8:
-#ifdef IEM3000_IEM3155
-          Energy.active_power[2] = value*1000;
-#else
-          Energy.active_power[2] = value;
-#endif 
+          Energy->active_power[2] = value*1000;
           break;
 
         case 9:
-          Energy.frequency[0] = value;
+          Energy->frequency[0] = value;
           break;
 
         case 10:
-#ifdef IEM3000_IEM3155
-          Energy.import_active[0] = value;
-#else
-          Energy.import_active[0] = value64 * 0.001f;  // 1125 => 1.125
-#endif 
+          Energy->import_active[0] = value64/1000.0;
+          break;
+        
+        case 11:
+          Energy->import_active[1] = value64/1000.0;
+          break;
+
+        case 12:
+          Energy->import_active[2] = value64/1000.0;
+          break;
+
+        case 13:
           EnergyUpdateTotal();
           break;
       }
@@ -191,12 +181,12 @@ void IEM3000Every250ms(void)
 
 void Iem3000SnsInit(void)
 {
-  Iem3000Modbus = new TasmotaModbus(Pin(GPIO_IEM3000_RX), Pin(GPIO_IEM3000_TX));
+  Iem3000Modbus = new TasmotaModbus(Pin(GPIO_IEM3000_RX), Pin(GPIO_IEM3000_TX), Pin(GPIO_NRG_MBS_TX_ENA));
   uint8_t result = Iem3000Modbus->Begin(IEM3000_SPEED);
   if (result) {
     if (2 == result) { ClaimSerial(); }
-    Energy.phase_count = 3;
-    Energy.frequency_common = true;             // Use common frequency
+    Energy->phase_count = 3;
+    Energy->frequency_common = true;             // Use common frequency
   } else {
     TasmotaGlobal.energy_driver = ENERGY_NONE;
   }
@@ -213,7 +203,7 @@ void Iem3000DrvInit(void)
  * Interface
 \*********************************************************************************************/
 
-bool Xnrg16(uint8_t function)
+bool Xnrg16(uint32_t function)
 {
   bool result = false;
 

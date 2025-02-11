@@ -68,8 +68,8 @@ void MLX90614_Every_Second(void)
 
 #ifdef USE_WEBSERVER
  const char HTTP_IRTMP[] PROGMEM =
-  "{s}MXL90614 " "OBJ-" D_TEMPERATURE "{m}%s C" "{e}"
-  "{s}MXL90614 " "AMB-" D_TEMPERATURE "{m}%s C" "{e}";
+  "{s}MLX90614 " "OBJ-" D_TEMPERATURE "{m}%s C" "{e}"
+  "{s}MLX90614 " "AMB-" D_TEMPERATURE "{m}%s C" "{e}";
 #endif  // USE_WEBSERVER
 
 void MLX90614_Show(uint8_t json)
@@ -137,7 +137,7 @@ uint8_t MLX90614_crc8(uint8_t *addr, uint8_t len)
  * Interface
 \*********************************************************************************************/
 
-bool Xsns46(byte function)
+bool Xsns46(uint32_t function)
 {
   if (!I2cEnabled(XI2C_32)) { return false; }
 

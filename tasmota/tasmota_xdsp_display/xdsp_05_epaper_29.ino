@@ -62,10 +62,10 @@ void EpdInitDriver29(void) {
 
     // whiten display with full update, takes 3 seconds
     if (TasmotaGlobal.soft_spi_enabled) {
-      epd->Begin(Pin(GPIO_EPAPER29_CS), Pin(GPIO_SSPI_MOSI), Pin(GPIO_SSPI_SCLK));
+      epd->Begin(Pin(GPIO_EPAPER29_CS), Pin(GPIO_SSPI_MOSI), Pin(GPIO_SSPI_SCLK), Pin(GPIO_OLED_RESET), Pin(GPIO_SSPI_MISO));
     }
     else if (TasmotaGlobal.spi_enabled) {
-      epd->Begin(Pin(GPIO_EPAPER29_CS), Pin(GPIO_SPI_MOSI), Pin(GPIO_SPI_CLK));
+      epd->Begin(Pin(GPIO_EPAPER29_CS), Pin(GPIO_SPI_MOSI), Pin(GPIO_SPI_CLK), Pin(GPIO_OLED_RESET));
     }
 
     renderer = epd;
@@ -130,8 +130,6 @@ void EpdPrintLog29(void)
       DisplayFillScreen(last_row);
       renderer->DrawStringAt(0, epd_scroll, disp_screen_buffer[last_row], COLORED, 0);
 //      EpdDisplayFrame();
-
-      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_APPLICATION "[%s]"), txt);
     }
   }
 }
@@ -178,7 +176,7 @@ void EpdRefresh29(void)  // Every second
  * Interface
 \*********************************************************************************************/
 
-bool Xdsp05(uint8_t function)
+bool Xdsp05(uint32_t function)
 {
   bool result = false;
 
