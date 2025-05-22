@@ -11,25 +11,25 @@
 #include "be_mem.h"
 
 static void int64_toa(int64_t num, uint8_t* str) {
-	uint64_t sum = num;
+  uint64_t sum = num;
   if (num < 0) {
     sum = -num;
     str[0] = '-';
     str++;
   }
-	int len = 0;
-	do {
+  int len = 0;
+  do {
     str[len++] = '0' + sum % 10LL;
-		sum /= 10LL;
-	} while (sum);
-	str[len] = '\0';
+    sum /= 10LL;
+  } while (sum);
+  str[len] = '\0';
   /* strrev */
   int i, j;
-	for (i = 0, j = len - 1; i < j; i++, j--){
-		uint8_t a = str[i];
-		str[i] = str[j];
-		str[j] = a;
-	}
+  for (i = 0, j = len - 1; i < j; i++, j--){
+    uint8_t a = str[i];
+    str[i] = str[j];
+    str[j] = a;
+  }
 }
 
 /* constructor*/
@@ -194,6 +194,22 @@ int64_t* int64_div(bvm *vm, int64_t *i64, int64_t *j64) {
 }
 BE_FUNC_CTYPE_DECLARE(int64_div, "int64", "@.(int64)")
 
+int64_t* int64_shiftleft(bvm *vm, int64_t *i64, int32_t j32) {
+  int64_t* r64 = (int64_t*)be_malloc(vm, sizeof(int64_t));
+  // it's possible that arg j64 is nullptr, since class type does allow NULLPTR to come through.
+  *r64 = *i64 << j32;
+  return r64;
+}
+BE_FUNC_CTYPE_DECLARE(int64_shiftleft, "int64", "@(int64)i")
+
+int64_t* int64_shiftright(bvm *vm, int64_t *i64, int32_t j32) {
+  int64_t* r64 = (int64_t*)be_malloc(vm, sizeof(int64_t));
+  // it's possible that arg j64 is nullptr, since class type does allow NULLPTR to come through.
+  *r64 = *i64 >> j32;
+  return r64;
+}
+BE_FUNC_CTYPE_DECLARE(int64_shiftright, "int64", "@(int64)i")
+
 bbool int64_equals(int64_t *i64, int64_t *j64) {
   // it's possible that arg j64 is nullptr, since class type does allow NULLPTR to come through.
   int64_t j = 0;
@@ -304,15 +320,15 @@ be_local_closure(toint64,   /* name */
     &be_const_str_toint64,
     &be_const_str_solidified,
     ( &(const binstruction[ 9]) {  /* code */
-      0x4C040000,  //  0000  LDNIL	R1
-      0x1C040001,  //  0001  EQ	R1	R0	R1
-      0x78060001,  //  0002  JMPF	R1	#0005
-      0x4C040000,  //  0003  LDNIL	R1
-      0x80040200,  //  0004  RET	1	R1
-      0xB8060000,  //  0005  GETNGBL	R1	K0
-      0x5C080000,  //  0006  MOVE	R2	R0
-      0x7C040200,  //  0007  CALL	R1	1
-      0x80040200,  //  0008  RET	1	R1
+      0x4C040000,  //  0000  LDNIL  R1
+      0x1C040001,  //  0001  EQ  R1  R0  R1
+      0x78060001,  //  0002  JMPF  R1  #0005
+      0x4C040000,  //  0003  LDNIL  R1
+      0x80040200,  //  0004  RET  1  R1
+      0xB8060000,  //  0005  GETNGBL  R1  K0
+      0x5C080000,  //  0006  MOVE  R2  R0
+      0x7C040200,  //  0007  CALL  R1  1
+      0x80040200,  //  0008  RET  1  R1
     })
   )
 );
@@ -349,6 +365,8 @@ class be_class_int64 (scope: global, name: int64) {
   >=, ctype_func(int64_gte)
   <, ctype_func(int64_lt)
   <=, ctype_func(int64_lte)
+  <<, ctype_func(int64_shiftleft)
+  >>, ctype_func(int64_shiftright)
 
   tobytes, ctype_func(int64_tobytes)
   frombytes, static_ctype_func(int64_frombytes)

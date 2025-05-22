@@ -52,12 +52,14 @@
 
 // Common
 #define D_ABSOLUTE_HUMIDITY "Abs Humidity"
+#define D_ADDRESS "Address"
 #define D_ADMIN "Admin"
 #define D_AIR_QUALITY "Hava Kalitesi"
 #define D_AP "AP"                    // Access Point
 #define D_AS "as"
 #define D_AT "at"
 #define D_AUTO "OTOMATIK"
+#define D_AUTO_UPDATE "Auto Update"
 #define D_BATTERY "Battery"
 #define D_BATT "Batt"                // Short for Battery
 #define D_BATTERY_CHARGE "Charge"   // Battery charge in %
@@ -88,6 +90,7 @@
 #define D_DEBUG "Hata Ayıklama"
 #define D_DEWPOINT "Dew point"
 #define D_DISABLED "Etkin Değil"
+#define D_DISCONNECTED "Disconnected"
 #define D_DISTANCE "Mesage"
 #define D_DNS_SERVER "DNS Sunucu"
 #define D_DO "Disolved Oxygen"
@@ -776,6 +779,8 @@
 #define D_SENSOR_SDM630_RX     "SDM630 Rx"
 #define D_SENSOR_WE517_TX      "WE517 Tx"
 #define D_SENSOR_WE517_RX      "WE517 Rx"
+#define D_SENSOR_LD2402_TX     "LD2402 Tx"
+#define D_SENSOR_LD2402_RX     "LD2402 Rx"
 #define D_SENSOR_LD2410_TX     "LD2410 Tx"
 #define D_SENSOR_LD2410_RX     "LD2410 Rx"
 #define D_SENSOR_LD2410S_TX     "LD2410S Tx"
@@ -1011,12 +1016,18 @@
 #define D_SENSOR_ME007_RX      "ME007 Rx"
 #define D_SENSOR_TUYAMCUBR_TX  "TuyaMCUBr Tx"
 #define D_SENSOR_TUYAMCUBR_RX  "TuyaMCUBr Rx"
+#define D_SENSOR_TWAI_TX       "TWAI Tx"
+#define D_SENSOR_TWAI_RX       "TWAI Rx"
+#define D_SENSOR_TWAI_BO       "TWAI BusOff"
+#define D_SENSOR_TWAI_CLK      "TWAI ClkOut"
 #define D_SENSOR_BIOPDU_PZEM0XX_TX "BioPDU PZEM0XX Tx"
 #define D_SENSOR_BIOPDU_PZEM016_RX "BioPDU PZEM016 Rx"
 #define D_SENSOR_BIOPDU_BIT    "BioPDU Bit"
 #define D_SENSOR_LOX_O2_RX     "LoxO2 RX"
 #define D_GPIO_MAGIC_SWITCH    "MagicSwitch"
 #define D_SENSOR_WOOLIIS_RX    "Wooliis Rx"
+#define D_SENSOR_C8_CO2_5K_RX  "C8-CO2-5K Rx"
+#define D_SENSOR_C8_CO2_5K_TX  "C8-CO2-5K Tx"
 
 // Units
 #define D_UNIT_AMPERE "A"
@@ -1212,6 +1223,13 @@
 #define D_FP_PASSVERIFY "Password verified"    // 0x21 Verify the fingerprint passed
 #define D_FP_UNKNOWNERROR "Error"              // Any other error
 
+// xsns_90_hrg15.ino
+#define D_HRG_VALID "Valid"
+#define D_HRG_ACTIVE "Active"
+#define D_HRG_EVENT "Event"
+#define D_HRG_TOTAL "Total"
+#define D_HRG_FLOWRATE "Flow Rate"
+
 // xsns_96_flowratemeter.ino
 #define D_FLOWRATEMETER_NAME "Flowrate"
 #define D_FLOWRATEMETER_AMOUNT_TODAY "Amount Today"
@@ -1300,5 +1318,9 @@
 #define D_EXPORT                          "Export"
 #define D_CHARGING                        "Charging"
 #define D_CAPACITY                        "Capacity"
+
+// xnrg_25_v9240.ino
+#define D_SENSOR_V9240_TX "V9240 TX"
+#define D_SENSOR_V9240_RX "V9240 RX"
 
 #endif  // _LANGUAGE_TR_TR_H_

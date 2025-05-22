@@ -1803,6 +1803,10 @@ void LightAnimate(void)
       sleep_previous = TasmotaGlobal.sleep;     // save previous value of sleep
       TasmotaGlobal.sleep = PWM_MAX_SLEEP;      // set a maximum value (in milliseconds) to sleep to ensure that animations are smooth
     }
+    if (Settings->save_data) {
+      // Postpone save_data during animation
+      TasmotaGlobal.save_data_counter = 2;
+    }
   } else {
     if (sleep_previous > 0) {
       TasmotaGlobal.sleep = sleep_previous;
@@ -2050,7 +2054,15 @@ uint16_t fadeGamma(uint32_t channel, uint16_t v) {
 }
 uint16_t fadeGammaReverse(uint32_t channel, uint16_t vg) {
   if (isChannelGammaCorrected(channel)) {
-    return leddGammaReverseFast(vg);
+    return ledGammaReverseFast(vg);
+  } else {
+    return vg;
+  }
+}
+
+uint16_t fadeEndGammaReverse(uint32_t channel, uint16_t vg) {
+  if (isChannelGammaCorrected(channel)) {
+    return ledGammaReverse(vg);
   } else {
     return vg;
   }
@@ -2060,7 +2072,7 @@ uint8_t LightGetCurFadeBri(void) {
   uint8_t max_bri = 0;
   uint8_t bri_i = 0;
   for (uint8_t i = 0; i < LST_MAX; i++) {
-    bri_i = changeUIntScale(fadeGammaReverse(i, Light.fade_cur_10[i]), 4, 1023, 1, 100);
+    bri_i = changeUIntScale(fadeEndGammaReverse(i, Light.fade_cur_10[i]), 4, 1023, 1, 100);
     if (bri_i > max_bri) max_bri = bri_i ;
   }
   return max_bri;
@@ -2121,7 +2133,7 @@ bool LightApplyFade(void) {   // did the value chanegd and needs to be applied
     //Serial.printf("Fade: %d / %d - ", fade_current, Light.fade_duration);
     for (uint32_t i = 0; i < Light.subtype; i++) {
       Light.fade_cur_10[i] = fadeGamma(i,
-                                changeUIntScale(fadeGammaReverse(i, fade_current),
+                                changeUIntScale(fade_current,
                                              0, Light.fade_duration,
                                              fadeGammaReverse(i, Light.fade_start_10[i]),
                                              fadeGammaReverse(i, Light.fade_end_10[i])));

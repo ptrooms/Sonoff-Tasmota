@@ -18,6 +18,8 @@
 #include <ctype.h>
 #include "be_byteslib.h"
 
+static const char * hex = "0123456789ABCDEF";
+
 /********************************************************************
 ** Base64 lib from https://github.com/Densaugeo/base64_arduino
 **
@@ -250,6 +252,26 @@ static size_t buf_add2_le(buf_impl* attr, const uint16_t data) // append 16 bits
 static size_t buf_add2_be(buf_impl* attr, const uint16_t data) // append 16 bits value
 {
     if (attr->len < attr->size - 1) {    // do we have room for 2 bytes
+        attr->bufptr[attr->len++] = data >> 8;
+        attr->bufptr[attr->len++] = data;
+    }
+    return attr->len;
+}
+
+static size_t buf_add3_le(buf_impl* attr, const uint32_t data) // append 32 bits value
+{
+    if (attr->len < attr->size - 2) {     // do we have room for 4 bytes
+        attr->bufptr[attr->len++] = data;
+        attr->bufptr[attr->len++] = data >> 8;
+        attr->bufptr[attr->len++] = data >> 16;
+    }
+    return attr->len;
+}
+
+size_t buf_add3_be(buf_impl* attr, const uint32_t data) // append 32 bits value
+{
+    if (attr->len < attr->size - 2) {     // do we have room for 4 bytes
+        attr->bufptr[attr->len++] = data >> 16;
         attr->bufptr[attr->len++] = data >> 8;
         attr->bufptr[attr->len++] = data;
     }
@@ -715,7 +737,6 @@ buf_impl bytes_check_data(bvm *vm, size_t add_size) {
 }
 
 size_t be_bytes_tohex(char * out, size_t outsz, const uint8_t * in, size_t insz) {
-  static const char * hex = "0123456789ABCDEF";
   const uint8_t * pin = in;
   char * pout = out;
   for (; pin < in + insz; pout += 2, pin++) {
@@ -837,10 +858,12 @@ static int m_add(bvm *vm)
             case -1:    /* fallback below */
             case 1:     buf_add1(&attr, v);       break;
             case 2:     buf_add2_le(&attr, v);    break;
+            case 3:     buf_add3_le(&attr, v);    break;
             case 4:     buf_add4_le(&attr, v);    break;
             case -2:    buf_add2_be(&attr, v);    break;
+            case -3:    buf_add3_be(&attr, v);    break;
             case -4:    buf_add4_be(&attr, v);    break;
-            default:    be_raise(vm, "type_error", "size must be -4, -2, -1, 0, 1, 2 or 4.");
+            default:    be_raise(vm, "type_error", "size must be between -4 and 4.");
         }
         be_pop(vm, argc - 1);
         m_write_attributes(vm, 1, &attr);  /* update attributes */
@@ -1317,7 +1340,7 @@ static int m_copy(bvm *vm)
     be_return(vm); /* return self */
 }
 
-/* accept bytes or int as operand */
+/* accept bytes or int or nil as operand */
 static int m_connect(bvm *vm)
 {
     int argc = be_top(vm);
@@ -1329,8 +1352,6 @@ static int m_connect(bvm *vm)
             bytes_resize(vm, &attr, attr.len + 1); /* resize */
             buf_add1(&attr, be_toint(vm, 2));
             m_write_attributes(vm, 1, &attr);  /* update instance */
-            be_pushvalue(vm, 1);
-            be_return(vm); /* return self */
         } else if (be_isstring(vm, 2)) {
             const char *str = be_tostring(vm, 2);
             size_t str_len = strlen(str);
@@ -1339,19 +1360,78 @@ static int m_connect(bvm *vm)
                 buf_add_raw(&attr, str, str_len);
                 m_write_attributes(vm, 1, &attr);  /* update instance */
             }
-            be_pushvalue(vm, 1);
-            be_return(vm); /* return self */
         } else {
             buf_impl attr2 = m_read_attributes(vm, 2);
             check_ptr(vm, &attr2);
             bytes_resize(vm, &attr, attr.len + attr2.len); /* resize buf1 for total size */
             buf_add_buf(&attr, &attr2);
             m_write_attributes(vm, 1, &attr);  /* update instance */
-            be_pushvalue(vm, 1);
-            be_return(vm); /* return self */
         }
+        be_pushvalue(vm, 1);
+        be_return(vm); /* return self */
     }
     be_raise(vm, "type_error", "operand must be bytes or int or string");
+    be_return_nil(vm); /* return self */
+}
+
+static int m_appendhex(bvm *vm)
+{
+    int argc = be_top(vm);
+    buf_impl attr = m_read_attributes(vm, 1);
+    check_ptr_modifiable(vm, &attr);
+    if (attr.fixed) { be_raise(vm, BYTES_RESIZE_ERROR, BYTES_RESIZE_MESSAGE); }
+    if (argc >= 2 && be_isbytes(vm, 2)) {
+        buf_impl attr2 = m_read_attributes(vm, 2);
+        check_ptr(vm, &attr2);
+        bytes_resize(vm, &attr, attr.len + attr2.len * 2); /* resize */
+        
+        for (const uint8_t * pin = attr2.bufptr; pin < attr2.bufptr + attr2.len; pin++) {
+            buf_add1(&attr, hex[((*pin)>>4) & 0xF]);
+            buf_add1(&attr, hex[ (*pin)     & 0xF]);
+        }
+        
+        m_write_attributes(vm, 1, &attr);  /* update instance */
+        be_pushvalue(vm, 1);
+        be_return(vm); /* return self */
+    }
+    be_raise(vm, "type_error", "operand must be bytes");
+    be_return_nil(vm); /* return self */
+}
+
+static int m_appendb64(bvm *vm)
+{
+    int argc = be_top(vm);
+    buf_impl attr = m_read_attributes(vm, 1);
+    check_ptr_modifiable(vm, &attr);
+    if (attr.fixed) { be_raise(vm, BYTES_RESIZE_ERROR, BYTES_RESIZE_MESSAGE); }
+    if (argc >= 2 && be_isbytes(vm, 2)) {
+        buf_impl attr2 = m_read_attributes(vm, 2);
+        check_ptr(vm, &attr2);
+        int32_t idx = 0;            /* start from index 0 */
+        int32_t len = attr2.len;    /* entire len */
+        if (argc >= 3 && be_isint(vm, 3)) {         /* read optional idx and len */
+            idx = be_toint(vm, 3);
+            if (idx < 0) { idx = attr2.len + idx; } /* if negative, count from end */
+            if (idx < 0) { idx = 0; }               /* guardrails */
+            if (idx > attr2.len) { idx = attr2.len; }
+            if (argc >= 4 && be_isint(vm, 4)) {
+                len = be_toint(vm, 4);
+                if (len < 0) { len = 0; }
+            }
+            if (idx + len >= attr2.len) { len = attr2.len - idx; }
+        }
+        if (len > 0) {                              /* only if there is something to encode */
+            bytes_resize(vm, &attr, attr.len + encode_base64_length(len) + 1); /* resize */
+        
+            size_t converted = encode_base64(attr2.bufptr + idx, len, (unsigned char*)(attr.bufptr + attr.len));
+            attr.len += converted;
+            
+            m_write_attributes(vm, 1, &attr);  /* update instance */
+        }
+        be_pushvalue(vm, 1);
+        be_return(vm); /* return self */
+    }
+    be_raise(vm, "type_error", "operand must be bytes");
     be_return_nil(vm); /* return self */
 }
 
@@ -1841,6 +1921,8 @@ void be_load_byteslib(bvm *vm)
         { "reverse", m_reverse },
         { "copy", m_copy },
         { "append", m_connect },
+        { "appendhex", m_appendhex },
+        { "appendb64", m_appendb64 },
         { "+", m_merge },
         { "..", m_connect },
         { "==", m_equal },
@@ -1894,6 +1976,8 @@ class be_class_bytes (scope: global, name: bytes) {
     reverse, func(m_reverse)
     copy, func(m_copy)
     append, func(m_connect)
+    appendhex, func(m_appendhex)
+    appendb64, func(m_appendb64)
     +, func(m_merge)
     .., func(m_connect)
     ==, func(m_equal)

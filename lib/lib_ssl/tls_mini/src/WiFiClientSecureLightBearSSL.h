@@ -85,6 +85,10 @@ class WiFiClientSecure_light : public WiFiClient {
       _fingerprint2 = f2;
       _fingerprint_any = f_any;
       _insecure = true;
+      _rsa_only = true;     // if fingerprint, we limit to RSA only
+    }
+    void setRSAOnly(bool rsa_only) {
+      _rsa_only = rsa_only;
     }
     const uint8_t * getRecvPubKeyFingerprint(void) {
       return _recv_fingerprint;
@@ -133,7 +137,7 @@ class WiFiClientSecure_light : public WiFiClient {
     }
 
   private:
-    uint32_t _loopTimeout=5000;
+    uint32_t _loopTimeout=10000;
     void _clear();
     bool _ctx_present;
     std::shared_ptr<br_ssl_client_context> _sc;
@@ -150,6 +154,7 @@ class WiFiClientSecure_light : public WiFiClient {
 
     bool _fingerprint_any;            // accept all fingerprints
     bool _insecure;                   // force fingerprint
+    bool _rsa_only;                   // restrict to RSA only key exchange (no ECDSA - enabled to force RSA fingerprints)
     const uint8_t *_fingerprint1;          // fingerprint1 to be checked against
     const uint8_t *_fingerprint2;          // fingerprint2 to be checked against
     uint8_t _recv_fingerprint[20];   // fingerprint received
@@ -187,7 +192,8 @@ class WiFiClientSecure_light : public WiFiClient {
 #define ERR_CANT_RESOLVE_IP -1001
 #define ERR_TCP_CONNECT     -1002
 // #define ERR_MISSING_EC_KEY  -1003   // deprecated, AWS IoT is not called if the private key is not present
-#define ERR_MISSING_CA      -1004
+// #define ERR_MISSING_CA      -1004   // deprecated
+#define ERR_TLS_TIMEOUT     -1005
 
 // For reference, BearSSL error codes:
 // #define BR_ERR_OK                      0

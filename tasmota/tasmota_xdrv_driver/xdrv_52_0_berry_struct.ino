@@ -93,6 +93,12 @@ public:
   int32_t timeout = 0;                  // Berry heartbeat timeout, preventing code to run for too long. `0` means not enabled
   bool rules_busy = false;              // are we already processing rules, avoid infinite loop
   bool web_add_handler_done = false;    // did we already sent `web_add_handler` event
+#ifdef USE_BERRY_LEDS_PANEL
+  bool leds_panel_loaded = false; // did we already load Leds Panel
+#endif // USE_BERRY_LEDS_PANEL
+#ifdef USE_BERRY_LVGL_PANEL
+  bool lvgl_panel_loaded = true; // did we already load LVGL Panel, default true, changed to false when LVGL starts
+#endif // USE_BERRY_LVGL_PANEL
 #ifdef USE_BERRY_PARTITION_WIZARD
   bool partition_wizard_loaded = false; // did we already load Parition_Wizard
 #endif // USE_BERRY_PARTITION_WIZARD
@@ -124,6 +130,26 @@ struct BeBECCode_t {
 };
 
 const BeBECCode_t BECCode[] = {
+#ifdef USE_BERRY_LEDS_PANEL
+  {
+    "Leds Panel",
+    "leds_panel",
+    USE_BERRY_LEDS_PANEL_URL,
+    "/?",
+    &berry.leds_panel_loaded
+  },
+#endif // USE_BERRY_LEDS_PANEL
+
+#if defined(USE_BERRY_LVGL_PANEL) && defined(USE_LVGL)
+  {
+    "LVGL Mirroring",
+    "lvgl_panel",
+    USE_BERRY_LVGL_PANEL_URL,
+    "/?",
+    &berry.lvgl_panel_loaded
+  },
+#endif // USE_BERRY_LEDS_PANEL
+
 #ifdef USE_BERRY_PARTITION_WIZARD
   {
     "Partition Wizard",

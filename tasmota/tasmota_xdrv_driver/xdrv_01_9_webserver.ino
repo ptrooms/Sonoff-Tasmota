@@ -69,6 +69,10 @@ const uint16_t HTTP_OTA_RESTART_RECONNECT_TIME = 10000;  // milliseconds - Allow
   #include "./html_uncompressed/HTTP_HEADER1_ES6.h"
 #endif
 
+#ifdef USE_ALPINEJS
+#include "include/alpinejs.h"
+#endif  // USE_ALPINEJS
+
 const char HTTP_SCRIPT_COUNTER[] PROGMEM =
   "var cn=180;"                           // seconds
   "function u(){"
@@ -433,7 +437,7 @@ const char HTTP_COUNTER[] PROGMEM =
   "<br><div id='t' style='text-align:center;'></div>";
 
 const char HTTP_END[] PROGMEM =
-  "<div style='text-align:right;font-size:11px;'><hr/><a href='https://bit.ly/tasmota' target='_blank' style='color:#aaa;'>Tasmota %s %s " D_BY " Theo Arends</a></div>"
+  "<div style='text-align:right;font-size:11px;'><hr/><a href='https://github.com/arendst/Tasmota' target='_blank' style='color:#aaa;'>Tasmota %s %s " D_BY " Theo Arends</a></div>"
   "</div>"
   "</body>"
   "</html>";
@@ -664,6 +668,9 @@ void StartWebserver(int type) {
 //      Webserver->on(F("/u2"), HTTP_POST, HandleUploadDone, HandleUploadLoop);  // this call requires 2 functions so we keep a direct call
       Webserver->on("/u2", HTTP_POST, HandleUploadDone, HandleUploadLoop);  // this call requires 2 functions so we keep a direct call
 #ifndef FIRMWARE_MINIMAL
+#ifdef USE_ALPINEJS
+      Webserver->on("/alpinejs", HTTP_ANY, HandleAlpinejsRequest);
+#endif // USE_ALPINEJS
       XdrvXsnsCall(FUNC_WEB_ADD_HANDLER);
 #endif  // Not FIRMWARE_MINIMAL
 
@@ -677,8 +684,7 @@ void StartWebserver(int type) {
     Webserver->begin(); // Web server start
   }
   if (Web.state != type) {
-    AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_HTTP D_WEBSERVER_ACTIVE_ON " %s%s " D_WITH_IP_ADDRESS " %s"),
-      NetworkHostname(), (Mdns.begun) ? PSTR(".local") : "", IPGetListeningAddressStr().c_str());
+    AddLogServerActive(PSTR(D_LOG_HTTP "Web"));
     TasmotaGlobal.rules_flag.http_init = 1;
     Web.state = type;
   }
@@ -985,11 +991,12 @@ void WSContentSendStyle_P(const char* formatP, ...) {
   WebColor(COL_TEXT_WARNING),
 #endif
   WebColor(COL_TITLE),
-  (Web.initial_config) ? "" : (Settings->flag5.gui_module_name) ? "" : ModuleName().c_str(), SettingsTextEscaped(SET_DEVICENAME).c_str());
+  (Web.initial_config) ? "" : (Settings->flag5.gui_module_name) ? "" : ModuleName().c_str(),  // SetOption141 - (GUI) Disable display of GUI module name (1)
+  (Settings->flag6.gui_device_name) ? "" : SettingsTextEscaped(SET_DEVICENAME).c_str());      // SetOption163 - (GUI) Disable display of GUI device name (1)
 
   // SetOption53 - Show hostname and IP address in GUI main menu
 #if (RESTART_AFTER_INITIAL_WIFI_CONFIG)
-  if (Settings->flag3.gui_hostname_ip) {               // SetOption53  - (GUI) Show hostname and IP address in GUI main menu
+  if (Settings->flag3.gui_hostname_ip) {            // SetOption53 - (GUI) Show hostname and IP address in GUI main menu
 #else
   if ( Settings->flag3.gui_hostname_ip || ( (WiFi.getMode() == WIFI_AP_STA) && (!Web.initial_config) )  ) {
 #endif
@@ -1931,6 +1938,25 @@ bool HandleRootStatusRefresh(void) {
 }
 
 #ifndef FIRMWARE_MINIMAL
+
+#ifdef USE_ALPINEJS
+/*********************************************************************************************\
+ * Serve AlpineJS 2.8.2 in gzip format
+ * Content-Encoding: gzip
+ * Content-Type: text/javascript
+\*********************************************************************************************/
+
+void HandleAlpinejsRequest(void) {
+  Webserver->client().flush();
+  WSHeaderSend();
+  Webserver->sendHeader(F("Content-Encoding"), F("gzip"));
+  Webserver->sendHeader(F("Vary"), F("Accept-Encoding"));
+  Webserver->setContentLength(sizeof(alpine_min_js_gz));
+  Webserver->send(200, PSTR("text/javascript"), "");
+  Webserver->sendContent_P(alpine_min_js_gz, sizeof(alpine_min_js_gz));
+  Webserver->client().stop();
+}
+#endif  // USE_ALPINEJS
 
 /*********************************************************************************************\
  * HandleConfiguration

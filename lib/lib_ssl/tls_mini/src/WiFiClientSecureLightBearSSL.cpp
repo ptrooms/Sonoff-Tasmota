@@ -195,6 +195,7 @@ void WiFiClientSecure_light::_clear() {
   _recvapp_buf = nullptr;
   _recvapp_len = 0;
   _insecure = false;  // set to true when calling setPubKeyFingerprint()
+  _rsa_only = true;   // for now we disable ECDSA by default
   _fingerprint_any = true; // by default accept all fingerprints
   _fingerprint1 = nullptr;
   _fingerprint2 = nullptr;
@@ -302,7 +303,9 @@ int WiFiClientSecure_light::connect(IPAddress ip, uint16_t port, int32_t timeout
     setLastError(ERR_TCP_CONNECT);
     return 0;
   }
-  return _connectSSL(_domain.isEmpty() ? nullptr : _domain.c_str());
+  bool success = _connectSSL(_domain.isEmpty() ? nullptr : _domain.c_str());
+  if (!success) { stop(); }
+  return success;
 }
 #else // ESP32
 int WiFiClientSecure_light::connect(IPAddress ip, uint16_t port) {
@@ -312,7 +315,9 @@ int WiFiClientSecure_light::connect(IPAddress ip, uint16_t port) {
     setLastError(ERR_TCP_CONNECT);
     return 0;
   }
-  return _connectSSL(_domain.isEmpty() ? nullptr : _domain.c_str());
+  bool success = _connectSSL(_domain.isEmpty() ? nullptr : _domain.c_str());
+  if (!success) { stop(); }
+  return success;
 }
 #endif
 
@@ -569,6 +574,7 @@ int WiFiClientSecure_light::_run_until(unsigned target, bool blocking) {
     
     if (((int32_t)(millis() - (t + this->_loopTimeout)) >= 0)){
       DEBUG_BSSL("_run_until: Timeout\n");
+      setLastError(ERR_TLS_TIMEOUT);
       return -1;
     }
 
@@ -813,8 +819,10 @@ extern "C" {
 
       // The tag string doesn't really matter, but it should differ depending on
       // key type. For ECDSA it's a fixed string.
-      sha1_update_len(&shactx, "ecdsa-sha2-nistp256", 19); // tag
-      sha1_update_len(&shactx, eckey.q, eckey.qlen);       // exponent
+      sha1_update_len(&shactx, "ecdsa", 5); // tag
+      int32_t curve = htonl(eckey.curve);
+      sha1_update_len(&shactx, &curve, 4);   // curve id as int32be
+      sha1_update_len(&shactx, eckey.q, eckey.qlen);       // public point
     }
   #endif
     else {
@@ -888,16 +896,27 @@ extern "C" {
     BR_TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
     BR_TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
   };
+  static const uint16_t suites_RSA_ONLY[] = {
+    BR_TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+  };
 #endif
 
   // Default initializion for our SSL clients
-  static void br_ssl_client_base_init(br_ssl_client_context *cc) {
+  static void br_ssl_client_base_init(br_ssl_client_context *cc, bool _rsa_only) {
     br_ssl_client_zero(cc);
     // forbid SSL renegotiation, as we free the Private Key after handshake
     br_ssl_engine_add_flags(&cc->eng, BR_OPT_NO_RENEGOTIATION);
 
     br_ssl_engine_set_versions(&cc->eng, BR_TLS12, BR_TLS12);
+#ifdef ESP8266
     br_ssl_engine_set_suites(&cc->eng, suites, (sizeof suites) / (sizeof suites[0]));
+#else
+    if (_rsa_only) {
+      br_ssl_engine_set_suites(&cc->eng, suites_RSA_ONLY, (sizeof suites_RSA_ONLY) / (sizeof suites_RSA_ONLY[0]));
+    } else {
+      br_ssl_engine_set_suites(&cc->eng, suites, (sizeof suites) / (sizeof suites[0]));
+    }
+#endif
     br_ssl_client_set_default_rsapub(cc);
     br_ssl_engine_set_default_rsavrfy(&cc->eng);
 
@@ -945,7 +964,7 @@ bool WiFiClientSecure_light::_connectSSL(const char* hostName) {
     _ctx_present = true;
     _eng = &_sc->eng; // Allocation/deallocation taken care of by the _sc shared_ptr
 
-    br_ssl_client_base_init(_sc.get());
+    br_ssl_client_base_init(_sc.get(), _rsa_only);
     if (_alpn_names && _alpn_num > 0) {
       br_ssl_engine_set_protocol_names(_eng, _alpn_names, _alpn_num);
     }
@@ -980,16 +999,16 @@ bool WiFiClientSecure_light::_connectSSL(const char* hostName) {
     br_ssl_engine_set_buffers_bidi(_eng, _iobuf_in.get(), _iobuf_in_size, _iobuf_out.get(), _iobuf_out_size);
 
     // ============================================================
-    // allocate Private key if needed, only if USE_MQTT_AWS_IOT
+    // allocate Private key if needed, only if USE_MQTT_CLIENT_CERT
     LOG_HEAP_SIZE("_connectSSL before PrivKey allocation");
-  #ifdef USE_MQTT_AWS_IOT
+  #if defined(USE_MQTT_CLIENT_CERT)
     // ============================================================
-    // Set the EC Private Key, only USE_MQTT_AWS_IOT
+    // Set the EC Private Key, only USE_MQTT_CLIENT_CERT
     // limited to P256 curve
     br_ssl_client_set_single_ec(_sc.get(), _chain_P, 1,
                                 _sk_ec_P, _allowed_usages,
                                 _cert_issuer_key_type, &br_ec_p256_m15, br_ecdsa_sign_asn1_get_default());
-  #endif // USE_MQTT_AWS_IOT
+  #endif // USE_MQTT_CLIENT_CERT
 
     // ============================================================
     // Start TLS connection, ALL
