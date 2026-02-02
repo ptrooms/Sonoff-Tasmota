@@ -32,7 +32,7 @@
 #endif
 
 #ifdef ESP32                       // ESP32 family only. Use define USE_HM10 for ESP8266 support
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32C2 || CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C6 || CONFIG_IDF_TARGET_ESP32S3
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32C2 || CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C5 || CONFIG_IDF_TARGET_ESP32C6 || CONFIG_IDF_TARGET_ESP32S3
 #ifdef USE_BLE_ESP32
 
 /*
@@ -154,9 +154,18 @@ i.e. the Bluetooth of the ESP can be shared without conflict.
 
 #include <NimBLEDevice.h>
 #include <NimBLEAdvertisedDevice.h>
-#include "NimBLEEddystoneURL.h"
+// #include "NimBLEEddystoneURL.h"
 #include "NimBLEEddystoneTLM.h"
 #include "NimBLEBeacon.h"
+
+// The LOG_LEVEL macros are used to set the log level for the NimBLE stack, but they pollute the global namespace and would override the loglevel enum of Tasmota.
+// So we undefine them here to avoid conflicts.
+#undef LOG_LEVEL_DEBUG
+#undef LOG_LEVEL_INFO
+#undef LOG_LEVEL_WARN
+#undef LOG_LEVEL_ERROR
+#undef LOG_LEVEL_CRITICAL
+#undef LOG_LEVEL_NONE
 
 // assume this hack is still valid.
 #define DEPENDSONNIMBLEARDUINO 1
@@ -254,7 +263,7 @@ struct generic_sensor_t {
 ////////////////////////////////////////////////////////////////
 // structure for callbacks from other drivers from advertisements.
 struct ble_advertisment_t {
-  BLEAdvertisedDevice *advertisedDevice; // the full NimBLE advertisment, in case people need MORE info.
+  const BLEAdvertisedDevice *advertisedDevice; // the full NimBLE advertisment, in case people need MORE info.
   uint32_t totalCount;
 
   uint8_t addr[6];
@@ -1232,10 +1241,10 @@ void setDetails(ble_advertisment_t *ad){
     maxlen -= len;
   }
 
-  BLEAdvertisedDevice *advertisedDevice = ad->advertisedDevice;
+  const BLEAdvertisedDevice *advertisedDevice = ad->advertisedDevice;
 
-  uint8_t* payload = advertisedDevice->getPayload();
-  size_t payloadlen = advertisedDevice->getPayloadLength();
+  const uint8_t* payload = advertisedDevice->getPayload().data();
+  size_t payloadlen = advertisedDevice->getPayload().size();
   if (payloadlen  && (maxlen > 30)){ // will truncate if not enough space
     strcpy(p, ",\"p\":\"");
     p += 6;
@@ -1367,11 +1376,11 @@ static BLESensorCallback clientCB;
 
 
 class BLEAdvCallbacks: public NimBLEScanCallbacks {
-  void onScanEnd(NimBLEScanResults results) {
+  void onScanEnd(const NimBLEScanResults& results, int reason) {
     BLEscanEndedCB(results);
   }
 
-  void onResult(NimBLEAdvertisedDevice* advertisedDevice) {
+  void onResult(const NimBLEAdvertisedDevice* advertisedDevice) {
     TasAutoMutex localmutex(&BLEOperationsRecursiveMutex, "BLEAddCB");
     uint64_t now = esp_timer_get_time();
     BLEScanLastAdvertismentAt = now; // note the time of the last advertisment
@@ -1388,7 +1397,7 @@ class BLEAdvCallbacks: public NimBLEScanCallbacks {
 
     BLEAdvertisment.addrtype = address.getType();
 
-    memcpy(BLEAdvertisment.addr, address.getNative(), 6);
+    memcpy(BLEAdvertisment.addr, address.getVal(), 6);
     ReverseMAC(BLEAdvertisment.addr);
 
     BLEAdvertisment.RSSI = RSSI;
@@ -1529,7 +1538,7 @@ static void BLEGenNotifyCB(NimBLERemoteCharacteristic* pRemoteCharacteristic, ui
   if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: Notified length: %u"),length);
 #endif
   // find the operation this is associated with
-  NimBLERemoteService *pSvc = pRemoteCharacteristic->getRemoteService();
+  const NimBLERemoteService *pSvc = pRemoteCharacteristic->getRemoteService();
 
   if (!pSvc){
 #ifdef BLE_ESP32_DEBUG
@@ -1910,6 +1919,10 @@ static void BLETaskRunCurrentOperation(BLE_ESP32::generic_sensor_t** pCurrentOpe
   int newstate = GEN_STATE_STARTED;
   op->state = GEN_STATE_STARTED;
 
+  char addrstr[13];
+  const uint8_t* m_address = op->addr.getVal();
+  snprintf(addrstr, sizeof(addrstr), "%02X%02X%02X%02X%02X%02X", m_address[5], m_address[4], m_address[3], m_address[2], m_address[1], m_address[0]);
+
 #ifdef BLE_ESP32_DEBUG
   if (BLEDebugMode > 0) AddLog(LOG_LEVEL_DEBUG,PSTR("BLE: BLETask: attempt connect %s"), ((std::string)op->addr).c_str());
 #endif
@@ -2120,21 +2133,21 @@ static void BLETaskRunCurrentOperation(BLE_ESP32::generic_sensor_t** pCurrentOpe
 
     switch (rc){
       case (0x0200+BLE_ERR_CONN_LIMIT ):
-        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Hit connection limit? - restarting NimBLE"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("BLE: %s: Hit connection limit? - restarting NimBLE"), addrstr);
         BLERestartNimBLE = 1;
         BLERestartBLEReason = BLE_RESTART_BLE_REASON_CONN_LIMIT;
         break;
       case (0x0200+BLE_ERR_ACL_CONN_EXISTS):
-        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Connection exists? - restarting NimBLE"));
+        AddLog(LOG_LEVEL_ERROR, PSTR("BLE: %s: Connection exists? - restarting NimBLE"), addrstr);
         BLERestartNimBLE = 1;
         BLERestartBLEReason = BLE_RESTART_BLE_REASON_CONN_EXISTS;
         break;
     }
     if (rc){
-      AddLog(LOG_LEVEL_ERROR,PSTR("BLE: failed to connect to device low level rc 0x%x"), rc);
+      AddLog(LOG_LEVEL_ERROR, PSTR("BLE: %s: Failed to connect to device low level rc 0x%X"), addrstr, rc);
     }
     // failed to connect
-    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: failed to connect to device"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("BLE: %s: Failed to connect to device"), addrstr);
   }
   op->state = newstate;
 }
@@ -2165,7 +2178,7 @@ static void BLETaskRunTaskDoneOperation(BLE_ESP32::generic_sensor_t** op, NimBLE
       }
       waits++;
       if (waits == 5){
-        int conn_id = (*ppClient)->getConnId();
+        int conn_id = (*ppClient)->getConnHandle();
 #ifdef DEPENDSONNIMBLEARDUINO        
         ble_gap_conn_broken(conn_id, -1);
 #endif        
@@ -2475,7 +2488,7 @@ int extQueueOperation(BLE_ESP32::generic_sensor_t** op){
   }
 
   if (!BLEMasterEnable){
-    AddLog(LOG_LEVEL_ERROR,PSTR("BLE: extQueueOperation: BLE is deiabled"));
+    AddLog(LOG_LEVEL_ERROR, PSTR("BLE: extQueueOperation: BLE is disabled"));
     return 0;
   }
 
@@ -2977,7 +2990,7 @@ void CmndBLEAlias(void){
           return;
         }
 
-        AddLog(LOG_LEVEL_ERROR,PSTR("BLE: Add Alias mac %s = name %s"), mac, p);
+        AddLog(LOG_LEVEL_INFO, PSTR("BLE: Add Alias mac %s = name %s"), mac, p);
         if (addAlias( addr, name )){
           added++;
         }
@@ -3512,7 +3525,7 @@ std::string BLETriggerResponse(generic_sensor_t *toSend){
   if (toSend->addr != NimBLEAddress()){
     out = out + "\",\"MAC\":\"";
     uint8_t addrrev[6];
-    memcpy(addrrev, toSend->addr.getNative(), 6);
+    memcpy(addrrev, toSend->addr.getVal(), 6);
     ReverseMAC(addrrev);
     dump(temp, 13, addrrev, 6);
     out = out + temp;
@@ -3568,7 +3581,7 @@ std::string BLETriggerResponse(generic_sensor_t *toSend){
 #define WEB_HANDLE_BLE "ble"
 
 const char HTTP_BTN_MENU_BLE[] PROGMEM =
-  "<p><form action='" WEB_HANDLE_BLE "' method='get'><button>" D_CONFIGURE_BLE "</button></form></p>";
+  "<p></p><form action='" WEB_HANDLE_BLE "' method='get'><button>" D_CONFIGURE_BLE "</button></form>";
 
 const char HTTP_FORM_BLE[] PROGMEM =
   "<fieldset><legend><b>&nbsp;" D_BLE_PARAMETERS "&nbsp;</b></legend>"

@@ -262,6 +262,7 @@ void MqttInit(void) {
     if (!Settings->flag5.tls_use_fingerprint) {
       tlsClient->setTrustAnchor(Tasmota_TA, nitems(Tasmota_TA));
     }
+    tlsClient->setECDSA(Settings->flag6.tls_use_ecdsa);
 
     MqttClient.setClient(*tlsClient);
   } else {
@@ -1391,6 +1392,17 @@ void MqttReconnect(void) {
       120 : 376 : BR_ALERT_NO_APPLICATION_PROTOCOL
 */
       AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "TLS connection error: %d"), tlsClient->getLastError());
+
+#if defined(ESP32) || (defined(ESP8266) && defined(USE_MQTT_TLS_ECDSA))
+      if (tlsClient->getLastError() == 296) {
+        // in this special case of cipher mismatch, we force enable ECDSA
+        // this would be the case for newer letsencrypt certificates now defaulting
+        // to EC certificates requiring ECDSA instead of RSA
+        Settings->flag6.tls_use_ecdsa = true;
+        tlsClient->setECDSA(Settings->flag6.tls_use_ecdsa);
+        AddLog(LOG_LEVEL_INFO, PSTR(D_LOG_MQTT "TLS now enabling ECDSA 'SetOption165 1'"), tlsClient->getLastError());
+      }
+#endif // defined(ESP32) || (defined(ESP8266) && defined(USE_MQTT_TLS_ECDSA))
     }
 #endif
 /*
@@ -1408,6 +1420,18 @@ void MqttReconnect(void) {
 */
     MqttDisconnected(MqttClient.state());
   }
+#ifdef USE_MQTT_TLS
+  if (Mqtt.mqtt_tls) {
+    int32_t cipher_suite = tlsClient->getLastCipherSuite();
+    if (BR_TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 == cipher_suite) {
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "TLS cipher suite: %s"), PSTR("ECDHE_RSA_AES_128_GCM_SHA256"));
+    } else if (BR_TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 == cipher_suite) {
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "TLS cipher suite: %s"), PSTR("ECDHE_ECDSA_AES_128_GCM_SHA256"));
+    } else if (0 != cipher_suite) {
+      AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "TLS cipher suite: 0x%04X"), cipher_suite);
+    }
+  }
+#endif // USE_MQTT_TLS
 }
 
 void MqttCheck(void) {
@@ -2028,7 +2052,7 @@ void CmndTlsDump(void) {
 const char S_CONFIGURE_MQTT[] PROGMEM = D_CONFIGURE_MQTT;
 
 const char HTTP_BTN_MENU_MQTT[] PROGMEM =
-  "<p><form action='" WEB_HANDLE_MQTT "' method='get'><button>" D_CONFIGURE_MQTT "</button></form></p>";
+  "<p></p><form action='" WEB_HANDLE_MQTT "' method='get'><button>" D_CONFIGURE_MQTT "</button></form>";
 
 const char HTTP_FORM_MQTT1[] PROGMEM =
   "<fieldset><legend><b>&nbsp;" D_MQTT_PARAMETERS "&nbsp;</b></legend>"
@@ -2116,6 +2140,17 @@ bool Xdrv02(uint32_t function)
       case FUNC_WEB_ADD_HANDLER:
         WebServer_on(PSTR("/" WEB_HANDLE_MQTT), HandleMqttConfiguration);
         break;
+#ifdef USE_WEB_STATUS_LINE
+      case FUNC_WEB_STATUS_RIGHT:
+        if (MqttIsConnected()) {
+          if (MqttTLSEnabled()) {
+            WSContentStatusSticker(PSTR(D_MQTT_TLS_ENABLE));
+          } else {
+            WSContentStatusSticker(PSTR(D_MQTT));
+          }
+        }
+        break;
+#endif  // USE_WEB_STATUS_LINE
 #endif  // not FIRMWARE_MINIMAL
 #endif  // USE_WEBSERVER
       case FUNC_COMMAND:

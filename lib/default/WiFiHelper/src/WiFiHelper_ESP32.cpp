@@ -27,8 +27,8 @@ enum LoggingLevels {LOG_LEVEL_NONE, LOG_LEVEL_ERROR, LOG_LEVEL_INFO, LOG_LEVEL_D
 
 
 #ifdef USE_IPV6
-ip_addr_t dns_save4[DNS_MAX_SERVERS] = {};      // IPv4 DNS servers
-ip_addr_t dns_save6[DNS_MAX_SERVERS] = {};      // IPv6 DNS servers
+ip_addr_t dns_save4[2] = {};      // IPv4 DNS servers
+ip_addr_t dns_save6[2] = {};      // IPv6 DNS servers
 #endif // USE_IPV6
 
 #include "tasmota_options.h"
@@ -76,48 +76,72 @@ extern bool WifiHasIPv6(void);
 extern bool EthernetHasIPv6(void);
 
 void WiFiHelper::scrubDNS(void) {
+  // AddLog(LOG_LEVEL_DEBUG, "IP>1: dns_save4 %s %s dns_save6 %s %s",
+  //     IPAddress(&dns_save4[0]).toString().c_str(),IPAddress(&dns_save4[1]).toString().c_str(),
+  //     IPAddress(&dns_save6[0]).toString().c_str(),IPAddress(&dns_save6[1]).toString().c_str());
   // String dns_entry0 = IPAddress(dns_getserver(0)).toString();
   // String dns_entry1 = IPAddress(dns_getserver(1)).toString();
+
   // scan DNS entries
   bool has_v4 = WifiHasIPv4() || EthernetHasIPv4();
   bool has_v6 = false;
 #ifdef USE_IPV6
   has_v6 = WifiHasIPv6() || EthernetHasIPv6();
 #endif
+  // AddLog(LOG_LEVEL_DEBUG, "IP>1: DNS: (%s %s) has4/6:%i-%i", dns_entry0.c_str(), dns_entry1.c_str(), has_v4, has_v6);
 
-  // First pass, save values
-  for (uint32_t i=0; i<DNS_MAX_SERVERS; i++) {
 #ifdef USE_IPV6
+  // First pass, save values
+  for (uint32_t i=0; i<2; i++) {
     const IPAddress ip_dns = IPAddress(dns_getserver(i));
     // Step 1. save valid values from DNS
     if (!ip_addr_isany_val((const ip_addr_t &)ip_dns)) {
-      if (ip_dns.type() == IPv4 && has_v4) {
-        ip_dns.to_ip_addr_t(&dns_save4[i]);
-        // dns_save4[i] = (ip_addr_t) ip_dns;    // dns entry is populated, save it in v4 slot
+      if (ip_dns.type() == IPv4 && (has_v4 || !has_v6)) {
+        ip_dns.to_ip_addr_t(&dns_save4[i]);       // dns entry is populated, save it in v4 slot
       } else if (has_v6) {
-        ip_dns.to_ip_addr_t(&dns_save6[i]);
-        // dns_save6[i] = (ip_addr_t) ip_dns;    // dns entry is populated, save it in v6 slot
+        ip_dns.to_ip_addr_t(&dns_save6[i]);       // dns entry is populated, save it in v6 slot
       }
     }
-
-    // Step 2. scrub addresses not supported
-    if (!has_v4) { dns_save4[i] = *IP4_ADDR_ANY; }
-    if (!has_v6) { dns_save6[i] = *IP_ADDR_ANY; }
-
-    // Step 3. restore saved value
-    if (has_v4 && has_v6) {   // if both IPv4 and IPv6 are active, prefer IPv4
-      if (!ip_addr_isany_val(dns_save4[i])) { dns_setserver(i, &dns_save4[i]); }
-      else { dns_setserver(i, &dns_save6[i]); }
-    } else if (has_v4) {
-      dns_setserver(i, &dns_save4[i]);
-    } else if (has_v6) {
-      dns_setserver(i, &dns_save6[i]);
-    } else {
-      dns_setserver(i, IP4_ADDR_ANY);
-    }
-#endif // USE_IPV6
   }
-  // AddLog(LOG_LEVEL_DEBUG, "IP>: DNS: from(%s %s) to (%s %s) has4/6:%i-%i", dns_entry0.c_str(), dns_entry1.c_str(), IPAddress(dns_getserver(0)).toString().c_str(),  IPAddress(dns_getserver(1)).toString().c_str(), has_v4, has_v6);
+
+  // Step 2. scrub addresses not supported
+  if (!has_v4 && has_v6) {            // v6 only
+    dns_save4[0] = *IP4_ADDR_ANY;
+    dns_save4[1] = *IP4_ADDR_ANY;
+  }
+  if (!has_v6) {
+    dns_save6[0] = *IP_ADDR_ANY;
+    dns_save6[1] = *IP_ADDR_ANY;
+  }
+
+  // Step 3. restore saved value
+  if (has_v4 && has_v6) {   // if both IPv4 and IPv6 are active, prefer IPv4 for first and IPv6 for second
+    if (!ip_addr_isany_val(dns_save4[0])) {
+      // First DNS IPv4
+      dns_setserver(0, &dns_save4[0]);
+      if (!ip_addr_isany_val(dns_save6[0])) {
+        dns_setserver(1, &dns_save6[0]);    // take first IPv6 as second DNS
+      } else {
+        dns_setserver(1, &dns_save4[1]);    // or revert to second IPv4
+      }
+    } else {
+      // If no DNS IPv4, use IPv6
+      dns_setserver(0, &dns_save6[0]);
+      dns_setserver(1, &dns_save6[1]);
+    }
+  } else if (has_v6) {                      // v6 and no v4
+    dns_setserver(0, &dns_save6[0]);
+    dns_setserver(1, &dns_save6[1]);
+  } else {                                  // no v6, we use v4 even if not connected
+    dns_setserver(0, &dns_save4[0]);
+    dns_setserver(1, &dns_save4[1]);
+  }
+#endif // USE_IPV6
+  // AddLog(LOG_LEVEL_DEBUG, "IP>2: DNS: from(%s %s) to (%s %s) has4/6:%i-%i", dns_entry0.c_str(), dns_entry1.c_str(), IPAddress(dns_getserver(0)).toString().c_str(),  IPAddress(dns_getserver(1)).toString().c_str(), has_v4, has_v6);
+
+  // AddLog(LOG_LEVEL_DEBUG, "IP>2: dns_save4 %s %s dns_save6 %s %s",
+  //     IPAddress(&dns_save4[0]).toString().c_str(),IPAddress(&dns_save4[1]).toString().c_str(),
+  //     IPAddress(&dns_save6[0]).toString().c_str(),IPAddress(&dns_save6[1]).toString().c_str());
 }
 
 
@@ -156,9 +180,7 @@ int WiFiHelper::getPhyMode() {
 bool WiFiHelper::setPhyMode(WiFiPhyMode_t mode) {
   uint8_t protocol_bitmap = WIFI_PROTOCOL_11B;      // 1
   switch (mode) {
-#if ESP_IDF_VERSION_MAJOR >= 5
     case 4: protocol_bitmap |= WIFI_PROTOCOL_11AX;  // 16
-#endif
     case 3: protocol_bitmap |= WIFI_PROTOCOL_11N;   // 4
     case 2: protocol_bitmap |= WIFI_PROTOCOL_11G;   // 2
   }
@@ -336,21 +358,20 @@ int WiFiHelper::hostByName(const char* aHostname, IPAddress& aResult)
   return WiFiHelper::hostByName(aHostname, aResult, WifiDNSGetTimeout());
 }
 
-#if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "esp_mac.h"
-#endif
 
 String WiFiHelper::macAddress(void) {
-#if (ESP_IDF_VERSION_MAJOR < 5)
-  return WiFi.macAddress();
-#else
   uint8_t mac[6] = {0,0,0,0,0,0};
   char macStr[18] = { 0 };
-
-  esp_read_mac(mac, ESP_MAC_WIFI_STA);
+#ifdef CONFIG_SOC_HAS_WIFI
+  esp_read_mac(mac, ESP_MAC_WIFI_STA);  // Local WiFi station MAC address
+#elif CONFIG_ESP_WIFI_REMOTE_ENABLED
+  WiFi.macAddress(mac);                 // Remote WiFi station MAC address (devices without WiFi but hostedMCU)
+#else   // No CONFIG_SOC_HAS_WIFI
+  esp_read_mac(mac, ESP_MAC_BASE);      // Local hardware base MAC address
+#endif  // CONFIG_SOC_HAS_WIFI
   snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
   return String(macStr);
-#endif
 }
 
-#endif // ESP32
+#endif  // ESP32

@@ -202,6 +202,9 @@ extern "C" uint32_t _FS_start;      // 1M = 0x402fb000, 2M = 0x40300000, 4M = 0x
 const uint32_t FLASH_FS_START = (((uint32_t)&_FS_start - 0x40200000) / SPI_FLASH_SEC_SIZE);
 uint32_t SETTINGS_LOCATION = FLASH_FS_START -1;                                                 // 0xFA, 0x0FF or 0x0FF
 
+extern "C" uint32_t _FS_end;
+const uint32_t FLASH_FS_SIZE = (uint32_t)&_FS_end - (uint32_t)&_FS_start;
+
 // From libraries/EEPROM/EEPROM.cpp EEPROMClass
 extern "C" uint32_t _EEPROM_start;  // 1M = 0x402FB000, 2M = 0x403FB000, 4M = 0x405FB000
 const uint32_t EEPROM_LOCATION = ((uint32_t)&_EEPROM_start - 0x40200000) / SPI_FLASH_SEC_SIZE;  // 0xFB, 0x1FB or 0x3FB
@@ -546,6 +549,10 @@ bool SettingsConfigRestore(void) {
     valid_settings = (5 == settings_buffer[0xF36]);  // Settings->config_version ESP32C2
 #elif CONFIG_IDF_TARGET_ESP32C6
     valid_settings = (6 == settings_buffer[0xF36]);  // Settings->config_version ESP32C6
+#elif CONFIG_IDF_TARGET_ESP32P4
+    valid_settings = (7 == settings_buffer[0xF36]);  // Settings->config_version ESP32P4
+#elif CONFIG_IDF_TARGET_ESP32C5
+    valid_settings = (8 == settings_buffer[0xF36]);  // Settings->config_version ESP32C5
 #else
     valid_settings = (1 == settings_buffer[0xF36]);  // Settings->config_version ESP32 all other
 #endif  // CONFIG_IDF_TARGET_ESP32S3
@@ -986,6 +993,10 @@ void SettingsDefaultSet2(void) {
   Settings->config_version = 5;  // ESP32C2
 #elif CONFIG_IDF_TARGET_ESP32C6
   Settings->config_version = 6;  // ESP32C6
+#elif CONFIG_IDF_TARGET_ESP32P4
+  Settings->config_version = 7;  // ESP32P4
+#elif CONFIG_IDF_TARGET_ESP32C5
+  Settings->config_version = 8;  // ESP32C5
 #else
   Settings->config_version = 1;  // ESP32
 #endif  // CONFIG_IDF_TARGET_ESP32S3
@@ -1440,6 +1451,7 @@ void SettingsDefaultSet2(void) {
 
   // Matter
   flag6.matter_enabled |= MATTER_ENABLED;
+  flag6.tls_use_ecdsa |= MQTT_TLS_ECDSA;
 
   Settings->flag = flag;
   Settings->flag2 = flag2;
@@ -1598,6 +1610,10 @@ void SettingsDelta(void) {
       Settings->config_version = 5;  // ESP32C2
 #elif CONFIG_IDF_TARGET_ESP32C6
       Settings->config_version = 6;  // ESP32C6
+#elif CONFIG_IDF_TARGET_ESP32P4
+      Settings->config_version = 7;  // ESP32P4
+#elif CONFIG_IDF_TARGET_ESP32C5
+      Settings->config_version = 8;  // ESP32C5
 #else
       Settings->config_version = 1;  // ESP32
 #endif  // CONFIG_IDF_TARGET_ESP32S3
