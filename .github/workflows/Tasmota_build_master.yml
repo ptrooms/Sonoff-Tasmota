@@ -267,3 +267,4 @@ jobs:
         gh api repos/arendst/Tasmota-firmware/actions/workflows/fetch_deploy.yml/dispatches \
           --method POST \
           -f ref='gh_actions'
+

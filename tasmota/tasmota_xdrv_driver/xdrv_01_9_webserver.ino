@@ -1379,9 +1379,8 @@ void WebGetDeviceCounts(void) {
     }
   }
 #endif  // USE_SHUTTER
-
-//  AddLog(LOG_LEVEL_DEBUG, PSTR("HTP: DP %d, BNLNS %d, SB %08X"), TasmotaGlobal.devices_present, Web.buttons_non_light_non_shutter, Web.light_shutter_button_mask);
 }
+
 
 #ifdef USE_LIGHT
 /*-------------------------------------------------------------------------------------------*/

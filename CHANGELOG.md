@@ -1,7 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - Development
+## [Released]
+
+## [14.4.1] 20241215
+- Release Rudolph
 
 ## [15.2.0.4]
 ### Added

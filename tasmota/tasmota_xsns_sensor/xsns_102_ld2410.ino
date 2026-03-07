@@ -24,6 +24,14 @@
  * LD2410EngineeringStart                      - Start engineering mode
  * LD2410EngineeringEnd                        - End engineering mode
  *
+ * ptro/feb2025: // log tele/sonoff_h001/SENSOR = {.... ,"LD2410":{"Distance":[157.0,157.0,135.0],"Energy":[0,100],
+ *		"MoveDistance":157.0,"StaticDistance":157.0,"DetectDistance":135.0,"MoveEnergy":0,"StaticEnergy":100}
+ * 	section: void Ld2410Show(bool json) --> extend with invividual  values to ease JSON fields.
+ * 		so we can use f.e. On Ld2410#MoveDistance as Trigger value field
+ * 
+ * Note:
+ *  There are 9 gates, gate 0 and 1-8  which each can be set to moving/statix/duration
+ * 
  * Inspiration:
  * https://community.home-assistant.io/t/mmwave-wars-one-sensor-module-to-rule-them-all/453260/2
  * Resources:
@@ -41,17 +49,21 @@
 
 #define LD2410_CMND_START_CONFIGURATION  0xFF
 #define LD2410_CMND_END_CONFIGURATION    0xFE
-#define LD2410_CMND_SET_DISTANCE         0x60
-#define LD2410_CMND_READ_PARAMETERS      0x61
+#define LD2410_CMND_SET_DISTANCE         0x60   // per gate 2-8 moving/statix/duration
+#define LD2410_CMND_READ_PARAMETERS      0x61   // read gates
 #define LD2410_CMND_START_ENGINEERING    0x62
 #define LD2410_CMND_END_ENGINEERING      0x63
-#define LD2410_CMND_SET_SENSITIVITY      0x64
+#define LD2410_CMND_SET_SENSITIVITY      0x64   // set 0x0000-gate / 0x0001-move / 0x0002-static
 #define LD2410_CMND_GET_FIRMWARE         0xA0
-#define LD2410_CMND_SET_BAUDRATE         0xA1
+#define LD2410_CMND_SET_BAUDRATE         0xA1   // 0x0001-0x0008 9600-19200-38400-57600-115200-230400-256000-460800
 #define LD2410_CMND_FACTORY_RESET        0xA2
 #define LD2410_CMND_REBOOT               0xA3
-#define LD2410_CMND_SET_BLUETOOTH        0xA4
+#define LD2410_CMND_SET_BLUETOOTH        0xA4   // set BT on 0x0100 / off 0x0000
 #define LD2410_CMND_GET_BLUETOOTH_MAC    0xA5
+// #define LD2410_CMND_GET_BLUETOOTH_PSW 0xA8   // garbled a'HiLink (ansered to BT onbly)
+// #define LD2410_CMND_SET_BLUETOOTH_PSW 0xA9   
+// #define LD2410_CMND_DISTANCE_RESOLUT  0xAA   // 0x0001=75cm, 0x0002=20cm
+// #define LD2410_CMND_QUERY_RESOLUT     0xAB   // 
 
 const uint8_t LD2410_config_header[4] = {0xFD, 0xFC, 0xFB, 0xFA};
 const uint8_t LD2410_config_footer[4] = {0x04, 0x03, 0x02, 0x01};
@@ -110,10 +122,19 @@ void Ld1410HandleTargetData(void) {
     // F4 F3 F2 F1 0D 00 02 AA 03 2A 00 64 00 00 64 00 00 55 00 F8 F7 F6 F5 - Movement and Stationary target
     //
     //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
-    // F4 F3 F2 F1 23 00 01 AA 00 1E 00 00 1E 00 0D 00 00 08 08 13 0E 07 02 05 07 03 04 05 00 00 0D 06 05 05 05 05 05 62 00 55 00 F8 F7 F6 F5
+    // F4 F3 F2 F1 23 00 01 AA 00 1E 00 00 1E 00 0D 00 00 08 08 12 05 04 09 0C 0D 0F 04 01 00 00 1F 64 64 64 64 31 1A 8C 00 01 00 F8 F7 F6 F5
+    // pdf:        23 00 01 AA 03 1E 00 3C 00 00 39 00 00 08 08 3C 22 05 03 03 04 03 06 05 00 00 39 10 13 06 06 08 04 60 01 55 00
     //
-    // F4 F3 F2 F1 23 00 01 AA 02 20 01 00 37 01 64 26 01                     
-    //  08 08 - max moving and static dist (17,18)
+    // F4 F3 F2 F1 - Header
+    //  23 00 - length  (04-05)
+    //  01 AA - Engineering Intradata frame (06-07)
+    //  00 -    type: 0x00-no target, 0x01-Campaing, 0x02 Stattionary, 0x03 Motion&Sstattionary
+    //  1E 00 - Moving distance (9-10)
+    //  00    - moving_energy (11)
+    //  1E 00 - Static Distance (12-13)
+    //  0D    - static_energy (14)
+    //  00 00 - detect disrance (15,16)
+    //  08 08 - max moving and static dist (17,18) table  of each 9 bytes
     //  12 05 04 09 0C 0D 0F 04 01 - Movement energy (19-27)
     //  00 00 1F 64 64 64 64 31 1A - Static energy (28-36)
     //  8C - Photo sens (37)
@@ -127,14 +148,13 @@ void Ld1410HandleTargetData(void) {
     LD2410.static_energy = 0;
     LD2410.detect_distance = 0;
 
-    if (LD2410.buffer[8] != 0x00) {                               // Movement and/or Stationary target
+    // if (LD2410.buffer[8] != 0x00) {                               // Movement and/or Stationary target
       LD2410.moving_distance = LD2410.buffer[10] << 8 | LD2410.buffer[9];
       LD2410.moving_energy = LD2410.buffer[11];
       LD2410.static_distance = LD2410.buffer[13] << 8 | LD2410.buffer[12];
       LD2410.static_energy = LD2410.buffer[14];
       LD2410.detect_distance = LD2410.buffer[16] << 8 | LD2410.buffer[15];
-
-    }
+    // }
     LD2410.web_engin_mode = LD2410.buffer[6]==1?1:0;
     if (0x01 == LD2410.buffer[6]) { /* Engineering mode*/
       if (LD2410.buffer[17] < 9) {
@@ -500,7 +520,7 @@ void Ld2410Response(void) {
   ResponseAppend_P(PSTR("]}}}"));
 }
 
-void CmndLd2410Duration(void) {
+void CmndLd2410Duration(void) {   // command ld2410duration
   // LD2410Duration 0  - Set default settings
   if (0 == XdrvMailbox.payload) {
     LD2410.settings = 2;
@@ -513,7 +533,7 @@ void CmndLd2410Duration(void) {
   Ld2410Response();
 }
 
-void CmndLd2410MovingSensitivity(void) {
+void CmndLd2410MovingSensitivity(void) {    // command ld2410MovingSens
   // LD2410MovingSens 50,50,40,30,20,15,15,15,15
   uint32_t parm[LD2410_MAX_GATES +1] = { 0 };
   uint32_t count = ParseParameters(LD2410_MAX_GATES +1, parm);
@@ -528,7 +548,7 @@ void CmndLd2410MovingSensitivity(void) {
   Ld2410Response();
 }
 
-void CmndLd2410StaticSensitivity(void) {
+void CmndLd2410StaticSensitivity(void) {  // command ld2410StaticSens
   // LD2410StaticSens 0,0,40,40,30,30,20,20,20
   uint32_t parm[LD2410_MAX_GATES +1] = { 0 };
   uint32_t count = ParseParameters(LD2410_MAX_GATES +1, parm);
@@ -543,7 +563,7 @@ void CmndLd2410StaticSensitivity(void) {
   Ld2410Response();
 }
 
-void CmndLd2410last(void) {
+void CmndLd2410last(void) {   // command ld2410get
   Response_P(PSTR("{\"LD2410\":{\"Moving energy\":[%d,%d,%d,%d,%d,%d,%d,%d,%d],\"Static energy\":[%d,%d,%d,%d,%d,%d,%d,%d,%d],\"Light\":%d,\"Out_pin\":%d}}"),
           LD2410.engineering.moving_gate_energy[0],LD2410.engineering.moving_gate_energy[1],LD2410.engineering.moving_gate_energy[2],
           LD2410.engineering.moving_gate_energy[3],LD2410.engineering.moving_gate_energy[4],LD2410.engineering.moving_gate_energy[5],
@@ -554,13 +574,13 @@ void CmndLd2410last(void) {
           LD2410.engineering.light,LD2410.engineering.out_pin);
 }
 
-void CmndLd2410EngineeringEnd(void) {
+void CmndLd2410EngineeringEnd(void) {   // command ld2410EngineeringEnd
     LD2410.set_engin_mode = 0;
     LD2410.step = 18;
     Response_P(PSTR("LD2410: End engineering mode"));
 }
 
-void CmndLd2410EngineeringStart(void) {
+void CmndLd2410EngineeringStart(void) { // command ld2410EngineeringStart 
     LD2410.set_engin_mode= 1;
     LD2410.step = 18;
     Response_P(PSTR("LD2410: Start engineering mode"));
@@ -587,9 +607,14 @@ void Ld2410Show(bool json) {
   float static_distance = LD2410.static_distance;
   float detect_distance = LD2410.detect_distance;
   if (json) {
-    //                                                             cm   cm   cm                          %  %
-    ResponseAppend_P(PSTR(",\"LD2410\":{\"" D_JSON_DISTANCE "\":[%1_f,%1_f,%1_f],\"" D_JSON_ENERGY "\":[%d,%d]}"),
-      &moving_distance, &static_distance, &detect_distance, LD2410.moving_energy, LD2410.static_energy);
+    // array and values                                            cm   cm   cm                          %  %
+    ResponseAppend_P(PSTR(",\"LD2410\":{\"" D_JSON_DISTANCE "\":[%1_f,%1_f,%1_f],\"" D_JSON_ENERGY "\":[%d,%d]"
+        ",\"Move" D_JSON_DISTANCE "\":%1_f,\"Static" D_JSON_DISTANCE "\":%1_f,\"Detect" D_JSON_DISTANCE "\":%1_f"
+        ",\"Move" D_JSON_ENERGY   "\":%d,\"Static"   D_JSON_ENERGY   "\":%d}" ),
+      &moving_distance, &static_distance, &detect_distance, LD2410.moving_energy, LD2410.static_energy,
+      &moving_distance, &static_distance, &detect_distance, LD2410.moving_energy, LD2410.static_energy      
+      );
+
 #ifdef USE_WEBSERVER
   } else {
     WSContentSend_PD(HTTP_SNS_LD2410_CM, &moving_distance, &static_distance, &detect_distance);
