@@ -30,6 +30,8 @@
 #define XDRV_36 36
 
 #include "cc1101.h"
+// #include "CC1101.h"
+// #include <RadioLib.h>
 #include <KeeloqLib.h>
 
 #define SYNC_WORD 199
@@ -54,8 +56,8 @@ struct JAROLIFT_DEVICE {
   uint64_t pack            = 0;   // Contains data to send.
   int count                = 0;
   uint32_t serial          = 0x0;
-  int8_t port_tx;
-  int8_t port_rx;
+  int8_t port_tx;   // GDo2 output to 8266
+  int8_t port_rx;   // GDo0 input to 8266
 } jaroliftDevice;
 
 void CmdSet(void)
@@ -273,6 +275,7 @@ bool Xdrv36(uint32_t function)
       result = DecodeCommand(kJaroliftCommands, jaroliftCommand);
       break;
     case FUNC_INIT:
+      DEBUG_DRIVER_LOG(PSTR("KLQ: init start"));      // ptro 20mar25; debug watchdog fault
       KeeloqInit();
       DEBUG_DRIVER_LOG(PSTR("KLQ: init done"));
       break;

@@ -152,13 +152,13 @@ class MI32AdvCallbacks: public NimBLEScanCallbacks {
     uint16_t UUID = *(uint16_t*)advertisedDevice->getServiceDataUUID(0).getValue();
     ServiceDataLength = advertisedDevice->getServiceData(0).length();
 
-    if(UUID==0xfe95) {
+    if(UUID==0xfe95) {      // Ptro: fyi 17mar26 0xFE95 Xiaomi Inc.
       MI32ParseResponse((char*)advertisedDevice->getServiceData(0).data(),ServiceDataLength, addr, RSSI);
     }
-    else if(UUID==0xfcd2) {
+    else if(UUID==0xfcd2) {  // Ptro: fyi 17mar26 = BTHOME
       MI32parseBTHomePacket((char*)advertisedDevice->getServiceData(0).data(),ServiceDataLength, addr, RSSI, advertisedDevice->getNameView());
     }
-    else if(UUID==0xfdcd) { // deprecated
+    else if(UUID==0xfdcd) { // deprecated  Ptro: fyi 17mar26 Qingping Technology (Beijing) Co., Ltd.
       MI32parseCGD1Packet((char*)advertisedDevice->getServiceData(0).data(),ServiceDataLength, addr, RSSI);
     }
     else if(UUID==0x181a) { //ATC and PVVX - deprecated, change FW setting of these devices to BTHome V2
